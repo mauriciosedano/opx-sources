@@ -1,0 +1,105 @@
+{% extends "layouts/main.html" %}
+
+{% block content %}
+
+    <div id="gestion-proyectos" class="container-fluid">
+
+      <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title ">Proyectos</h4>
+                  <p class="card-category"> Gestión de Proyectos </p>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead class=" text-primary">
+                        <th></th>
+                        <th>
+                          Nombre
+                        </th>
+                        <th>
+                          Descripción
+                        </th>
+                        <th>
+                          Fecha Creación
+                        </th>
+                        <th>
+                          Fecha Cierre
+                        </th>
+                        <th>
+                          Estado
+                        </th>
+                      </thead>
+                      <tbody>
+                        <tr v-for="proyecto in proyectos">
+                          <td>
+                            <button class="btn" data-toggle="modal" data-target="#agregar-proyecto">
+                              Edición
+                            </button>
+                          </td>
+                          <td>
+                            [[ proyecto.proynombre ]]
+                          </td>
+                          <td>
+                            [[ proyecto.proydescripcion ]]
+                          </td>
+                          <td>
+                            [[ proyecto.proyfechacreacion ]]
+                          </td>
+                          <td>
+                            [[ proyecto.proyfechacierre ]]
+                          </td>
+                          <td class="text-primary">
+                            [[ proyecto.proyestado ]]
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+      <div class="row">
+          <div class="modal" id="agregar-proyecto">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Crear Proyecto</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form action="">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Nombre</label>
+                          <input ng-model="almacenamientoProyecto.proynombre" type="text" class="form-control">
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Descripción</label>
+                          <textarea ng-model="almacenamientoProyecto.proydescripcion" class="form-control"></textarea>
+                        </div>
+                      </div>      
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <button class="btn">Guardar</button>
+                        </div>
+                      </div>                
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+{% endblock %}

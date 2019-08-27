@@ -56,6 +56,36 @@ def eliminarUsuario(request, userid):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
+@csrf_exempt
+def actualizarUsuario(request, userid):
+    
+    try:
+        usuario = models.Usuario.objects.get(pk = userid)
+
+        usuario.useremail = request.POST.get('useremail')
+        usuario.userpassword = request.POST.get('userpassword')
+        usuario.rolid = request.POST.get('rolid')
+        usuario.userleveltype = request.POST.get('userleveltype')
+        usuario.userestado = request.POST.get('userestado')
+        usuario.userfullname = request.POST.get('userfullname')
+        usuario.usertoken = request.POST.get('usertoken')
+
+        usuario.full_clean()
+
+        usuario.save()
+
+        return JsonResponse(serializers.serialize('python', [usuario]), safe = False)
+
+    except ObjectDoesNotExist:
+        return JsonResponse({'status': 'error'}, status = 404)
+
+    except ValidationError as e:
+        return JsonResponse({'status': 'error', 'errors': dict(e) }, status = 400)
+
+def listadoUsuariosView(request):
+
+    return render(request, 'proyectos/listado.html')
+
 # ======================== Datos de Contexto =======================
 
 def listadoDatosContexto(request):
@@ -100,6 +130,28 @@ def eliminarDatoContexto(request, dataid):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
+@csrf_exempt
+def actualizarDatoContexto(request, dataid):
+    try:
+        datoContexto = models.DatosContexto.objects.get(pk=dataid)
+
+        datoContexto.hdxtag = request.POST.get('hdxtag')
+        datoContexto.datavalor = request.POST.get('datavalor')
+        datoContexto.proyid = request.POST.get('proyid')
+        datoContexto.datatipe = request.POST.get('datatipe')
+
+        datoContexto.full_clean()
+
+        datoContexto.save()
+
+        return JsonResponse(serializers.serialize('python', [datoContexto]), safe=False)
+
+    except ObjectDoesNotExist:
+        return JsonResponse({'status': 'error'}, status=404)
+
+    except ValidationError as e:
+        return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
+
 # ======================== Decisiones =============================
 
 def listadoDecisiones(request):
@@ -141,6 +193,26 @@ def eliminarDecision(request, desiid):
 
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
+
+@csrf_exempt
+def actualizarDecision(request, desiid):
+    try:
+        decision = models.Decision.objects.get(pk=desiid)
+
+        decision.desidescripcion = request.POST.get('desidescripcion')
+        decision.userid = request.POST.get('userid')
+
+        decision.full_clean()
+
+        decision.save()
+
+        return JsonResponse(serializers.serialize('python', [decision]), safe=False)
+
+    except ObjectDoesNotExist:
+        return JsonResponse({'status': 'error'}, status=404)
+
+    except ValidationError as e:
+        return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
 # ========================== Decisiones Proyecto ==================
 
@@ -184,6 +256,26 @@ def eliminarDecisionProyecto(request, desproid):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
+@csrf_exempt
+def actualizarDecisionProyecto(request, desproid):
+    try:
+        decisionProyecto = models.DecisionProyecto.objects.get(pk=desproid)
+
+        decisionProyecto.proyid = request.POST.get('proyid')
+        decisionProyecto.desiid = request.POST.get('desiid')
+
+        decisionProyecto.full_clean()
+
+        decisionProyecto.save()
+
+        return JsonResponse(serializers.serialize('python', [decisionProyecto]), safe=False)
+
+    except ObjectDoesNotExist:
+        return JsonResponse({'status': 'error'}, status=404)
+
+    except ValidationError as e:
+        return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
+
 # ========================== Equipos ==============================
 
 def listadoEquipos(request):
@@ -226,6 +318,26 @@ def eliminarEquipo(request, equid):
 
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
+
+@csrf_exempt
+def actualizarEquipo(request, equid):
+    try:
+        equipo = models.Equipo.objects.get(pk=equid)
+
+        equipo.userid = request.POST.get('userid')
+        equipo.proyid = request.POST.get('proyid')
+
+        equipo.full_clean()
+
+        equipo.save()
+
+        return JsonResponse(serializers.serialize('python', [equipo]), safe=False)
+
+    except ObjectDoesNotExist:
+        return JsonResponse({'status': 'error'}, status=404)
+
+    except ValidationError as e:
+        return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
 # ========================= Funciones Rol =========================
 
@@ -271,6 +383,30 @@ def eliminarFuncionRol(request, funcrolid):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
+@csrf_exempt
+def actualizarFuncionRol(request, funcrolid):
+
+    try:
+        funcionRol = models.FuncionRol.objects.get(pk=funcrolid)
+
+        funcionRol.rolid = request.POST.get('rolid')
+        funcionRol.actionid = request.POST.get('actionid')
+        funcionRol.funcrolestado = request.POST.get('funcrolestado')
+        funcionRol.funcrolpermiso = request.POST.get('funcrolpermiso')
+
+        funcionRol.full_clean()
+
+        funcionRol.save()
+
+        return JsonResponse(serializers.serialize('python', [funcionRol]), safe=False)
+
+    except ObjectDoesNotExist:
+        return JsonResponse({'status': 'error'}, status=404)
+
+    except ValidationError as e:
+
+        return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
+
 # =============================== Instrumentos ===================
 
 def listadoInstrumentos(request):
@@ -312,6 +448,28 @@ def eliminarInstrumento(request, instrid):
 
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
+
+@csrf_exempt
+def actualizarInstrumento(request, instrid):
+
+    try:
+        instrumento = models.Instrumento.objects.get(pk=instrid)
+
+        instrumento.instridexterno = request.POST.get('instridexterno')
+        instrumento.instrtipo = request.POST.get('instrtipo')
+
+        instrumento.full_clean()
+
+        instrumento.save()
+
+        return JsonResponse(serializers.serialize('python', [instrumento]), safe=False)
+
+    except ObjectDoesNotExist:
+        return JsonResponse({'status': 'error'}, status=404)
+
+    except ValidationError as e:
+
+        return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
 # ============================= Proyectos ========================
 
@@ -359,6 +517,31 @@ def eliminarProyecto(request, proyid):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
+@csrf_exempt
+def actualizarProyecto(request, proyid):
+    try:
+        proyecto = models.Proyecto.objects.get(pk=proyid)
+
+        proyecto.proynombre = request.POST.get('proynombre')
+        proyecto.proydescripcion = request.POST.get('proydescripcion')
+        proyecto.proyidexterno = request.POST.get('proyidexterno')
+        proyecto.proyfechacreacion = request.POST.get('proyfechacreacion')
+        proyecto.proyfechacierre = request.POST.get('proyfechacierre')
+        proyecto.proyestado = request.POST.get('proyestado')
+
+        proyecto.full_clean()
+
+        proyecto.save()
+
+        return JsonResponse(serializers.serialize('python', [proyecto]), safe=False)
+
+    except ObjectDoesNotExist:
+        return JsonResponse({'status': 'error'}, status=404)
+
+    except ValidationError as e:
+
+        return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
+
 # ============================ Roles =============================
 
 def listadoRoles(request):
@@ -401,6 +584,27 @@ def eliminarRol(request, rolid):
 
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
+
+@csrf_exempt
+def actualizarRol(request, rolid):
+    try:
+        rol = models.Rol.objects.get(pk=rolid)
+
+        rol.rolname = request.POST.get('rolname')
+        rol.roldescripcion = request.POST.get('roldescripcion')        
+        rol.rolestado = request.POST.get('rolestado')
+
+        rol.full_clean()
+
+        rol.save()
+
+        return JsonResponse(serializers.serialize('python', [rol]), safe=False)
+
+    except ObjectDoesNotExist:
+        return JsonResponse({'status': 'error'}, status=404)
+
+    except ValidationError as e:
+        return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
 # =========================== Tareas ==============================
 
@@ -448,3 +652,28 @@ def eliminarTarea(request, tareid):
 
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
+
+@csrf_exempt
+def actualizarTarea(request, tareid):
+    try:
+        tarea = models.Tarea.objects.get(pk=tareid)
+
+        tarea.tarenombre = request.POST.get('tarenombre')
+        tarea.taretipo = request.POST.get('taretipo')
+        tarea.tarerestricgeo = request.POST.get('tarerestricgeo')
+        tarea.tarerestriccant = request.POST.get('tarerestriccant')
+        tarea.tarerestrictime = request.POST.get('tarerestrictime')
+        tarea.instrid = request.POST.get('instrid')
+        tarea.proyid = request.POST.get('proyid')
+
+        tarea.full_clean()
+
+        tarea.save()
+
+        return JsonResponse(serializers.serialize('python', [tarea]), safe=False)
+
+    except ObjectDoesNotExist:
+        return JsonResponse({'status': 'error'}, status=404)
+
+    except ValidationError as e:
+        return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
