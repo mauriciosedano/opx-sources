@@ -7,7 +7,7 @@ class Usuario(models.Model):
     useremail = models.CharField(max_length = 255)
     userpassword = models.CharField(max_length = 255)
     usertoken = models.CharField(max_length = 255, null = True, blank = True)
-    userfullname = models.CharField(max_length = 255, null = True, blank = True)
+    userfullname = models.CharField(max_length = 255)
     rolid = models.UUIDField()
     userleveltype = models.IntegerField()
     userestado = models.IntegerField()
@@ -71,6 +71,8 @@ class Instrumento(models.Model):
     instrid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     instridexterno = models.CharField(max_length = 255)
     instrtipo = models.IntegerField()
+    instrnombre = models.CharField(max_length = 255)
+    instrdescripcion = models.CharField(max_length = 3000, null = True, blank = True)
 
     class Meta:
         db_table = '"v1"."instrumentos"'

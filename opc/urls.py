@@ -20,18 +20,20 @@ from myapp import views
 
 urlpatterns = [
     #path('admin/', admin.site.urls),
-    path('usuarios/', views.listadoUsuarios),
+
+    path('usuarios/', views.listadoUsuariosView),
+    path('usuarios/list/', views.listadoUsuarios),
     path('usuarios/store/', views.almacenarUsuario),
-    path('usuarios/delete/<str:userid>/', views.eliminarUsuario),
-    path('usuarios/lista/', views.listadoUsuariosView),
-    path('usuarios/<str:userid>/', views.actualizarUsuario),
+    path('usuarios/delete/<str:userid>', views.eliminarUsuario),
+    path('usuarios/<str:userid>', views.actualizarUsuario),
 
     path('datos-contexto/', views.listadoDatosContexto),
     path('datos-contexto/store/', views.almacenarDatoContexto),
     path('datos-contexto/delete/<str:dataid>/', views.eliminarDatoContexto),
     path('datos-contexto/<str:dataid>/', views.actualizarDatoContexto),
 
-    path('decisiones/', views.listadoDecisiones),
+    path('decisiones/', views.listadoDecisionesView),
+    path('decisiones/list/', views.listadoDecisiones),
     path('decisiones/store/', views.almacenarDecision),
     path('decisiones/delete/<str:desiid>/', views.eliminarDecision),
     path('decisiones/<str:desiid>', views.actualizarDecision),
@@ -51,22 +53,25 @@ urlpatterns = [
     path('funciones-rol/delete/<str:funcrolid>/', views.eliminarFuncionRol),
     path('funciones-rol/<str:funcrolid>', views.actualizarFuncionRol),
 
-    path('instrumentos/', views.listadoInstrumentos),
+    path('instrumentos/', views.listadoInstrumentosView),
+    path('instrumentos/list/', views.listadoInstrumentos),
     path('instrumentos/store/', views.almacenamientoInstrumento),
-    path('instrumentos/delete/<str:instrid>/', views.eliminarInstrumento),
+    path('instrumentos/delete/<str:instrid>', views.eliminarInstrumento),
     path('instrumentos/<str:instrid>', views.actualizarInstrumento),
 
-    path('proyectos/', views.listadoProyectos),
+    path('proyectos/', views.listadoProyectosView),
+    path('proyectos/list/', views.listadoProyectos),
     path('proyectos/store/', views.almacenamientoProyecto),
     path('proyectos/delete/<str:proyid>/', views.eliminarProyecto),
     path('proyectos/<str:proyid>', views.actualizarProyecto),
 
-    path('roles/', views.listadoRoles),
+    path('roles/list/', views.listadoRoles),
     path('roles/store/', views.almacenamientoRol),
     path('roles/delete/<str:rolid>/', views.eliminarRol),
     path('roles/<str:rolid>', views.actualizarRol),
 
-    path('tareas/', views.listadoTareas),
+    path('tareas/', views.listadoTareasView),
+    path('tareas/list/', views.listadoTareas),
     path('tareas/store/', views.almacenamientoTarea),
     path('tareas/delete/<str:tareid>/', views.eliminarTarea),
     path('tareas/<str:tareid>', views.actualizarTarea)

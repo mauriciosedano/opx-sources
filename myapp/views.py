@@ -1,12 +1,25 @@
+from datetime import datetime
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.db import connection
 from django.forms import model_to_dict
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.http.response import JsonResponse
+import json
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from myapp import models
+
+#========================== Utilidades =============================
+
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
 
 # ======================= usuarios ================================= 
 
@@ -25,8 +38,8 @@ def almacenarUsuario(request):
     userfullname = request.POST.get('userfullname')
     userpassword = request.POST.get('userpassword')
     rolid = request.POST.get('rolid')
-    userleveltype = request.POST.get('userleveltype')
-    userestado = request.POST.get('userestado')
+    userleveltype = 1
+    userestado = 1
 
     usuario = models.Usuario(useremail = useremail, usertoken = usertoken, userfullname = userfullname, userpassword = userpassword, rolid = rolid, userleveltype = userleveltype, userestado = userestado)
 
@@ -84,7 +97,7 @@ def actualizarUsuario(request, userid):
 
 def listadoUsuariosView(request):
 
-    return render(request, 'proyectos/listado.html')
+    return render(request, "usuarios/listado.html")
 
 # ======================== Datos de Contexto =======================
 
@@ -156,9 +169,16 @@ def actualizarDatoContexto(request, dataid):
 
 def listadoDecisiones(request):
 
-    decisiones = models.Decision.objects.all().values()
+    # decisiones = models.Decision.objects.all().values()
+    #
+    # return JsonResponse(list(decisiones), safe = False)
 
-    return JsonResponse(list(decisiones), safe = False)
+    with connection.cursor() as cursor:
+        cursor.execute("select v1.decisiones.desiid, v1.decisiones.desidescripcion, v1.usuarios.userid, v1.usuarios.userfullname from v1.decisiones inner join v1.usuarios on v1.decisiones.userid = v1.usuarios.userid")
+
+        columns = dictfetchall(cursor)
+
+        return JsonResponse(columns, safe = False)
 
 @csrf_exempt
 def almacenarDecision(request):
@@ -214,6 +234,11 @@ def actualizarDecision(request, desiid):
     except ValidationError as e:
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
+def listadoDecisionesView(request):
+
+    return render(request, "decisiones/listado.html")
+
+
 # ========================== Decisiones Proyecto ==================
 
 def listadoDecisionesProyecto(request):
@@ -223,22 +248,21 @@ def listadoDecisionesProyecto(request):
     return JsonResponse(list(decisionesProyecto), safe = False)
 
 @csrf_exempt
-def almacenarDecisionProyecto(request):
-
-    proyid = request.POST.get('proyid')
-    desiid = request.POST.get('desiid')
-
-    decisionProyecto = models.DecisionProyecto(proyid = proyid, desiid = desiid)
+def almacenarDecisionProyecto(proyecto, decisiones):
 
     try:
-        decisionProyecto.full_clean()
+        for decision in decisiones:
 
-        decisionProyecto.save()
-        data = serializers.serialize('python', [decisionProyecto])
-        return JsonResponse(data, safe = False, status = 201)
+            decisionProyecto = None
+
+            decisionProyecto = models.DecisionProyecto(proyid = proyecto.proyid, desiid = decision)
+
+            decisionProyecto.save()
+
+        return True
 
     except ValidationError as e:
-        return JsonResponse(dict(e), safe = True, status = 400)
+        return False
 
 @csrf_exempt
 def eliminarDecisionProyecto(request, desproid):
@@ -418,10 +442,12 @@ def listadoInstrumentos(request):
 @csrf_exempt
 def almacenamientoInstrumento(request):
 
-    instrIdExterno = request.POST.get('instridexterno')
+    instrIdExterno = "12345"
     instrTipo = request.POST.get('instrtipo')
+    instrNombre = request.POST.get('instrnombre')
+    instrDescripcion = request.POST.get('instrdescripcion')
 
-    instrumento = models.Instrumento(instridexterno = instrIdExterno, instrtipo = instrTipo)
+    instrumento = models.Instrumento(instridexterno = instrIdExterno, instrtipo = instrTipo, instrnombre = instrNombre, instrdescripcion = instrDescripcion)
 
     try:
         instrumento.full_clean()
@@ -455,8 +481,10 @@ def actualizarInstrumento(request, instrid):
     try:
         instrumento = models.Instrumento.objects.get(pk=instrid)
 
-        instrumento.instridexterno = request.POST.get('instridexterno')
+        #instrumento.instridexterno = request.POST.get('instridexterno')
         instrumento.instrtipo = request.POST.get('instrtipo')
+        instrumento.instrnombre = request.POST.get('instrnombre')
+        instrumento.instrdescripcion = request.POST.get('instrdescripcion')
 
         instrumento.full_clean()
 
@@ -471,6 +499,10 @@ def actualizarInstrumento(request, instrid):
 
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
+def listadoInstrumentosView(request):
+
+    return render(request, "instrumentos/listado.html")
+
 # ============================= Proyectos ========================
 
 def listadoProyectos(request):
@@ -484,10 +516,11 @@ def almacenamientoProyecto(request):
 
     proyNombre = request.POST.get('proynombre')
     proyDescripcion = request.POST.get('proydescripcion')
-    proyIdExterno = request.POST.get('proyidexterno')
-    proyFechaCreacion = request.POST.get('proyfechacreacion')
+    proyIdExterno = 12345
+    proyFechaCreacion = datetime.today()
     proyFechaCierre = request.POST.get('proyfechacierre')
-    proyEstado = request.POST.get('proyestado')    
+    proyEstado = 0
+    decisiones = json.loads(request.POST.get('decisiones'))
 
     proyecto = models.Proyecto(proynombre = proyNombre, proydescripcion = proyDescripcion, proyidexterno = proyIdExterno, proyfechacreacion = proyFechaCreacion, proyfechacierre = proyFechaCierre, proyestado = proyEstado)
 
@@ -495,6 +528,9 @@ def almacenamientoProyecto(request):
         proyecto.full_clean()
 
         proyecto.save()
+
+        almacenarDecisionProyecto(proyecto, decisiones)
+
         data = serializers.serialize('python', [proyecto])
         return JsonResponse(data, safe = False, status = 201)
 
@@ -524,10 +560,10 @@ def actualizarProyecto(request, proyid):
 
         proyecto.proynombre = request.POST.get('proynombre')
         proyecto.proydescripcion = request.POST.get('proydescripcion')
-        proyecto.proyidexterno = request.POST.get('proyidexterno')
-        proyecto.proyfechacreacion = request.POST.get('proyfechacreacion')
-        proyecto.proyfechacierre = request.POST.get('proyfechacierre')
-        proyecto.proyestado = request.POST.get('proyestado')
+        #proyecto.proyidexterno = request.POST.get('proyidexterno')
+        #proyecto.proyfechacreacion = request.POST.get('proyfechacreacion')
+        #proyecto.proyfechacierre = request.POST.get('proyfechacierre')
+        #proyecto.proyestado = request.POST.get('proyestado')
 
         proyecto.full_clean()
 
@@ -541,6 +577,10 @@ def actualizarProyecto(request, proyid):
     except ValidationError as e:
 
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
+
+def listadoProyectosView(request):
+
+    return render(request, 'proyectos/listado.html')
 
 # ============================ Roles =============================
 
@@ -610,18 +650,27 @@ def actualizarRol(request, rolid):
 
 def listadoTareas(request):
 
-    tareas =  models.Tarea.objects.all().values()
+    #tareas =  models.Tarea.objects.all().values()
 
-    return JsonResponse(list(tareas), safe = False)
+    #return JsonResponse(list(tareas), safe = False)
+
+    query = "select v1.tareas.tareid, v1.tareas.tarenombre, v1.tareas.taretipo, v1.tareas.tarerestriccant, v1.instrumentos.instrid, v1.instrumentos.instrnombre, v1.proyectos.proyid, v1.proyectos.proynombre from v1.tareas inner join v1.proyectos on v1.tareas.proyid = v1.proyectos.proyid inner join v1.instrumentos on v1.tareas.instrid = v1.instrumentos.instrid"
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+
+        columns = dictfetchall(cursor)
+
+        return JsonResponse(columns, safe = False)
 
 @csrf_exempt
 def almacenamientoTarea(request):
 
     tareNombre = request.POST.get('tarenombre')
     tareTipo = request.POST.get('taretipo')
-    tareRestricGeo = request.POST.get('tarerestricgeo')
+    tareRestricGeo = "{}"
     tareRestricCant = request.POST.get('tarerestriccant')
-    tareRestricTime = request.POST.get('tarerestrictime')
+    tareRestricTime = "{}"
     instrID = request.POST.get('instrid')
     proyID = request.POST.get('proyid')
 
@@ -660,9 +709,9 @@ def actualizarTarea(request, tareid):
 
         tarea.tarenombre = request.POST.get('tarenombre')
         tarea.taretipo = request.POST.get('taretipo')
-        tarea.tarerestricgeo = request.POST.get('tarerestricgeo')
+        tarea.tarerestricgeo = "{}"
         tarea.tarerestriccant = request.POST.get('tarerestriccant')
-        tarea.tarerestrictime = request.POST.get('tarerestrictime')
+        tarea.tarerestrictime = "{}"
         tarea.instrid = request.POST.get('instrid')
         tarea.proyid = request.POST.get('proyid')
 
@@ -677,3 +726,7 @@ def actualizarTarea(request, tareid):
 
     except ValidationError as e:
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
+
+def listadoTareasView(request):
+
+    return render(request, 'tareas/listado.html')

@@ -24,7 +24,7 @@
   <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <title>
-    Material Dashboard by Creative Tim
+    OPC
   </title>
   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
   <!--     Fonts and icons     -->
@@ -34,6 +34,8 @@
   <link href="{% static 'css/material-dashboard.css' %}" rel="stylesheet" />
   <!-- CSS Just for demo purpose, don't include it in your project -->
   <link href="{% static 'demo/demo.css' %}" rel="stylesheet" />
+
+  <link rel="stylesheet" href="{% static 'css/vue-multiselect.min.css' %}">
 </head>
 
 <body class="">
@@ -47,63 +49,39 @@
     -->
       <div class="logo">
         <a href="http://www.creative-tim.com" class="simple-text logo-normal">
-          Creative Tim
+          OPC
         </a>
       </div>
       <div class="sidebar-wrapper">
         <ul class="nav">
           <li class="nav-item  ">
-            <a class="nav-link" href="./dashboard.html">
+            <a class="nav-link" href="/proyectos/">
               <i class="material-icons">dashboard</i>
-              <p>Dashboard</p>
+              <p>Proyectos</p>
             </a>
           </li>
           <li class="nav-item ">
-            <a class="nav-link" href="./user.html">
+            <a class="nav-link" href="/tareas">
               <i class="material-icons">person</i>
-              <p>User Profile</p>
+              <p>Tareas</p>
             </a>
           </li>
-          <li class="nav-item active ">
-            <a class="nav-link" href="./tables.html">
+          <li class="nav-item">
+            <a class="nav-link" href="/instrumentos">
               <i class="material-icons">content_paste</i>
-              <p>Table List</p>
+              <p>Instrumentos</p>
             </a>
           </li>
           <li class="nav-item ">
-            <a class="nav-link" href="./typography.html">
+            <a class="nav-link" href="/decisiones">
               <i class="material-icons">library_books</i>
-              <p>Typography</p>
+              <p>Decisiones</p>
             </a>
           </li>
           <li class="nav-item ">
-            <a class="nav-link" href="./icons.html">
-              <i class="material-icons">bubble_chart</i>
-              <p>Icons</p>
-            </a>
-          </li>
-          <li class="nav-item ">
-            <a class="nav-link" href="./map.html">
-              <i class="material-icons">location_ons</i>
-              <p>Maps</p>
-            </a>
-          </li>
-          <li class="nav-item ">
-            <a class="nav-link" href="./notifications.html">
-              <i class="material-icons">notifications</i>
-              <p>Notifications</p>
-            </a>
-          </li>
-          <li class="nav-item ">
-            <a class="nav-link" href="./rtl.html">
-              <i class="material-icons">language</i>
-              <p>RTL Support</p>
-            </a>
-          </li>
-          <li class="nav-item active-pro ">
-            <a class="nav-link" href="./upgrade.html">
-              <i class="material-icons">unarchive</i>
-              <p>Upgrade to PRO</p>
+            <a class="nav-link" href="/usuarios">
+              <i class="material-icons">person</i>
+              <p>Usuarios</p>
             </a>
           </li>
         </ul>
@@ -116,7 +94,7 @@
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="#pablo">Table List</a>
+            <a class="navbar-brand" href="#pablo"></a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>

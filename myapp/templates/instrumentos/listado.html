@@ -1,0 +1,159 @@
+{% extends "layouts/main.html" %}
+
+{% block content %}
+
+    <div id="gestion-instrumentos" class="container-fluid">
+
+      <!-- Instrumentos -->
+      <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <button class="btn button-right" data-target="#agregar-instrumento" data-toggle="modal">Crear Instrumento</button>
+                  <h4 class="card-title ">Instrumentos</h4>
+                  <p class="card-category"> Gestión de Instrumentos </p>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead class=" text-primary">
+                        <th></th>
+                        <th>
+                          Tipo
+                        </th>
+                        <th>
+                          Nombre
+                        </th>
+                      <th>
+                        Descripción
+                      </th>
+                      </thead>
+                      <tbody>
+                        <tr v-for="instrumento in instrumentos">
+                          <td>
+                            <button @click="edicionInstrumento = instrumento" class="btn" data-toggle="modal" data-target="#editar-instrumento">
+                              Edición
+                            </button>
+                            <button class="btn" @click="eliminarInstrumento(instrumento.instrid)">
+                              Eliminar
+                            </button>
+                          </td>
+                          <td>
+                            [[ instrumento.instrtipo | tipoInstrumento ]]
+                          </td>
+                          <td>
+                            [[ instrumento.instrnombre ]]
+                          </td>
+                          <td>
+                            [[ instrumento.instrdescripcion ]]
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+      <!-- Modales -->
+      <div class="row">
+
+          <!-- Creación de Instrumento -->
+          <div class="modal fade" id="agregar-instrumento">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Crear Instrumento</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form action="">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Tipo</label>
+                            <select v-model="almacenamientoInstrumento.instrtipo" class="form-control">
+                                <option value="">Seleccione</option>
+                                <option value="1">Encuesta</option>
+                                <option value="2">Cartografia</option>
+                            </select>
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Nombre</label>
+                          <input class="form-control" type="text" v-model="almacenamientoInstrumento.instrnombre">
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Descripción</label>
+                          <textarea class="form-control" v-model="almacenamientoInstrumento.instrdescripcion"></textarea>
+                        </div>
+                      </div>
+                      <div align="center" class="col-md-12">
+                        <div class="form-group">
+                          <button :disabled="!almacenamientoInstrumento.instrtipo || !almacenamientoInstrumento.instrnombre" class="btn" @click="almacenarInstrumento()" type="button">Guardar</button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <!-- Edición de Instrumento -->
+          <div class="modal fade" id="editar-instrumento">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Editar Instrumento</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form action="">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Tipo</label>
+                            <select v-model="edicionInstrumento.instrtipo" class="form-control">
+                                <option value="">Seleccione</option>
+                                <option value="1">Encuesta</option>
+                                <option value="2">Cartografia</option>
+                            </select>
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Nombre</label>
+                          <input class="form-control" type="text" v-model="edicionInstrumento.instrnombre">
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Descripción</label>
+                          <textarea class="form-control" v-model="edicionInstrumento.instrdescripcion"></textarea>
+                        </div>
+                      </div>
+                      <div align="center" class="col-md-12">
+                        <div class="form-group">
+                          <button :disabled="!edicionInstrumento.instrtipo || !edicionInstrumento.instrnombre" class="btn" @click="editarInstrumento()" type="button">Editar</button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+    </div>
+
+{% endblock %}
