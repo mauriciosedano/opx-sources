@@ -40,4 +40,9 @@ require('./components/decisiones').decision;
 // Instancia Vue para Gestión de Usuarios
 require('./components/usuarios').usuario;
 
+// Instancia Vue para gestión de Roles
+require('./components/roles').rol;
+
+require('./components/permisosRol.js');
+
 //import '../../../node-modules/vue-multiselect/dist/vue-multiselect.min.css';

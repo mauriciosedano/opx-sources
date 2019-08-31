@@ -48,7 +48,7 @@ urlpatterns = [
     path('equipos/delete/<str:equid>/', views.eliminarEquipo),
     path('equipos/<str:equid>', views.actualizarEquipo),
 
-    path('funciones-rol/', views.listadoFuncionesRol),
+    path('funciones-rol/list/<str:rolid>', views.listadoFuncionesRol),
     path('funciones-rol/store/', views.almacenamientoFuncionRol),
     path('funciones-rol/delete/<str:funcrolid>/', views.eliminarFuncionRol),
     path('funciones-rol/<str:funcrolid>', views.actualizarFuncionRol),
@@ -65,10 +65,12 @@ urlpatterns = [
     path('proyectos/delete/<str:proyid>/', views.eliminarProyecto),
     path('proyectos/<str:proyid>', views.actualizarProyecto),
 
+    path('roles/', views.listadoRolesView),
     path('roles/list/', views.listadoRoles),
     path('roles/store/', views.almacenamientoRol),
-    path('roles/delete/<str:rolid>/', views.eliminarRol),
+    path('roles/delete/<str:rolid>', views.eliminarRol),
     path('roles/<str:rolid>', views.actualizarRol),
+    path('roles/permisos/<str:rolid>', views.permisosRolView),
 
     path('tareas/', views.listadoTareasView),
     path('tareas/list/', views.listadoTareas),

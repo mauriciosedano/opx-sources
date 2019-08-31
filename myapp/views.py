@@ -365,11 +365,15 @@ def actualizarEquipo(request, equid):
 
 # ========================= Funciones Rol =========================
 
-def listadoFuncionesRol(request):
+def listadoFuncionesRol(request, rolid):
 
-    funcionesRol =  models.FuncionRol.objects.all().values()
+    try:
+        funcionesRol =  models.FuncionRol.objects.filter(rolid__exact = rolid).values()
 
-    return JsonResponse(list(funcionesRol), safe = False)
+        return JsonResponse(list(funcionesRol), safe = False)
+
+    except ValidationError:
+        return JsonResponse({'status': 'error', 'message': 'Información Inválida'}, status = 400)
 
 @csrf_exempt
 def almacenamientoFuncionRol(request):
@@ -595,7 +599,7 @@ def almacenamientoRol(request):
 
     rolName = request.POST.get('rolname')
     rolDescripcion = request.POST.get('roldescripcion')   
-    rolEstado = request.POST.get('rolestado')    
+    rolEstado = 1
 
     rol = models.Rol(rolname = rolName, roldescripcion = rolDescripcion, rolestado = rolEstado)
 
@@ -645,6 +649,23 @@ def actualizarRol(request, rolid):
 
     except ValidationError as e:
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
+
+def listadoRolesView(request):
+
+    return render(request, "roles/listado.html")
+
+def permisosRolView(request, rolid):
+
+    try:
+        rol = models.Rol.objects.get(pk = rolid)
+
+        return render(request, "roles/permisos.html", {'rol': rol})
+
+    except ObjectDoesNotExist:
+        return HttpResponse("", status = 404)
+
+    except ValidationError:
+        return HttpResponse("", status = 400)
 
 # =========================== Tareas ==============================
 
