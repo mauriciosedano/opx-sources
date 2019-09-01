@@ -380,8 +380,8 @@ def almacenamientoFuncionRol(request):
 
     rolID = request.POST.get('rolid')
     actionID = request.POST.get('actionid')
-    funcRolEstado = request.POST.get('funcrolestado')
-    funcRolPermiso = request.POST.get('funcrolpermiso')
+    funcRolEstado = 1
+    funcRolPermiso = 1
 
     funcionRol = models.FuncionRol(rolid = rolID, actionid = actionID, funcrolestado = funcRolEstado, funcrolpermiso = funcRolPermiso)
 
@@ -417,10 +417,10 @@ def actualizarFuncionRol(request, funcrolid):
     try:
         funcionRol = models.FuncionRol.objects.get(pk=funcrolid)
 
-        funcionRol.rolid = request.POST.get('rolid')
+        #funcionRol.rolid = request.POST.get('rolid')
         funcionRol.actionid = request.POST.get('actionid')
-        funcionRol.funcrolestado = request.POST.get('funcrolestado')
-        funcionRol.funcrolpermiso = request.POST.get('funcrolpermiso')
+        #funcionRol.funcrolestado = request.POST.get('funcrolestado')
+        #funcionRol.funcrolpermiso = request.POST.get('funcrolpermiso')
 
         funcionRol.full_clean()
 

@@ -4,12 +4,12 @@
 
     <div id="gestion-permisos-rol" class="container-fluid">
 
-      <!-- Roles -->
+      <!-- Permisos -->
       <div class="row">
             <div class="col-md-12">
               <div class="card">
                 <div class="card-header card-header-primary">
-                  <button class="btn button-right" data-target="#agregar-rol" data-toggle="modal">Crear Rol</button>
+                  <button class="btn button-right" data-target="#agregar-permiso" data-toggle="modal">Asignar Permiso</button>
                   <h4 class="card-title ">{{ rol.rolname }}</h4>
                   <p class="card-category"> Gestión de Rol {{ rol.rolname }} </p>
                 </div>
@@ -25,9 +25,9 @@
                       <tbody>
                         <tr v-for="permiso in permisos">
                           <td>
-                            <button @click="edicionPermiso = permiso" class="btn" data-toggle="modal" data-target="#editar-permiso">
+                            <!--<button @click="edicionPermiso = permiso" class="btn" data-toggle="modal" data-target="#editar-permiso">
                               Edición
-                            </button>
+                            </button>-->
                             <button class="btn" @click="eliminarPermiso(permiso.funcrolid)">
                               Eliminar
                             </button>
@@ -45,14 +45,14 @@
           </div>
 
       <!-- Modales -->
-      <!--<div class="row">
+      <div class="row">
 
-          &lt;!&ndash; Creación de Roles &ndash;&gt;
-          <div class="modal fade" id="agregar-rol">
+          <!-- Creación de Permisos -->
+          <div class="modal fade" id="agregar-permiso">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title">Crear Rol</h5>
+                  <h5 class="modal-title">Crear Permiso</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
@@ -63,18 +63,12 @@
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Nombre</label>
-                          <input v-model="almacenamientoRol.rolname" type="text" class="form-control">
-                        </div>
-                      </div>
-                      <div class="col-md-12">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Descripción</label>
-                          <textarea v-model="almacenamientoRol.roldescripcion" class="form-control"></textarea>
+                          <input v-model="almacenamientoPermiso.actionid" type="text" class="form-control">
                         </div>
                       </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!almacenamientoRol.rolname" class="btn" @click="almacenarRol()" type="button">Guardar</button>
+                          <button :disabled="!almacenamientoPermiso.actionid" class="btn" @click="almacenarPermiso()" type="button">Guardar</button>
                         </div>
                       </div>
                     </div>
@@ -84,8 +78,8 @@
             </div>
           </div>
 
-            &lt;!&ndash; Edición de Roles &ndash;&gt;
-          <div class="modal fade" id="editar-rol">
+            <!-- Edición de Roles -->
+          <!--<div class="modal fade" id="editar-rol">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -120,8 +114,8 @@
               </div>
             </div>
           </div>
-
+-->
         </div>
-    </div>-->
+    </div>
 
 {% endblock %}

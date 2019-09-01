@@ -50,7 +50,7 @@ urlpatterns = [
 
     path('funciones-rol/list/<str:rolid>', views.listadoFuncionesRol),
     path('funciones-rol/store/', views.almacenamientoFuncionRol),
-    path('funciones-rol/delete/<str:funcrolid>/', views.eliminarFuncionRol),
+    path('funciones-rol/delete/<str:funcrolid>', views.eliminarFuncionRol),
     path('funciones-rol/<str:funcrolid>', views.actualizarFuncionRol),
 
     path('instrumentos/', views.listadoInstrumentosView),

@@ -7,6 +7,7 @@ let rol = new Vue({
 
     },
     data: {
+        rolID: 0,
         permisos: [],
         //edicionRol: {},
         almacenamientoPermiso: {},
@@ -14,22 +15,24 @@ let rol = new Vue({
     methods: {
         listadoPermisos(){
 
-            rolID = window.location.pathname.substr(16, 36);
+            this.rolID = window.location.pathname.substr(16, 36);
 
-            axios.get('/funciones-rol/list/' + rolID).then(response => {
+            axios.get('/funciones-rol/list/' + this.rolID).then(response => {
 
                 this.permisos = response.data;
             });
         },
-        almacenarRol(){
+        almacenarPermiso(){
 
-            var queryString = Object.keys(this.almacenamientoRol).map(key => {
-                return key + '=' + this.almacenamientoRol[key]
+            this.almacenamientoPermiso.rolid = this.rolID;
+
+            var queryString = Object.keys(this.almacenamientoPermiso).map(key => {
+                return key + '=' + this.almacenamientoPermiso[key]
             }).join('&');
 
             axios({
                 method: 'post',
-                url: '/roles/store/',
+                url: '/funciones-rol/store/',
                 data: queryString,
                 headers: {
                     'Content-type': 'application/x-www-form-urlencoded'
@@ -37,21 +40,21 @@ let rol = new Vue({
             })
             .then(response => {
 
-                $("#agregar-rol").modal('hide')
-                this.almacenamientoRol = {};
-                this.listadoRoles();
+                $("#agregar-permiso").modal('hide')
+                this.almacenamientoPermiso = {};
+                this.listadoPermisos();
 
                 Swal.fire({
                   title: 'Exito!',
-                  text: 'Rol creado satisfactoriamente',
+                  text: 'Permiso asignado satisfactoriamente',
                   type: 'success',
                   confirmButtonText: 'Acepto'
                 });
             })
             .catch(response => {
 
-                $("#agregar-rol").modal('hide')
-                this.almacenamientoRol = {};
+                $("#agregar-permiso").modal('hide')
+                this.almacenamientoPermiso = {};
 
                 Swal.fire({
                   title: 'Error!',
@@ -61,7 +64,7 @@ let rol = new Vue({
                 });
             });
         },
-        eliminarRol(id){
+        eliminarPermiso(id){
 
             Swal.fire({
               title: 'Estas seguro?',
@@ -76,20 +79,20 @@ let rol = new Vue({
 
               if (result.value) {
 
-                axios.delete('/roles/delete/' + id)
+                axios.delete('/funciones-rol/delete/' + id)
                 .then(response => {
 
-                    this.listadoRoles();
+                    this.listadoPermisos();
 
                     Swal.fire(
                       'Eliminado!',
-                      'El rol fue eliminado de forma exitosa',
+                      'El permiso fue eliminado de forma exitosa',
                       'success'
                     );
                 })
                 .catch(response => {
 
-                     this.listadoRoles();
+                     this.listadoPermisos();
 
                      Swal.fire(
                       'Error!',
