@@ -21,6 +21,8 @@ from myapp import views
 urlpatterns = [
     #path('admin/', admin.site.urls),
 
+    path('login/', views.login),
+
     path('usuarios/', views.listadoUsuariosView),
     path('usuarios/list/', views.listadoUsuarios),
     path('usuarios/store/', views.almacenarUsuario),
@@ -47,6 +49,8 @@ urlpatterns = [
     path('equipos/store/', views.almacenamientoEquipo),
     path('equipos/delete/<str:equid>/', views.eliminarEquipo),
     path('equipos/<str:equid>', views.actualizarEquipo),
+
+    path('acciones/list/', views.listadoAcciones),
 
     path('funciones-rol/list/<str:rolid>', views.listadoFuncionesRol),
     path('funciones-rol/store/', views.almacenamientoFuncionRol),

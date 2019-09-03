@@ -1,13 +1,26 @@
 from datetime import datetime
+import json
+
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import connection
-from django.forms import model_to_dict
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.http.response import JsonResponse
-import json
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated
+)
+from rest_framework.response import Response
+from rest_framework.status import (
+    HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND,
+    HTTP_200_OK
+)
 
 from myapp import models
 
@@ -21,16 +34,68 @@ def dictfetchall(cursor):
         for row in cursor.fetchall()
     ]
 
+# ================================ Login ================================
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
+def login(request):
+
+    username = request.POST.get("username")
+    password = request.POST.get("password")
+
+    if username is None or password is None:
+
+        data = {
+           'status': 'error',
+           'message': 'Por favor especifique usuario y contraseña',
+           'code': 400
+        }
+
+    else:
+
+        user = models.Usuario.objects.filter(useremail__exact = username).filter(password__exact = password)
+        #user = authenticate(email=username, password=password)
+
+        if len(user) == 0:
+
+            data = {
+                'status': 'error',
+                'message': 'Usuario y/o contraseña incorrecta',
+                'code': 404
+            }
+
+        else:
+            refresh = RefreshToken.for_user(user[0])
+
+            data = {
+                'token': str(refresh.access_token),
+                'user': {
+                    'name': user[0].userfullname,
+                    'email': user[0].useremail
+                },
+                'code': 200
+            }
+
+            # token = Token.objects.get_or_create(user=user[0])
+
+    return JsonResponse(data, status = data['code'])
+
 # ======================= usuarios ================================= 
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def listadoUsuarios(request):
 
     users = models.Usuario.objects.all().values()
     # json_res = serializers.serialize('python', users)
 
     return JsonResponse(list(users), safe=False)
+    #return Response({'error': 'Please provide both username and password'}, status=HTTP_400_BAD_REQUEST)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def almacenarUsuario(request):
 
     useremail = request.POST.get('useremail')
@@ -41,7 +106,7 @@ def almacenarUsuario(request):
     userleveltype = 1
     userestado = 1
 
-    usuario = models.Usuario(useremail = useremail, usertoken = usertoken, userfullname = userfullname, userpassword = userpassword, rolid = rolid, userleveltype = userleveltype, userestado = userestado)
+    usuario = models.Usuario(useremail = useremail, usertoken = usertoken, userfullname = userfullname, password = userpassword, rolid = rolid, userleveltype = userleveltype, userestado = userestado)
 
     try:
         usuario.full_clean()
@@ -54,6 +119,8 @@ def almacenarUsuario(request):
         return JsonResponse(dict(e), safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
 def eliminarUsuario(request, userid):
 
     try:
@@ -70,13 +137,15 @@ def eliminarUsuario(request, userid):
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def actualizarUsuario(request, userid):
     
     try:
         usuario = models.Usuario.objects.get(pk = userid)
 
         usuario.useremail = request.POST.get('useremail')
-        usuario.userpassword = request.POST.get('userpassword')
+        usuario.password = request.POST.get('userpassword')
         usuario.rolid = request.POST.get('rolid')
         usuario.userleveltype = request.POST.get('userleveltype')
         usuario.userestado = request.POST.get('userestado')
@@ -101,6 +170,8 @@ def listadoUsuariosView(request):
 
 # ======================== Datos de Contexto =======================
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def listadoDatosContexto(request):
 
     datosContexto = models.DatosContexto.objects.all().values()
@@ -108,6 +179,8 @@ def listadoDatosContexto(request):
     return JsonResponse(list(datosContexto), safe = False)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def almacenarDatoContexto(request):
 
     hdxtag = request.POST.get('hdxtag')
@@ -128,6 +201,8 @@ def almacenarDatoContexto(request):
         return JsonResponse(dict(e), safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
 def eliminarDatoContexto(request, dataid):
 
     try:
@@ -144,6 +219,8 @@ def eliminarDatoContexto(request, dataid):
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def actualizarDatoContexto(request, dataid):
     try:
         datoContexto = models.DatosContexto.objects.get(pk=dataid)
@@ -167,6 +244,8 @@ def actualizarDatoContexto(request, dataid):
 
 # ======================== Decisiones =============================
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def listadoDecisiones(request):
 
     # decisiones = models.Decision.objects.all().values()
@@ -181,6 +260,8 @@ def listadoDecisiones(request):
         return JsonResponse(columns, safe = False)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def almacenarDecision(request):
 
     desidescripcion = request.POST.get('desidescripcion')
@@ -199,6 +280,8 @@ def almacenarDecision(request):
         return JsonResponse(dict(e), safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
 def eliminarDecision(request, desiid):
 
     try:
@@ -215,6 +298,8 @@ def eliminarDecision(request, desiid):
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def actualizarDecision(request, desiid):
     try:
         decision = models.Decision.objects.get(pk=desiid)
@@ -241,6 +326,8 @@ def listadoDecisionesView(request):
 
 # ========================== Decisiones Proyecto ==================
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def listadoDecisionesProyecto(request):
 
     decisionesProyecto = models.DecisionProyecto.objects.all().values()
@@ -248,6 +335,8 @@ def listadoDecisionesProyecto(request):
     return JsonResponse(list(decisionesProyecto), safe = False)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def almacenarDecisionProyecto(proyecto, decisiones):
 
     try:
@@ -265,6 +354,8 @@ def almacenarDecisionProyecto(proyecto, decisiones):
         return False
 
 @csrf_exempt
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
 def eliminarDecisionProyecto(request, desproid):
 
     try:
@@ -281,6 +372,8 @@ def eliminarDecisionProyecto(request, desproid):
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def actualizarDecisionProyecto(request, desproid):
     try:
         decisionProyecto = models.DecisionProyecto.objects.get(pk=desproid)
@@ -302,6 +395,8 @@ def actualizarDecisionProyecto(request, desproid):
 
 # ========================== Equipos ==============================
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def listadoEquipos(request):
 
     equipos = models.Equipo.objects.all().values()
@@ -309,6 +404,8 @@ def listadoEquipos(request):
     return JsonResponse(list(equipos), safe = False)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def almacenamientoEquipo(request):
 
     userid = request.POST.get('userid')
@@ -328,6 +425,8 @@ def almacenamientoEquipo(request):
         return JsonResponse(dict(e), safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
 def eliminarEquipo(request, equid):
 
     try:
@@ -344,6 +443,8 @@ def eliminarEquipo(request, equid):
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def actualizarEquipo(request, equid):
     try:
         equipo = models.Equipo.objects.get(pk=equid)
@@ -365,25 +466,36 @@ def actualizarEquipo(request, equid):
 
 # ========================= Funciones Rol =========================
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def listadoAcciones(request):
+
+    acciones = models.Accion.objects.all().values()
+
+    return JsonResponse(list(acciones), safe = False)
+
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def listadoFuncionesRol(request, rolid):
 
-    try:
-        funcionesRol =  models.FuncionRol.objects.filter(rolid__exact = rolid).values()
+    with connection.cursor() as cursor:
+        cursor.execute("select v1.funciones_rol.funcrolid, v1.acciones.nombre from v1.funciones_rol inner join v1.acciones on v1.funciones_rol.accionid = v1.acciones.accionid where v1.funciones_rol.rolid = %s", [rolid])
 
-        return JsonResponse(list(funcionesRol), safe = False)
+        columns = dictfetchall(cursor)
 
-    except ValidationError:
-        return JsonResponse({'status': 'error', 'message': 'Información Inválida'}, status = 400)
+        return JsonResponse(columns, safe = False)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def almacenamientoFuncionRol(request):
 
     rolID = request.POST.get('rolid')
-    actionID = request.POST.get('actionid')
+    accionID = request.POST.get('accionid')
     funcRolEstado = 1
     funcRolPermiso = 1
 
-    funcionRol = models.FuncionRol(rolid = rolID, actionid = actionID, funcrolestado = funcRolEstado, funcrolpermiso = funcRolPermiso)
+    funcionRol = models.FuncionRol(rolid = rolID, accionid = accionID, funcrolestado = funcRolEstado, funcrolpermiso = funcRolPermiso)
 
     try:
         funcionRol.full_clean()
@@ -396,6 +508,8 @@ def almacenamientoFuncionRol(request):
         return JsonResponse(dict(e), safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
 def eliminarFuncionRol(request, funcrolid):
 
     try:
@@ -412,6 +526,8 @@ def eliminarFuncionRol(request, funcrolid):
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def actualizarFuncionRol(request, funcrolid):
 
     try:
@@ -444,6 +560,8 @@ def listadoInstrumentos(request):
     return JsonResponse(list(instrumentos), safe = False)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def almacenamientoInstrumento(request):
 
     instrIdExterno = "12345"
@@ -464,6 +582,8 @@ def almacenamientoInstrumento(request):
         return JsonResponse(dict(e), safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
 def eliminarInstrumento(request, instrid):
 
     try:
@@ -480,6 +600,8 @@ def eliminarInstrumento(request, instrid):
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def actualizarInstrumento(request, instrid):
 
     try:
@@ -516,6 +638,8 @@ def listadoProyectos(request):
     return JsonResponse(list(proyectos), safe = False)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def almacenamientoProyecto(request):
 
     proyNombre = request.POST.get('proynombre')
@@ -542,6 +666,8 @@ def almacenamientoProyecto(request):
         return JsonResponse(dict(e), safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
 def eliminarProyecto(request, proyid):
 
     try:
@@ -558,6 +684,8 @@ def eliminarProyecto(request, proyid):
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def actualizarProyecto(request, proyid):
     try:
         proyecto = models.Proyecto.objects.get(pk=proyid)
@@ -588,6 +716,8 @@ def listadoProyectosView(request):
 
 # ============================ Roles =============================
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def listadoRoles(request):
 
     roles =  models.Rol.objects.all().values()
@@ -595,6 +725,8 @@ def listadoRoles(request):
     return JsonResponse(list(roles), safe = False)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def almacenamientoRol(request):
 
     rolName = request.POST.get('rolname')
@@ -614,6 +746,8 @@ def almacenamientoRol(request):
         return JsonResponse(dict(e), safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
 def eliminarRol(request, rolid):
 
     try:
@@ -630,6 +764,8 @@ def eliminarRol(request, rolid):
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def actualizarRol(request, rolid):
     try:
         rol = models.Rol.objects.get(pk=rolid)
@@ -669,6 +805,8 @@ def permisosRolView(request, rolid):
 
 # =========================== Tareas ==============================
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def listadoTareas(request):
 
     #tareas =  models.Tarea.objects.all().values()
@@ -685,6 +823,8 @@ def listadoTareas(request):
         return JsonResponse(columns, safe = False)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def almacenamientoTarea(request):
 
     tareNombre = request.POST.get('tarenombre')
@@ -708,6 +848,8 @@ def almacenamientoTarea(request):
         return JsonResponse(dict(e), safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
 def eliminarTarea(request, tareid):
 
     try:
@@ -724,6 +866,8 @@ def eliminarTarea(request, tareid):
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def actualizarTarea(request, tareid):
     try:
         tarea = models.Tarea.objects.get(pk=tareid)

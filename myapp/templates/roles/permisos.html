@@ -33,7 +33,7 @@
                             </button>
                           </td>
                           <td>
-                            [[ permiso.actionid ]]
+                            [[ permiso.nombre ]]
                           </td>
                         </tr>
                       </tbody>
@@ -62,13 +62,16 @@
                     <div class="row">
                       <div class="col-md-12">
                         <div class="form-group">
-                          <label class="bmd-label-floating">Nombre</label>
-                          <input v-model="almacenamientoPermiso.actionid" type="text" class="form-control">
+                          <label class="bmd-label-floating">Acción</label>
+                          <select v-model="almacenamientoPermiso.accionid" class="form-control">
+                            <option value=""> Seleccione </option>
+                            <option v-for="accion in acciones" :value="accion.accionid"> [[ accion.nombre ]] </option>
+                          </select>
                         </div>
                       </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!almacenamientoPermiso.actionid" class="btn" @click="almacenarPermiso()" type="button">Guardar</button>
+                          <button :disabled="!almacenamientoPermiso.accionid" class="btn" @click="almacenarPermiso()" type="button">Guardar</button>
                         </div>
                       </div>
                     </div>
@@ -78,7 +81,7 @@
             </div>
           </div>
 
-            <!-- Edición de Roles -->
+          <!-- Edición de Roles -->
           <!--<div class="modal fade" id="editar-rol">
             <div class="modal-dialog">
               <div class="modal-content">

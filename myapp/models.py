@@ -1,16 +1,24 @@
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 import uuid
 
-class Usuario(models.Model):
-    #userid = models.AutoField(primary_key = True)
-    userid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False) 
-    useremail = models.CharField(max_length = 255)
-    userpassword = models.CharField(max_length = 255)
+class MyUserManager(BaseUserManager):
+    use_in_migrations = True
+
+class Usuario(AbstractBaseUser):
+    userid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    useremail = models.EmailField(max_length = 255, unique=True)
+    password = models.CharField(max_length = 255)
     usertoken = models.CharField(max_length = 255, null = True, blank = True)
     userfullname = models.CharField(max_length = 255)
     rolid = models.UUIDField()
     userleveltype = models.IntegerField()
     userestado = models.IntegerField()
+
+    objects = MyUserManager()
+
+    USERNAME_FIELD = "useremail"
+
 
     class Meta:
         db_table = '"v1"."usuarios"'
@@ -55,11 +63,18 @@ class Equipo(models.Model):
     class Meta:
         db_table = '"v1"."equipos"'
 
+class Accion(models.Model):
+    accionid = models.UUIDField(primary_key= True, default = uuid.uuid4(), editable = False)
+    nombre = models.CharField(max_length = 255)
+    descripcion = models.CharField(max_length = 1000)
+
+    class Meta:
+        db_table = '"v1"."acciones"'
 
 class FuncionRol(models.Model):
     funcrolid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     rolid = models.UUIDField()
-    actionid = models.CharField(max_length = 255)
+    accionid = models.CharField(max_length = 255)
     funcrolestado = models.IntegerField()
     funcrolpermiso = models.IntegerField()
 

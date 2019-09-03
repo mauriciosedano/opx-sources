@@ -4,13 +4,15 @@ let rol = new Vue({
     created(){
 
         this.listadoPermisos();
+        this.listadoAcciones();
 
     },
     data: {
         rolID: 0,
         permisos: [],
-        //edicionRol: {},
         almacenamientoPermiso: {},
+        acciones: [],
+        //edicionRol: {}
     },
     methods: {
         listadoPermisos(){
@@ -136,6 +138,14 @@ let rol = new Vue({
                     'Ocurrio un error. Por favor intenta de nuevo',
                     'error'
                 );
+            });
+        },
+        listadoAcciones(){
+
+            axios.get('/acciones/list/')
+            .then(response => {
+
+                this.acciones = response.data;
             });
         }
     }
