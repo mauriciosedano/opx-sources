@@ -3,9 +3,12 @@ let rol = new Vue({
     el: '#gestion-permisos-rol',
     created(){
 
-        this.listadoPermisos();
-        this.listadoAcciones();
+        if(window.location.pathname.substr(0, 16) == "/roles/permisos/"){
 
+            this.rolID = window.location.pathname.substr(16, 36);
+            this.listadoPermisos();
+            this.listadoAcciones();
+         }
     },
     data: {
         rolID: 0,
@@ -17,9 +20,13 @@ let rol = new Vue({
     methods: {
         listadoPermisos(){
 
-            this.rolID = window.location.pathname.substr(16, 36);
-
-            axios.get('/funciones-rol/list/' + this.rolID).then(response => {
+            axios({
+                method: 'GET',
+                url: '/funciones-rol/list/' + this.rolID,
+                headers: {
+                    Authorization: getToken()
+                }
+            }).then(response => {
 
                 this.permisos = response.data;
             });
@@ -37,7 +44,8 @@ let rol = new Vue({
                 url: '/funciones-rol/store/',
                 data: queryString,
                 headers: {
-                    'Content-type': 'application/x-www-form-urlencoded'
+                    'Content-type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
                 }
             })
             .then(response => {
@@ -81,7 +89,13 @@ let rol = new Vue({
 
               if (result.value) {
 
-                axios.delete('/funciones-rol/delete/' + id)
+                axios({
+                    method: 'DELETE',
+                    url: '/funciones-rol/delete/' + id,
+                    headers: {
+                        Authorization: getToken()
+                    }
+                })
                 .then(response => {
 
                     this.listadoPermisos();
@@ -116,7 +130,8 @@ let rol = new Vue({
                 url: '/roles/' + this.edicionRol.rolid,
                 data: queryString,
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
                 }
             })
             .then(response => {
@@ -142,7 +157,13 @@ let rol = new Vue({
         },
         listadoAcciones(){
 
-            axios.get('/acciones/list/')
+            axios({
+                method: 'GET',
+                url: '/acciones/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
             .then(response => {
 
                 this.acciones = response.data;

@@ -3,7 +3,10 @@ let rol = new Vue({
     el: '#gestion-roles',
     created(){
 
-        this.listadoRoles();
+        if(window.location.pathname == '/roles/'){
+
+            this.listadoRoles();
+        }
 
     },
     data: {
@@ -14,7 +17,14 @@ let rol = new Vue({
     methods: {
         listadoRoles(){
 
-            axios.get('/roles/list/').then(response => {
+            axios({
+                method: 'GET',
+                url: '/roles/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
 
                 this.roles = response.data;
             });
@@ -30,7 +40,8 @@ let rol = new Vue({
                 url: '/roles/store/',
                 data: queryString,
                 headers: {
-                    'Content-type': 'application/x-www-form-urlencoded'
+                    'Content-type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
                 }
             })
             .then(response => {
@@ -74,7 +85,13 @@ let rol = new Vue({
 
               if (result.value) {
 
-                axios.delete('/roles/delete/' + id)
+                axios({
+                    method: 'DELETE',
+                    url: '/roles/delete/' + id,
+                    headers: {
+                        Authorization: getToken()
+                    }
+                })
                 .then(response => {
 
                     this.listadoRoles();
@@ -109,7 +126,8 @@ let rol = new Vue({
                 url: '/roles/' + this.edicionRol.rolid,
                 data: queryString,
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
                 }
             })
             .then(response => {

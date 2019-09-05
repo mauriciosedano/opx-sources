@@ -72,7 +72,7 @@
                             <textarea v-model="almacenamientoDecision.desidescripcion" class="form-control"></textarea>
                         </div>
                       </div>
-                      <div class="col-md-12">
+                      <!--<div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Usuario</label>
                             <select v-model="almacenamientoDecision.userid" class="form-control">
@@ -80,10 +80,10 @@
                                 <option v-for="usuario in usuarios" :value="usuario.userid"> [[ usuario.userfullname ]] </option>
                             </select>
                         </div>
-                      </div>
+                      </div>-->
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!almacenamientoDecision.desidescripcion || !almacenamientoDecision.userid" class="btn" @click="almacenarDecision()" type="button">Guardar</button>
+                          <button :disabled="!almacenamientoDecision.desidescripcion" class="btn" @click="almacenarDecision()" type="button">Guardar</button>
                         </div>
                       </div>
                     </div>

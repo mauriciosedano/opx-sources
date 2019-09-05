@@ -3,8 +3,11 @@ proyecto = new Vue({
     delimiters: ['[[', ']]'],
     created: function(){
 
-        this.listadoProyectos();
-        this.listadoDecisiones();
+        if(window.location.pathname == '/proyectos/'){
+
+            this.listadoProyectos();
+            this.listadoDecisiones();
+        }
     },
     data: {
         almacenamientoProyecto: {},
@@ -16,7 +19,14 @@ proyecto = new Vue({
     methods: {
         listadoProyectos(){
 
-            axios.get('/proyectos/list/').then(response => {
+            axios({
+                method: 'GET',
+                url: '/proyectos/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
 
                 this.proyectos = response.data;
             });
@@ -43,14 +53,13 @@ proyecto = new Vue({
                 return key + '=' + valor
             }).join('&');
 
-            console.log(queryString);
-
             axios({
                 method: 'post',
                 url: '/proyectos/store/',
                 data: queryString,
                 headers: {
-                    'Content-type': 'application/x-www-form-urlencoded'
+                    'Content-type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
                 }
             })
             .then(response => {
@@ -93,7 +102,13 @@ proyecto = new Vue({
 
               if (result.value) {
 
-                axios.delete('/proyectos/delete/' + id)
+                axios({
+                    method: 'delete',
+                    url: '/proyectos/delete/' + id,
+                    headers: {
+                        Authorization: getToken()
+                    }
+                })
                 .then(response => {
 
                     this.listadoProyectos();
@@ -128,7 +143,8 @@ proyecto = new Vue({
                 url: '/proyectos/' + this.edicionProyecto.proyid,
                 data: queryString,
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
                 }
             })
             .then(response => {
@@ -154,7 +170,14 @@ proyecto = new Vue({
         },
         listadoDecisiones(){
 
-            axios.get('/decisiones/list/').then(response => {
+            axios({
+                method: 'GET',
+                url: '/decisiones/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
 
                 /*for(let i = 0; i < response.data.length; i++){
 

@@ -3,9 +3,12 @@ let tarea = new Vue({
     el: '#gestion-tareas',
     created(){
 
-        this.listadoTareas();
-        this.listadoProyectos();
-        this.listadoInstrumentos();
+        if(window.location.pathname == '/tareas/'){
+
+            this.listadoTareas();
+            this.listadoProyectos();
+            this.listadoInstrumentos();
+        }
     },
     data: {
         tareas: [],
@@ -17,7 +20,14 @@ let tarea = new Vue({
     methods: {
         listadoTareas(){
 
-            axios.get('/tareas/list/').then(response => {
+            axios({
+                method: 'GET',
+                url: '/tareas/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
 
                 this.tareas = response.data;
             });
@@ -33,7 +43,8 @@ let tarea = new Vue({
                 url: '/tareas/store/',
                 data: queryString,
                 headers: {
-                    'Content-type': 'application/x-www-form-urlencoded'
+                    'Content-type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
                 }
             })
             .then(response => {
@@ -77,7 +88,13 @@ let tarea = new Vue({
 
               if (result.value) {
 
-                axios.delete('/tareas/delete/' + id)
+                axios({
+                    method: 'DELETE',
+                    url: '/tareas/delete/' + id,
+                    headers: {
+                        Authorization: getToken()
+                    }
+                })
                 .then(response => {
 
                     this.listadoTareas();
@@ -129,7 +146,8 @@ let tarea = new Vue({
                 url: '/tareas/' + this.edicionTarea.tareid,
                 data: queryString,
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
                 }
             })
             .then(response => {
@@ -157,14 +175,28 @@ let tarea = new Vue({
         },
         listadoProyectos(){
 
-            axios.get('/proyectos/list/').then(response => {
+            axios({
+                method: 'GET',
+                url: '/proyectos/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
 
                 this.proyectos = response.data;
             });
         },
         listadoInstrumentos(){
 
-            axios.get('/instrumentos/list/').then(response => {
+            axios({
+                method: 'GET',
+                url: '/instrumentos/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
 
               this.instrumentos = response.data;
             });

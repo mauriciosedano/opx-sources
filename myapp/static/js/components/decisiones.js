@@ -2,9 +2,11 @@ let decision = new Vue({
     delimiters: ['[[', ']]'],
     el: '#gestion-decisiones',
     created(){
+        if(window.location.pathname == '/decisiones/'){
 
-        this.listadoDecisiones();
-        this.listadoUsuarios();
+            this.listadoDecisiones();
+            this.listadoUsuarios();
+        }
     },
     data: {
         decisiones: [],
@@ -15,12 +17,22 @@ let decision = new Vue({
     methods: {
         listadoDecisiones(){
 
-            axios.get('/decisiones/list/').then(response => {
+            axios({
+                method: 'GET',
+                url: '/decisiones/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
 
                 this.decisiones = response.data;
             });
         },
         almacenarDecision(){
+
+            this.almacenamientoDecision.userid = getUser().id;
+            console.log(this.almacenamientoDecision.userid)
 
             var queryString = Object.keys(this.almacenamientoDecision).map(key => {
                 return key + '=' + this.almacenamientoDecision[key]
@@ -31,7 +43,8 @@ let decision = new Vue({
                 url: '/decisiones/store/',
                 data: queryString,
                 headers: {
-                    'Content-type': 'application/x-www-form-urlencoded'
+                    'Content-type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
                 }
             })
             .then(response => {
@@ -75,7 +88,13 @@ let decision = new Vue({
 
               if (result.value) {
 
-                axios.delete('/decisiones/delete/' + id)
+                axios({
+                    method: 'DELETE',
+                    url: '/decisiones/delete/' + id,
+                    headers: {
+                        Authorization: getToken()
+                    }
+                })
                 .then(response => {
 
                     this.listadoDecisiones();
@@ -110,7 +129,8 @@ let decision = new Vue({
                 url: '/decisiones/' + this.edicionDecision.desiid,
                 data: queryString,
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
                 }
             })
             .then(response => {
@@ -136,7 +156,14 @@ let decision = new Vue({
         },
         listadoUsuarios(){
 
-            axios.get('/usuarios/list/').then(response => {
+            axios({
+                method: 'GET',
+                url: '/usuarios/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
 
                 this.usuarios = response.data;
             });

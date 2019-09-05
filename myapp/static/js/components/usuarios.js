@@ -3,8 +3,11 @@ let usuario = new Vue({
     el: '#gestion-usuarios',
     created(){
 
-        this.listadoUsuarios();
-        this.listadoRoles();
+        if(window.location.pathname == '/usuarios/'){
+
+            this.listadoUsuarios();
+            this.listadoRoles();
+        }
     },
     data: {
         usuarios: [],
@@ -15,7 +18,14 @@ let usuario = new Vue({
     methods: {
         listadoUsuarios(){
 
-            axios.get('/usuarios/list/').then(response => {
+            axios({
+                method: 'GET',
+                url: '/usuarios/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
 
                 this.usuarios = response.data;
             });
@@ -31,7 +41,8 @@ let usuario = new Vue({
                 url: '/usuarios/store/',
                 data: queryString,
                 headers: {
-                    'Content-type': 'application/x-www-form-urlencoded'
+                    'Content-type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
                 }
             })
             .then(response => {
@@ -75,7 +86,13 @@ let usuario = new Vue({
 
               if (result.value) {
 
-                axios.delete('/usuarios/delete/' + id)
+                axios({
+                    method: "DELETE",
+                    url: '/usuarios/delete/' + id,
+                    headers: {
+                        Authorization: getToken()
+                    }
+                })
                 .then(response => {
 
                     this.listadoUsuarios();
@@ -110,7 +127,8 @@ let usuario = new Vue({
                 url: '/usuarios/' + this.edicionUsuario.userid,
                 data: queryString,
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
                 }
             })
             .then(response => {
@@ -138,7 +156,13 @@ let usuario = new Vue({
         },
         listadoRoles(){
 
-            axios.get('/roles/list/').then(response => {
+            axios({
+                method: 'GET',
+                url: '/roles/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            }).then(response => {
 
                 this.roles = response.data;
             });

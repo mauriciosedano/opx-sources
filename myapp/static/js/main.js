@@ -1,3 +1,41 @@
+window.getToken = function(){
+
+    let userInfo = JSON.parse(sessionStorage.getItem('userinfo'));
+
+    if(userInfo != null && typeof userInfo == 'object' && userInfo.hasOwnProperty('token')){
+
+
+        return 'Bearer ' + userInfo.token;
+
+    } else{
+
+        return location.href = '/';
+    }
+
+}
+
+window.getUser = function(){
+
+    let userInfo = JSON.parse(sessionStorage.getItem('userinfo'));
+
+    if(userInfo != null && typeof userInfo == 'object' && userInfo.hasOwnProperty('user')){
+
+
+        return userInfo.user;
+
+    } else{
+
+        return location.href = '/';
+    }
+}
+
+window.logout = function(){
+
+
+    sessionStorage.removeItem('userinfo');
+    location.href = "/";
+}
+
 // Vue.js
 window.Vue = require('vue');
 
@@ -43,6 +81,10 @@ require('./components/usuarios').usuario;
 // Instancia Vue para gestión de Roles
 require('./components/roles').rol;
 
+// Gestión de Permisos
 require('./components/permisosRol.js');
+
+// Gestión de Autenticación
+require('./components/login').login;
 
 //import '../../../node-modules/vue-multiselect/dist/vue-multiselect.min.css';

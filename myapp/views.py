@@ -36,6 +36,10 @@ def dictfetchall(cursor):
 
 # ================================ Login ================================
 
+def loginView(request):
+
+    return render(request, "auth/login.html")
+
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((AllowAny,))
@@ -71,6 +75,7 @@ def login(request):
             data = {
                 'token': str(refresh.access_token),
                 'user': {
+                    'id': user[0].userid,
                     'name': user[0].userfullname,
                     'email': user[0].useremail
                 },
@@ -87,11 +92,14 @@ def login(request):
 @permission_classes((IsAuthenticated,))
 def listadoUsuarios(request):
 
-    users = models.Usuario.objects.all().values()
+    #users = models.Usuario.objects.all().values()
     # json_res = serializers.serialize('python', users)
 
-    return JsonResponse(list(users), safe=False)
-    #return Response({'error': 'Please provide both username and password'}, status=HTTP_400_BAD_REQUEST)
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT userid, userfullname, useremail, userestado, v1.usuarios.rolid, v1.roles.rolname FROM v1.usuarios INNER JOIN v1.roles ON v1.roles.rolid = v1.usuarios.rolid")
+        columns = dictfetchall(cursor)
+
+        return JsonResponse(columns, safe=False)
 
 @csrf_exempt
 @api_view(["POST"])
@@ -147,10 +155,8 @@ def actualizarUsuario(request, userid):
         usuario.useremail = request.POST.get('useremail')
         usuario.password = request.POST.get('userpassword')
         usuario.rolid = request.POST.get('rolid')
-        usuario.userleveltype = request.POST.get('userleveltype')
-        usuario.userestado = request.POST.get('userestado')
         usuario.userfullname = request.POST.get('userfullname')
-        usuario.usertoken = request.POST.get('usertoken')
+
 
         usuario.full_clean()
 
@@ -305,7 +311,7 @@ def actualizarDecision(request, desiid):
         decision = models.Decision.objects.get(pk=desiid)
 
         decision.desidescripcion = request.POST.get('desidescripcion')
-        decision.userid = request.POST.get('userid')
+        # decision.userid = request.POST.get('userid')
 
         decision.full_clean()
 
@@ -334,9 +340,6 @@ def listadoDecisionesProyecto(request):
 
     return JsonResponse(list(decisionesProyecto), safe = False)
 
-@csrf_exempt
-@api_view(["POST"])
-@permission_classes((IsAuthenticated,))
 def almacenarDecisionProyecto(proyecto, decisiones):
 
     try:
@@ -553,6 +556,8 @@ def actualizarFuncionRol(request, funcrolid):
 
 # =============================== Instrumentos ===================
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def listadoInstrumentos(request):
 
     instrumentos =  models.Instrumento.objects.all().values()
@@ -631,6 +636,8 @@ def listadoInstrumentosView(request):
 
 # ============================= Proyectos ========================
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def listadoProyectos(request):
 
     proyectos =  models.Proyecto.objects.all().values()
@@ -641,6 +648,8 @@ def listadoProyectos(request):
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
 def almacenamientoProyecto(request):
+
+    #return HttpResponse(request.POST.get('proynombre'))
 
     proyNombre = request.POST.get('proynombre')
     proyDescripcion = request.POST.get('proydescripcion')

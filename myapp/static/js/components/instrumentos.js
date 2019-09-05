@@ -3,7 +3,10 @@ let instrumento = new Vue({
     el: '#gestion-instrumentos',
     created(){
 
-        this.listadoInstrumentos();
+        if(window.location.pathname == '/instrumentos/'){
+
+            this.listadoInstrumentos();
+        }
     },
     data: {
         instrumentos: [],
@@ -13,7 +16,14 @@ let instrumento = new Vue({
     methods: {
         listadoInstrumentos(){
 
-            axios.get('/instrumentos/list/').then(response => {
+            axios({
+                method: 'GET',
+                url: '/instrumentos/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
 
               this.instrumentos = response.data;
             });
@@ -29,7 +39,8 @@ let instrumento = new Vue({
                 url: '/instrumentos/store/',
                 data: queryString,
                 headers: {
-                    'Content-type': 'application/x-www-form-urlencoded'
+                    'Content-type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
                 }
             })
             .then(response => {
@@ -73,7 +84,13 @@ let instrumento = new Vue({
 
               if (result.value) {
 
-                axios.delete('/instrumentos/delete/' + id)
+                axios({
+                    method: 'DELETE',
+                    url: '/instrumentos/delete/' + id,
+                    headers: {
+                        Authorization: getToken()
+                    }
+                })
                 .then(response => {
 
                     this.listadoInstrumentos();
@@ -110,7 +127,8 @@ let instrumento = new Vue({
                 url: '/instrumentos/' + this.edicionInstrumento.instrid,
                 data: queryString,
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
                 }
             })
             .then(response => {
