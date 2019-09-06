@@ -87,4 +87,7 @@ require('./components/permisosRol.js');
 // Gestión de Autenticación
 require('./components/login').login;
 
+// Gestión de Contextos
+require('./components/contextos').contexto;
+
 //import '../../../node-modules/vue-multiselect/dist/vue-multiselect.min.css';

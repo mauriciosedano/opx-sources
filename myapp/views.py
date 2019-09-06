@@ -174,6 +174,116 @@ def listadoUsuariosView(request):
 
     return render(request, "usuarios/listado.html")
 
+# ======================== Contextos ===============================
+
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def listadoContextos(request):
+
+    contextos = models.Contexto.objects.all().values()
+
+    return JsonResponse(list(contextos), safe = False)
+
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def almacenamientoContexto(request):
+
+    descripcion = request.POST.get('descripcion');
+
+    contexto = models.Contexto(descripcion=descripcion)
+
+    try:
+        contexto.full_clean()
+
+        contexto.save()
+
+        data = {
+            'status': 'success',
+            'contexto': serializers.serialize('python', [contexto])[0],
+            'code': 201
+        }
+    except ValidationError as e:
+        data = {
+            'status': 'error',
+            'errors': dict(e),
+            'code': 400
+        }
+
+    return JsonResponse(data, safe = False, status = data['code'])
+
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
+def eliminarContexto(request, contextoid):
+
+    try:
+        contexto = models.Contexto.objects.get(pk = contextoid)
+
+        contexto.delete()
+
+        data = {
+            'status': 'success',
+            'code': 200
+        }
+
+    except ObjectDoesNotExist:
+
+        data = {
+            'status': 'error',
+            'code': 404
+        }
+
+    except ValidationError:
+
+        data = {
+            'status': 'error',
+            'message': 'Información inválida',
+            'code': 400
+        }
+
+    return JsonResponse(data, status = data['code'])
+
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def actualizarContexto(request, contextoid):
+
+    descripcion = request.POST.get('descripcion')
+
+    try:
+        contexto = models.Contexto.objects.get(pk = contextoid)
+
+        contexto.descripcion = descripcion
+
+        contexto.full_clean()
+
+        contexto.save()
+
+        data = {
+            'status': 'success',
+            'contexto': serializers.serialize('python', [contexto])[0],
+            'code': 200
+        }
+
+    except ObjectDoesNotExist:
+
+        data = {
+            'status': 'error',
+            'code': 404
+        }
+
+    except ValidationError:
+
+        data = {
+            'status': 'error',
+            'message': 'Información inválida',
+            'code': 400
+        }
+
+    return JsonResponse(data, status = data['code'])
+
+def listadoContextosView(request):
+
+    return render(request, "contextos/listado.html")
+
 # ======================== Datos de Contexto =======================
 
 @api_view(["GET"])
@@ -192,14 +302,19 @@ def almacenarDatoContexto(request):
     hdxtag = request.POST.get('hdxtag')
     datavalor = request.POST.get('datavalor')
     datatipe = request.POST.get('datatipe')
-    proyid = request.POST.get('proyid')
+    contextoid = request.POST.get('contextoid')
 
-    datosContexto = models.DatosContexto(hdxtag = hdxtag, datavalor = datavalor, datatipe = datatipe, proyid = proyid)
+    datosContexto = models.DatosContexto(hdxtag = hdxtag, datavalor = datavalor, datatipe = datatipe, contextoid = contextoid)
 
     try:
         datosContexto.full_clean()
 
         datosContexto.save()
+
+        with open('/home/vagrant/code/opc-webpack/myapp/static/uploads/datoscontexto/' + str(datosContexto.dataid) + '.jpg', 'wb+') as destination:
+            for chunk in request.FILES['file'].chunks():
+                destination.write(chunk)
+
         data = serializers.serialize('python', [datosContexto])
         return JsonResponse(data, safe = False, status = 201)
 

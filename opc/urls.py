@@ -30,6 +30,12 @@ urlpatterns = [
     path('usuarios/delete/<str:userid>', views.eliminarUsuario),
     path('usuarios/<str:userid>', views.actualizarUsuario),
 
+    path('contextos/', views.listadoContextosView),
+    path('contextos/list/', views.listadoContextos),
+    path('contextos/store/', views.almacenamientoContexto),
+    path('contextos/delete/<str:contextoid>', views.eliminarContexto),
+    path('contextos/<str:contextoid>', views.actualizarContexto),
+
     path('datos-contexto/', views.listadoDatosContexto),
     path('datos-contexto/store/', views.almacenarDatoContexto),
     path('datos-contexto/delete/<str:dataid>/', views.eliminarDatoContexto),

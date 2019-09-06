@@ -23,6 +23,13 @@ class Usuario(AbstractBaseUser):
     class Meta:
         db_table = '"v1"."usuarios"'
 
+class Contexto(models.Model):
+
+    contextoid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    descripcion = models.CharField(max_length = 1000)
+
+    class Meta:
+        db_table = '"v1"."contextos"'
 
 class DatosContexto(models.Model):
 
@@ -30,7 +37,7 @@ class DatosContexto(models.Model):
     hdxtag = models.CharField(max_length = 20)
     datavalor = models.CharField(max_length = 20)
     datatipe = models.IntegerField()
-    proyid = models.UUIDField()
+    contextoid = models.UUIDField()
 
     class Meta:
         db_table = '"v1"."datos_contexto"'
