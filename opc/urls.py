@@ -35,11 +35,12 @@ urlpatterns = [
     path('contextos/store/', views.almacenamientoContexto),
     path('contextos/delete/<str:contextoid>', views.eliminarContexto),
     path('contextos/<str:contextoid>', views.actualizarContexto),
+    path('contextos/datos/<str:contextoid>', views.listadoDatosContextoView),
 
-    path('datos-contexto/', views.listadoDatosContexto),
+    path('datos-contexto/list/<str:contextoid>', views.listadoDatosContexto),
     path('datos-contexto/store/', views.almacenarDatoContexto),
-    path('datos-contexto/delete/<str:dataid>/', views.eliminarDatoContexto),
-    path('datos-contexto/<str:dataid>/', views.actualizarDatoContexto),
+    path('datos-contexto/delete/<str:dataid>', views.eliminarDatoContexto),
+    path('datos-contexto/<str:dataid>', views.actualizarDatoContexto),
 
     path('decisiones/', views.listadoDecisionesView),
     path('decisiones/list/', views.listadoDecisiones),

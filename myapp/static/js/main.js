@@ -90,4 +90,6 @@ require('./components/login').login;
 // Gestión de Contextos
 require('./components/contextos').contexto;
 
+require('./components/datosContexto').datoContexto;
+
 //import '../../../node-modules/vue-multiselect/dist/vue-multiselect.min.css';

@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+import os
 
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -288,11 +289,17 @@ def listadoContextosView(request):
 
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
-def listadoDatosContexto(request):
+def listadoDatosContexto(request, contextoid):
 
-    datosContexto = models.DatosContexto.objects.all().values()
+    datosContexto = models.DatosContexto.objects.filter(contextoid__exact = contextoid).values()
 
-    return JsonResponse(list(datosContexto), safe = False)
+    data = {
+        'status': 'success',
+        'datosContexto': list(datosContexto),
+        'code': 200
+    }
+
+    return JsonResponse(data, safe = False, status = data['code'])
 
 @csrf_exempt
 @api_view(["POST"])
@@ -300,8 +307,8 @@ def listadoDatosContexto(request):
 def almacenarDatoContexto(request):
 
     hdxtag = request.POST.get('hdxtag')
-    datavalor = request.POST.get('datavalor')
-    datatipe = request.POST.get('datatipe')
+    datavalor = " "
+    datatipe = 1
     contextoid = request.POST.get('contextoid')
 
     datosContexto = models.DatosContexto(hdxtag = hdxtag, datavalor = datavalor, datatipe = datatipe, contextoid = contextoid)
@@ -309,10 +316,32 @@ def almacenarDatoContexto(request):
     try:
         datosContexto.full_clean()
 
+        if "file" in request.FILES.keys():
+            file = request.FILES['file']
+
+            if file.content_type != "text/csv" and file.content_type != "application/vnd.ms-excel":
+
+                data = {
+                   'status': 'error',
+                   'errors':'El tipo de archivo no es permitido',
+                    'code': 400
+                }
+                raise ValidationError(data)
+
+        else:
+
+            data = {
+                'status': 'error',
+                'errors': 'No se encontro ningun archivo',
+                'code': 400
+            }
+
+            raise ValidationError(data)
+
         datosContexto.save()
 
-        with open('/home/vagrant/code/opc-webpack/myapp/static/uploads/datoscontexto/' + str(datosContexto.dataid) + '.jpg', 'wb+') as destination:
-            for chunk in request.FILES['file'].chunks():
+        with open('/home/vagrant/code/opc-webpack/myapp/static/uploads/datoscontexto/' + str(datosContexto.dataid) + '.csv', 'wb+') as destination:
+            for chunk in file.chunks():
                 destination.write(chunk)
 
         data = serializers.serialize('python', [datosContexto])
@@ -331,6 +360,8 @@ def eliminarDatoContexto(request, dataid):
 
         datoContexto.delete()
 
+        os.remove("/home/vagrant/code/opc-webpack/myapp/static/uploads/datoscontexto/" + dataid + ".csv")
+
         return JsonResponse({'status': 'success'})
 
     except ObjectDoesNotExist:
@@ -347,11 +378,28 @@ def actualizarDatoContexto(request, dataid):
         datoContexto = models.DatosContexto.objects.get(pk=dataid)
 
         datoContexto.hdxtag = request.POST.get('hdxtag')
-        datoContexto.datavalor = request.POST.get('datavalor')
-        datoContexto.proyid = request.POST.get('proyid')
-        datoContexto.datatipe = request.POST.get('datatipe')
+        #datoContexto.datavalor = request.POST.get('datavalor')
+        #datoContexto.datatipe = request.POST.get('datatipe')
 
         datoContexto.full_clean()
+
+        if "file" in request.FILES.keys():
+
+            file = request.FILES['file']
+
+            if file.content_type != "text/csv" and file.content_type != "application/vnd.ms-excel":
+
+                data = {
+                    'status': 'error',
+                    'errors': 'El tipo de archivo no es permitido',
+                    'code': 400
+                }
+                raise ValidationError(data)
+
+            with open('/home/vagrant/code/opc-webpack/myapp/static/uploads/datoscontexto/' + str(
+                    datoContexto.dataid) + '.csv', 'wb+') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
 
         datoContexto.save()
 
@@ -362,6 +410,10 @@ def actualizarDatoContexto(request, dataid):
 
     except ValidationError as e:
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
+
+def listadoDatosContextoView(request, contextoid):
+
+    return render(request, "contextos/datos-contexto.html", {})
 
 # ======================== Decisiones =============================
 
