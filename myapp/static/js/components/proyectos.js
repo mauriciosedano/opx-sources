@@ -7,6 +7,7 @@ proyecto = new Vue({
 
             this.listadoProyectos();
             this.listadoDecisiones();
+            this.listadoContextos();
         }
     },
     data: {
@@ -14,7 +15,7 @@ proyecto = new Vue({
         decisiones: [],
         edicionProyecto: {},
         proyectos: [],
-        test: ['test', 'test 2']
+        contextos: []
     },
     methods: {
         listadoProyectos(){
@@ -44,6 +45,18 @@ proyecto = new Vue({
                         decisiones.push(this.almacenamientoProyecto.decisiones[i].desiid);
                     }
                     valor = JSON.stringify(decisiones);
+
+                } else if(key == 'contextos'){
+
+                    let contextos = [];
+
+                    for(let i = 0; i < this.almacenamientoProyecto.contextos.length; i++){
+
+
+                        contextos.push(this.almacenamientoProyecto.contextos[i].contextoid);
+                    }
+
+                    valor = JSON.stringify(contextos);
 
                 } else{
 
@@ -186,6 +199,20 @@ proyecto = new Vue({
                 this.decisiones = response.data;
 
             })
+        },
+        listadoContextos(){
+
+            axios({
+                method: 'GET',
+                url: '/contextos/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                this.contextos = response.data;
+            });
         }
     }
 })

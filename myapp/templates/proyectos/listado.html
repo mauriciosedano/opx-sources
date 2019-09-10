@@ -106,6 +106,12 @@
                           <multiselect v-model="almacenamientoProyecto.decisiones" :multiple="true" :options="decisiones" track-by="desiid" label="desidescripcion"></multiselect>
                         </div>
                       </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label for="" class="bmd-label-floating">Contextos</label>
+                          <multiselect v-model="almacenamientoProyecto.contextos" :multiple="true" :options="contextos" track-by="contextoid" label="descripcion"></multiselect>
+                        </div>
+                      </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
                           <button :disabled="!almacenamientoProyecto.proynombre || !almacenamientoProyecto.proydescripcion || !almacenamientoProyecto.decisiones" class="btn" @click="almacenarProyecto()" type="button">Guardar</button>

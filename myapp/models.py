@@ -43,6 +43,16 @@ class DatosContexto(models.Model):
         db_table = '"v1"."datos_contexto"'
 
 
+class ContextoProyecto(models.Model):
+
+    contproyid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    proyid = models.UUIDField()
+    contextoid = models.UUIDField()
+
+    class Meta:
+        db_table = '"v1"."contextos_proyecto"'
+
+
 class Decision(models.Model):
     desiid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     desidescripcion = models.CharField(max_length = 1000)

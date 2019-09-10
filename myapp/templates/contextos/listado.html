@@ -31,6 +31,11 @@
                         <button class="btn" @click="eliminarContexto(contexto.contextoid)">
                           Eliminar
                         </button>
+                        <button class="btn">
+                          <a :href="'/contextos/datos/' + contexto.contextoid">
+                            Datos
+                          </a>
+                        </button>
                       </td>
                       <td>
                         [[ contexto.descripcion ]]

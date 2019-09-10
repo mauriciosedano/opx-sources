@@ -413,7 +413,20 @@ def actualizarDatoContexto(request, dataid):
 
 def listadoDatosContextoView(request, contextoid):
 
-    return render(request, "contextos/datos-contexto.html", {})
+    try:
+        contexto = models.Contexto.objects.get(pk = contextoid)
+
+        return render(request, "contextos/datos-contexto.html", {'contexto': contexto})
+
+    except ObjectDoesNotExist:
+        code = 404
+
+    except ValidationError:
+        code = 400
+
+    return HttpResponse("", status = code)
+
+
 
 # ======================== Decisiones =============================
 
@@ -825,6 +838,7 @@ def almacenamientoProyecto(request):
     proyFechaCierre = request.POST.get('proyfechacierre')
     proyEstado = 0
     decisiones = json.loads(request.POST.get('decisiones'))
+    contextos = json.loads(request.POST.get('contextos'))
 
     proyecto = models.Proyecto(proynombre = proyNombre, proydescripcion = proyDescripcion, proyidexterno = proyIdExterno, proyfechacreacion = proyFechaCreacion, proyfechacierre = proyFechaCierre, proyestado = proyEstado)
 
@@ -834,12 +848,31 @@ def almacenamientoProyecto(request):
         proyecto.save()
 
         almacenarDecisionProyecto(proyecto, decisiones)
+        almacenarContextosProyecto(proyecto, contextos)
 
         data = serializers.serialize('python', [proyecto])
         return JsonResponse(data, safe = False, status = 201)
 
     except ValidationError as e:
         return JsonResponse(dict(e), safe = True, status = 400)
+
+
+def almacenarContextosProyecto(proyecto, contextos):
+
+    try:
+        for contexto in contextos:
+
+            contextoProyecto = models.ContextoProyecto(proyid = proyecto.proyid, contextoid = contexto)
+
+            contextoProyecto.save()
+
+            del contextoProyecto
+
+        return True
+
+    except ValidationError as e:
+        return False
+
 
 @csrf_exempt
 @api_view(["DELETE"])
@@ -885,6 +918,7 @@ def actualizarProyecto(request, proyid):
     except ValidationError as e:
 
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
+
 
 def listadoProyectosView(request):
 
