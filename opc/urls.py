@@ -70,6 +70,10 @@ urlpatterns = [
     path('instrumentos/store/', views.almacenamientoInstrumento),
     path('instrumentos/delete/<str:instrid>', views.eliminarInstrumento),
     path('instrumentos/<str:instrid>', views.actualizarInstrumento),
+    path('instrumentos/<str:id>/informacion/', views.informacionInstrumento),
+    path('instrumentos/<str:id>/implementar/', views.implementarFormularioKoboToolbox),
+    path('instrumentos/<str:id>/verificar-implementacion/', views.verificarImplementaciónFormulario),
+    path('instrumentos/informacion/<str:id>', views.informacionInstrumentoView),
 
     path('proyectos/', views.listadoProyectosView),
     path('proyectos/list/', views.listadoProyectos),

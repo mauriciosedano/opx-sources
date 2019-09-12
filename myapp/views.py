@@ -1,6 +1,8 @@
 from datetime import datetime
 import json
 import os
+import http.client
+from urllib.parse import urlencode
 
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -814,6 +816,19 @@ def listadoInstrumentosView(request):
 
     return render(request, "instrumentos/listado.html")
 
+def informacionInstrumentoView(request, id):
+
+    try:
+        instrumento = models.Instrumento.objects.get(pk = id)
+
+        return render(request, "instrumentos/informacion-encuesta.html", {'instrumento': instrumento})
+
+    except ObjectDoesNotExist:
+        return HttpResponse("", status = 404)
+
+    except ValidationError:
+        return HttpResponse("", 400)
+
 # ============================= Proyectos ========================
 
 @api_view(["GET"])
@@ -1105,3 +1120,174 @@ def actualizarTarea(request, tareid):
 def listadoTareasView(request):
 
     return render(request, 'tareas/listado.html')
+
+# ================= Kobo Toolbox ========================
+
+def informacionInstrumento(request, id):
+
+    try:
+        instrumento = models.Instrumento.objects.get(pk = id)
+
+        if instrumento.instrtipo == 1:
+
+            informacion = informacionFormularioKoboToolbox(instrumento.instridexterno)
+
+            if(informacion):
+
+                data = {
+                    'status': 'success',
+                    'code': 200,
+                    'info': informacion
+                }
+
+            else:
+
+                data = {
+                    'status': 'error',
+                    'code': 500
+                }
+
+        else:
+
+            data = {
+                'status': 'error',
+                'code': 404
+            }
+
+    except ObjectDoesNotExist:
+
+        data = {
+            'status': 'error',
+            'code': 404
+        }
+
+    except ValidationError:
+
+        data = {
+            'status': 'error',
+            'code': 400
+        }
+
+    return JsonResponse(data, status = data['code'])
+
+
+def informacionFormularioKoboToolbox(id):
+
+    headers = {'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d'}
+
+    client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout = 10)
+
+    client.request('GET', '/assets/'+ id +'/submissions/', '{}', headers)
+
+    response = client.getresponse()
+
+    if(response.status != 200):
+
+        data = False
+
+    else:
+
+        data = json.loads(response.read())
+
+    client.close()
+
+    return data
+
+@csrf_exempt
+def implementarFormularioKoboToolbox(request, id):
+
+    try:
+
+        instrumento = models.Instrumento.objects.get(pk = id)
+
+        headers = {
+            'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d',
+            'Content-Type': 'application/json'
+        }
+
+        payload = {'active': True}
+
+        client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout = 10)
+
+        client.request('POST', '/assets/' + instrumento.instridexterno + '/deployment/', json.dumps(payload), headers)
+
+        response = client.getresponse()
+
+        if response.status != 200:
+
+            data = {
+                'status': 'error',
+                'code': 500
+            }
+
+        else:
+
+            data = {
+                'status': 'success',
+                'code': 200
+            }
+
+    except ObjectDoesNotExist:
+
+        data = {
+            'status': 'error',
+            'code': 404
+        }
+
+    except ValidationError:
+
+        data = {
+            'status': 'error',
+            'code': 400
+        }
+
+    return JsonResponse(data, status = data['code'])
+
+
+def verificarImplementaciónFormulario(request, id):
+
+    try:
+        instrumento = models.Instrumento.objects.get(pk = id)
+
+        headers = {
+            'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d',
+            'Content-Type': 'x-www-form-urlencoded',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36'
+        }
+
+        payload = {'format': 'json'}
+
+        client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout=10)
+        client.request('GET', '/assets?' + urlencode(payload), '', headers)
+        response = client.getresponse()
+
+        if(response.status == 200):
+
+            formulariosKoboToolbox = json.loads(response.read())
+            print(type(formulariosKoboToolbox))
+
+        else:
+            print(response.status)
+            print(response.read())
+            print('/assets' + urlencode(payload))
+
+        #
+        #     for i in formulariosKoboToolbox
+
+        return HttpResponse("")
+
+    except ObjectDoesNotExist:
+
+        data = {
+            'status': 'success',
+            'code': 404
+        }
+
+    except ValidationError:
+
+        data = {
+            'status': 'error',
+            'code': 400
+        }
+
+    return JsonResponse(data, status = data['code'])

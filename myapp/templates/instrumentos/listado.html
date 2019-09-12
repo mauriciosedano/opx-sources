@@ -37,6 +37,9 @@
                             <button class="btn" @click="eliminarInstrumento(instrumento.instrid)">
                               Eliminar
                             </button>
+                            <button v-if="instrumento.instrtipo == 1" class="btn">
+                              <a :href="'/instrumentos/informacion/' + instrumento.instrid">Información
+                            </button>
                           </td>
                           <td>
                             [[ instrumento.instrtipo | tipoInstrumento ]]
