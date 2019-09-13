@@ -151,6 +151,108 @@ let instrumento = new Vue({
                     'error'
                 );
             });
+        },
+        verificarImplementacionEncuesta(id){
+
+            return new Promise((resolve, reject) => {
+
+                axios({
+                    method: 'GET',
+                    url: '/instrumentos/' + id + '/verificar-implementacion/',
+                    headers: {
+                        Authorization: getToken()
+                    }
+                })
+                .then(response => {
+
+                    if(response.data.code == 200){
+
+                        resolve(response.data.implementacion);
+                    }
+                })
+                .catch(response => {
+
+                    reject(false);
+                });
+
+            });
+        },
+        async implementarEncuesta(id){
+
+            await this.verificarImplementacionEncuesta(id)
+            .then(response => {
+
+                if(!response){
+
+                    axios({
+                        method: 'GET',
+                        url: '/instrumentos/' + id + '/implementar/',
+                        headers: {
+                            Authorization: getToken()
+                        }
+                    })
+                    .then(response => {
+
+                        Swal.fire({
+                            title: 'Exito',
+                            text: 'La encuesta fue implementada exitosamente',
+                            type: 'success'
+                        });
+
+                    })
+                    .catch( error => {
+
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Ocurrio un error. Por favor intenta de nuevo',
+                            type: 'error'
+                        });
+                    });
+
+                } else{
+
+                    Swal.fire({
+                        title: 'Implementado',
+                        text: 'El instrumento ya se encuentra implementado',
+                        type: 'warning'
+                    });
+                }
+            })
+            .catch( error => {
+
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Ocurrio un error. Por favor intenta de nuevo',
+                    type: 'error'
+                });
+            })
+        },
+        async informacionEncuesta(id){
+
+            await this.verificarImplementacionEncuesta(id)
+            .then(response => {
+
+                if(response){
+
+                    location.href = '/instrumentos/informacion/' + id;
+
+                } else{
+
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'El formulario no se encuentra implementado',
+                        type: 'error'
+                    });
+                }
+            })
+            .catch(error => {
+
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Ocurrio un error. Por favor intenta de nuevo',
+                    type: 'warning'
+                });
+            });
         }
     },
     filters: {

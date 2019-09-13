@@ -1131,8 +1131,9 @@ def informacionInstrumento(request, id):
         if instrumento.instrtipo == 1:
 
             informacion = informacionFormularioKoboToolbox(instrumento.instridexterno)
+            print(type(informacion))
 
-            if(informacion):
+            if(isinstance(informacion, list)):
 
                 data = {
                     'status': 'success',
@@ -1187,7 +1188,32 @@ def informacionFormularioKoboToolbox(id):
 
     else:
 
-        data = json.loads(response.read())
+        info = json.loads(response.read())
+
+        # ============== Obteniendo campos ================================
+
+        client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout=10)
+        client.request('GET', '/assets/?format=json', '', headers)
+        response = client.getresponse()
+
+        if (response.status == 200):
+
+            formulariosKoboToolbox = json.loads(response.read())['results']
+
+            for i in formulariosKoboToolbox:
+
+                if (i['uid'] == id):
+
+                    campos = i['labels']
+
+            data = {
+                'campos': campos,
+                'info': info
+            }
+
+        else:
+
+            data = False
 
     client.close()
 
@@ -1251,30 +1277,52 @@ def verificarImplementaciónFormulario(request, id):
 
         headers = {
             'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d',
-            'Content-Type': 'x-www-form-urlencoded',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36'
         }
 
-        payload = {'format': 'json'}
-
         client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout=10)
-        client.request('GET', '/assets?' + urlencode(payload), '', headers)
+        client.request('GET', '/assets/?format=json', '', headers)
         response = client.getresponse()
 
         if(response.status == 200):
 
-            formulariosKoboToolbox = json.loads(response.read())
-            print(type(formulariosKoboToolbox))
+            formulariosKoboToolbox = json.loads(response.read())['results']
+
+            for i in formulariosKoboToolbox:
+
+                if(i['uid'] == instrumento.instridexterno):
+
+                    if(i['has_deployment']):
+
+                        data = {
+                            'code': 200,
+                            'status': 'success',
+                            'implementacion': True
+                        }
+
+                    else:
+
+                        data = {
+                            'code': 200,
+                            'status': 'success',
+                            'implementacion': False
+                        }
+
+                    break
+
+                else:
+
+                    data = {
+                        'code': 404,
+                        'status': 'error'
+                    }
 
         else:
-            print(response.status)
-            print(response.read())
-            print('/assets' + urlencode(payload))
 
-        #
-        #     for i in formulariosKoboToolbox
-
-        return HttpResponse("")
+            data = {
+                'code': 500,
+                'status': 'error'
+            }
 
     except ObjectDoesNotExist:
 
