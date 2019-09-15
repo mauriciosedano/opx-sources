@@ -75,6 +75,15 @@ def login(request):
         else:
             refresh = RefreshToken.for_user(user[0])
 
+            request.session['permisos'] = []
+
+            permisos = models.FuncionRol.objects.filter(rolid__exact = user[0].rolid);
+
+            for i in permisos:
+                request.session['permisos'].append(str(i.accionid))
+
+            print(request.session['permisos'])
+
             data = {
                 'token': str(refresh.access_token),
                 'user': {
@@ -1133,7 +1142,7 @@ def informacionInstrumento(request, id):
             informacion = informacionFormularioKoboToolbox(instrumento.instridexterno)
             print(type(informacion))
 
-            if(isinstance(informacion, list)):
+            if(isinstance(informacion, dict)):
 
                 data = {
                     'status': 'success',
@@ -1178,7 +1187,7 @@ def informacionFormularioKoboToolbox(id):
 
     client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout = 10)
 
-    client.request('GET', '/assets/'+ id +'/submissions/', '{}', headers)
+    client.request('GET', '/assets/' + id + '/submissions/', '{}', headers)
 
     response = client.getresponse()
 
@@ -1190,7 +1199,7 @@ def informacionFormularioKoboToolbox(id):
 
         info = json.loads(response.read())
 
-        # ============== Obteniendo campos ================================
+        # ============== Obteniendo campos del formulario====================
 
         client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout=10)
         client.request('GET', '/assets/?format=json', '', headers)
@@ -1204,7 +1213,8 @@ def informacionFormularioKoboToolbox(id):
 
                 if (i['uid'] == id):
 
-                    campos = i['labels']
+                    campos = i['summary']['labels']
+                    break
 
             data = {
                 'campos': campos,

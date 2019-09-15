@@ -45,11 +45,13 @@ let informacionEncuesta = new Vue({
             })
             .then(response => {
 
-                if(response.data.code == 200 && response.data.info.length > 0){
+                if(response.data.code == 200 && response.data.info.info.length > 0){
+
+                    this.informacion = response.data.info.info;
 
                     // Captura de campos de interés
-                    this.informacion = response.data.info;
-                    let camposTotales = Object.keys(response.data.info[0])
+
+                    let camposTotales = Object.keys(this.informacion[0])
 
                     for(let i = 0; i < camposTotales.length; i++){
 

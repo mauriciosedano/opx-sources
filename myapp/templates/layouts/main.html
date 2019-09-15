@@ -54,48 +54,62 @@
       </div>
       <div class="sidebar-wrapper">
         <ul class="nav">
-          <li class="nav-item  ">
-            <a class="nav-link" href="/proyectos/">
-              <i class="material-icons">dashboard</i>
-              <p>Proyectos</p>
-            </a>
-          </li>
-          <li class="nav-item ">
-            <a class="nav-link" href="/tareas">
-              <i class="material-icons">person</i>
-              <p>Tareas</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/instrumentos">
-              <i class="material-icons">content_paste</i>
-              <p>Instrumentos</p>
-            </a>
-          </li>
-          <li class="nav-item ">
-            <a class="nav-link" href="/decisiones">
-              <i class="material-icons">library_books</i>
-              <p>Decisiones</p>
-            </a>
-          </li>
-          <li class="nav-item ">
-            <a class="nav-link" href="/contextos">
-              <i class="material-icons">library_books</i>
-              <p>Contextos</p>
-            </a>
-          </li>
+          {% if '0ff17033-7e9a-4f6d-a66b-b80b69860ec0' in request.session.permisos %}
+            <li class="nav-item  ">
+              <a class="nav-link" href="/proyectos/">
+                <i class="material-icons">dashboard</i>
+                <p>Proyectos</p>
+              </a>
+            </li>
+          {% endif %}
+          {% if '1f471664-7209-4053-85f5-e49cd506e9d9' in request.session.permisos %}
+            <li class="nav-item ">
+              <a class="nav-link" href="/tareas">
+                <i class="material-icons">person</i>
+                <p>Tareas</p>
+              </a>
+            </li>
+          {% endif %}
+          {% if 'dd9a202b-3c2c-4a69-97b6-1c13b8f4792f' in request.session.permisos %}
+            <li class="nav-item">
+              <a class="nav-link" href="/instrumentos">
+                <i class="material-icons">content_paste</i>
+                <p>Instrumentos</p>
+              </a>
+            </li>
+          {% endif %}
+          {% if '07225737-ca27-4f9a-bae9-1be6bfe8d15c' in request.session.permisos %}
+            <li class="nav-item ">
+              <a class="nav-link" href="/decisiones">
+                <i class="material-icons">library_books</i>
+                <p>Decisiones</p>
+              </a>
+            </li>
+          {% endif %}
+          {% if 'cf49d486-f6fe-4667-b155-51eda0fb7382' in request.session.permisos %}
+            <li class="nav-item ">
+              <a class="nav-link" href="/contextos">
+                <i class="material-icons">library_books</i>
+                <p>Contextos</p>
+              </a>
+            </li>
+          {% endif %}
+          {% if 'e0be3e0e-b127-4fe7-8478-b78a35faf845' in request.session.permisos %}
           <li class="nav-item ">
             <a class="nav-link" href="/usuarios">
               <i class="material-icons">person</i>
               <p>Usuarios</p>
             </a>
           </li>
-          <li class="nav-item ">
-            <a class="nav-link" href="/roles">
-              <i class="material-icons">person</i>
-              <p>Roles</p>
-            </a>
-          </li>
+          {% endif %}
+          {% if '00add5dd-7d17-4c93-b3a7-22ac9a1f3c76' in request.session.permisos %}
+            <li class="nav-item ">
+              <a class="nav-link" href="/roles">
+                <i class="material-icons">person</i>
+                <p>Roles</p>
+              </a>
+            </li>
+          {% endif %}
         </ul>
       </div>
     </div>
