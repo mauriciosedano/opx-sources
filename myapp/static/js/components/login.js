@@ -34,6 +34,11 @@ let login = new Vue({
                 .then(response => {
 
                     sessionStorage.setItem('userinfo', JSON.stringify(response.data));
+
+                    /*document.cookie = "csrftoken=wG2xUInpzPR787Bz8FXDIONSDYoemwW3;domain=http://kf.oim-opc.pre;path=/"
+                    document.cookie = "kobonaut=y4rd7ywp5yz57fjmnv1ca8wzpc1in09m;domain=http://kf.oim-opc.pre;path=/"
+                    document.cookie = "selectedAssetUid=aJypqscWMCu3J3URaN2JKf;domain=http://kf.oim-opc.pre;path=/"*/
+
                     location.href = '/proyectos';
                 })
                 .catch(error => {

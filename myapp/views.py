@@ -2,7 +2,7 @@ from datetime import datetime
 import json
 import os
 import http.client
-from urllib.parse import urlencode
+from passlib.context import CryptContext
 
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -61,7 +61,9 @@ def login(request):
 
     else:
 
-        user = models.Usuario.objects.filter(useremail__exact = username).filter(password__exact = password)
+        user = models.Usuario.objects.filter(useremail__exact = username)
+
+        #.filter(password__exact = password)
         #user = authenticate(email=username, password=password)
 
         if len(user) == 0:
@@ -73,28 +75,45 @@ def login(request):
             }
 
         else:
-            refresh = RefreshToken.for_user(user[0])
 
-            request.session['permisos'] = []
+            # Contexto Passlib
+            pwd_context = CryptContext(
+                schemes=["pbkdf2_sha256"],
+                default="pbkdf2_sha256",
+                pbkdf2_sha256__default_rounds=30000
+            )
+            passwordVerification = pwd_context.verify(password, user[0].password)
 
-            permisos = models.FuncionRol.objects.filter(rolid__exact = user[0].rolid);
+            if(passwordVerification):
 
-            for i in permisos:
-                request.session['permisos'].append(str(i.accionid))
+                refresh = RefreshToken.for_user(user[0])
 
-            print(request.session['permisos'])
+                request.session['permisos'] = []
 
-            data = {
-                'token': str(refresh.access_token),
-                'user': {
-                    'id': user[0].userid,
-                    'name': user[0].userfullname,
-                    'email': user[0].useremail
-                },
-                'code': 200
-            }
+                permisos = models.FuncionRol.objects.filter(rolid__exact = user[0].rolid);
 
-            # token = Token.objects.get_or_create(user=user[0])
+                for i in permisos:
+                    request.session['permisos'].append(str(i.accionid))
+
+                print(request.session['permisos'])
+
+                data = {
+                    'token': str(refresh.access_token),
+                    'user': {
+                        'id': user[0].userid,
+                        'name': user[0].userfullname,
+                        'email': user[0].useremail
+                    },
+                    'code': 200
+                }
+
+            else:
+
+                data = {
+                    'status': 'error',
+                    'message': 'Usuario y/o contraseña incorrecta',
+                    'code': 404
+                }
 
     return JsonResponse(data, status = data['code'])
 
@@ -130,6 +149,14 @@ def almacenarUsuario(request):
 
     try:
         usuario.full_clean()
+
+        # Contexto Passlib
+        pwd_context = CryptContext(
+            schemes=["pbkdf2_sha256"],
+            default="pbkdf2_sha256",
+            pbkdf2_sha256__default_rounds=30000
+        )
+        usuario.password = pwd_context.encrypt(usuario.password)
 
         usuario.save()
         data = serializers.serialize('python', [usuario])
@@ -753,7 +780,11 @@ def listadoInstrumentos(request):
 
     instrumentos =  models.Instrumento.objects.all().values()
 
-    return JsonResponse(list(instrumentos), safe = False)
+    response = JsonResponse(list(instrumentos), safe = False)
+
+    response['Set-Cookie'] = "csrftoken=wG2xUInpzPR787Bz8FXDIONSDYoemwW3;domain=kf.oim-opc.pre;path=/"
+
+    return response
 
 @csrf_exempt
 @api_view(["POST"])
@@ -1349,3 +1380,22 @@ def verificarImplementaciónFormulario(request, id):
         }
 
     return JsonResponse(data, status = data['code'])
+
+def constructorKobo(request):
+
+    client = http.client.HTTPConnection('kf.oim-opc.pre', 80, timeout=10)
+
+    client.request('GET', '/accounts/login/?next=/')
+
+    response = client.getresponse()
+
+    if(response.status == 200):
+
+        print(response.read())
+
+    else:
+
+        print(response.status)
+        print(response.info())
+
+    return HttpResponse("")

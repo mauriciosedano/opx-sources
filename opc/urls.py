@@ -92,5 +92,7 @@ urlpatterns = [
     path('tareas/list/', views.listadoTareas),
     path('tareas/store/', views.almacenamientoTarea),
     path('tareas/delete/<str:tareid>/', views.eliminarTarea),
-    path('tareas/<str:tareid>', views.actualizarTarea)
+    path('tareas/<str:tareid>', views.actualizarTarea),
+
+    path('constructor-kobo', views.constructorKobo)
 ]
