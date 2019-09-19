@@ -4,6 +4,8 @@ import os
 import http.client
 from passlib.context import CryptContext
 
+from myapp import models
+
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import connection
@@ -18,14 +20,12 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated
 )
-from rest_framework.response import Response
-from rest_framework.status import (
-    HTTP_400_BAD_REQUEST,
-    HTTP_404_NOT_FOUND,
-    HTTP_200_OK
-)
-
-from myapp import models
+# from rest_framework.response import Response
+# from rest_framework.status import (
+#     HTTP_400_BAD_REQUEST,
+#     HTTP_404_NOT_FOUND,
+#     HTTP_200_OK
+# )
 
 #========================== Utilidades =============================
 
@@ -558,22 +558,6 @@ def listadoDecisionesProyecto(request):
 
     return JsonResponse(list(decisionesProyecto), safe = False)
 
-def almacenarDecisionProyecto(proyecto, decisiones):
-
-    try:
-        for decision in decisiones:
-
-            decisionProyecto = None
-
-            decisionProyecto = models.DecisionProyecto(proyid = proyecto.proyid, desiid = decision)
-
-            decisionProyecto.save()
-
-        return True
-
-    except ValidationError as e:
-        return False
-
 @csrf_exempt
 @api_view(["DELETE"])
 @permission_classes((IsAuthenticated,))
@@ -782,7 +766,7 @@ def listadoInstrumentos(request):
 
     response = JsonResponse(list(instrumentos), safe = False)
 
-    response['Set-Cookie'] = "csrftoken=wG2xUInpzPR787Bz8FXDIONSDYoemwW3;domain=kf.oim-opc.pre;path=/"
+    response['Set-Cookie'] = "pruebas=123456"
 
     return response
 
@@ -891,7 +875,7 @@ def almacenamientoProyecto(request):
     proyIdExterno = 12345
     proyFechaCreacion = datetime.today()
     proyFechaCierre = request.POST.get('proyfechacierre')
-    proyEstado = 0
+    proyEstado = 1
     decisiones = json.loads(request.POST.get('decisiones'))
     contextos = json.loads(request.POST.get('contextos'))
 
@@ -911,6 +895,21 @@ def almacenamientoProyecto(request):
     except ValidationError as e:
         return JsonResponse(dict(e), safe = True, status = 400)
 
+def almacenarDecisionProyecto(proyecto, decisiones):
+
+    try:
+        for decision in decisiones:
+
+            decisionProyecto = None
+
+            decisionProyecto = models.DecisionProyecto(proyid = proyecto.proyid, desiid = decision)
+
+            decisionProyecto.save()
+
+        return True
+
+    except ValidationError as e:
+        return False
 
 def almacenarContextosProyecto(proyecto, contextos):
 
@@ -927,7 +926,6 @@ def almacenarContextosProyecto(proyecto, contextos):
 
     except ValidationError as e:
         return False
-
 
 @csrf_exempt
 @api_view(["DELETE"])
@@ -956,14 +954,45 @@ def actualizarProyecto(request, proyid):
 
         proyecto.proynombre = request.POST.get('proynombre')
         proyecto.proydescripcion = request.POST.get('proydescripcion')
-        #proyecto.proyidexterno = request.POST.get('proyidexterno')
-        #proyecto.proyfechacreacion = request.POST.get('proyfechacreacion')
-        #proyecto.proyfechacierre = request.POST.get('proyfechacierre')
-        #proyecto.proyestado = request.POST.get('proyestado')
+        decisiones = json.loads(request.POST.get('decisiones'))
+        contextos = json.loads(request.POST.get('contextos'))
 
         proyecto.full_clean()
 
         proyecto.save()
+
+        # ================ Actualizacion de decisiones ===============================
+        decisionesProyecto = models.DecisionProyecto.objects.filter(proyid__exact = proyecto.proyid)
+
+        if decisionesProyecto.exists():
+
+            for decisionProyecto in decisionesProyecto:
+
+                decisionProyecto.delete()
+
+        if len(decisiones) > 0:
+
+            for decision in decisiones:
+
+                decisionProyecto = models.DecisionProyecto(proyid = proyecto.proyid, desiid = decision)
+                decisionProyecto.save()
+
+        # ============== Actualización de contextos ================================
+
+        contextosProyecto = models.ContextoProyecto.objects.filter(proyid__exact = proyecto.proyid)
+
+        if contextosProyecto.exists():
+
+            for contextoProyecto in contextosProyecto:
+
+                contextoProyecto.delete()
+
+        if len(contextos) > 0:
+
+            for contexto in contextos:
+
+                contextoProyecto = models.ContextoProyecto(proyid = proyecto.proyid, contextoid = contexto)
+                contextoProyecto.save()
 
         return JsonResponse(serializers.serialize('python', [proyecto]), safe=False)
 
@@ -973,7 +1002,6 @@ def actualizarProyecto(request, proyid):
     except ValidationError as e:
 
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
-
 
 def listadoProyectosView(request):
 
@@ -1391,11 +1419,4 @@ def constructorKobo(request):
 
     if(response.status == 200):
 
-        print(response.read())
-
-    else:
-
-        print(response.status)
-        print(response.info())
-
-    return HttpResponse("")
+        return HttpResponse(response.read())

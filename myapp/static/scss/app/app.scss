@@ -1,0 +1,12 @@
+@import 'configuration.scss';
+
+.card .card-header-primary .card-icon, .card .card-header-primary:not(.card-header-icon):not(.card-header-text), .card .card-header-primary .card-text{
+    background: $cardHeaderColor;
+}
+
+button.button-right{
+    background: #FFFFFF !important;
+    color: #343434 !important;
+    font-size: 11pt;
+    text-transform: capitalize;
+}

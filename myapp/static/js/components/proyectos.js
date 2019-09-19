@@ -148,7 +148,35 @@ proyecto = new Vue({
         editarProyecto(){
 
             var queryString = Object.keys(this.edicionProyecto).map(key => {
-                return key + '=' + this.edicionProyecto[key]
+
+                if(key == 'decisiones'){
+
+                    let decisiones = [];
+
+                    for(let i = 0; i < this.edicionProyecto.decisiones.length; i++){
+
+                        decisiones.push(this.edicionProyecto.decisiones[i].desiid);
+                    }
+                    valor = JSON.stringify(decisiones);
+
+                } else if(key == 'contextos'){
+
+                    let contextos = [];
+
+                    for(let i = 0; i < this.edicionProyecto.contextos.length; i++){
+
+
+                        contextos.push(this.edicionProyecto.contextos[i].contextoid);
+                    }
+
+                    valor = JSON.stringify(contextos);
+
+                } else{
+
+                    valor = this.edicionProyecto[key]
+                }
+
+                return key + '=' + valor
             }).join('&');
 
             axios({

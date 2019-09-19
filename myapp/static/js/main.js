@@ -63,6 +63,9 @@ Vue.filter('estado-entidad', function(value){
 
 });
 
+// const webdriver = require('selenium-webdriver');
+// const chrome = require('selenium-webdriver/chrome');
+
 // Instancia Vue para Gestión de proyectos
 require('./components/proyectos').proyecto;
 
@@ -96,4 +99,5 @@ require('./components/datosContexto').datoContexto;
 // Información de Encuestas
 require('./components/informacion-encuesta').informacionEncuesta;
 
-//import '../../../node-modules/vue-multiselect/dist/vue-multiselect.min.css';
+// Estilos
+import './../scss/app/app.scss'
