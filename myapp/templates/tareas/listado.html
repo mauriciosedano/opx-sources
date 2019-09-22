@@ -17,7 +17,6 @@
                   <div class="table-responsive">
                     <table class="table">
                       <thead class=" text-primary">
-                        <th></th>
                         <th>
                           Nombre
                         </th>
@@ -33,17 +32,10 @@
                         <th>
                           Proyecto
                         </th>
+                        <th></th>
                       </thead>
                       <tbody>
                         <tr v-for="tarea in tareas">
-                          <td>
-                            <button @click="edicionTarea = tarea" class="btn" data-toggle="modal" data-target="#editar-tarea">
-                              Edición
-                            </button>
-                            <button class="btn" @click="eliminarTarea(tarea.tareid)">
-                              Eliminar
-                            </button>
-                          </td>
                           <td>
                             [[ tarea.tarenombre ]]
                           </td>
@@ -58,6 +50,17 @@
                           </td>
                           <td>
                             [[ tarea.proynombre ]]
+                          </td>
+                          <td>
+                            <div class="dropdown">
+                              <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                              </a>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a @click.prevent="edicionTarea = tarea" data-toggle="modal" data-target="#editar-tarea" class="dropdown-item" href="#"> Edición </a>
+                                <a @click.prevent="eliminarTarea(tarea.tareid)" class="dropdown-item" href="#"> Eliminación </a>
+                              </div>
+                            </div>
                           </td>
                         </tr>
                       </tbody>

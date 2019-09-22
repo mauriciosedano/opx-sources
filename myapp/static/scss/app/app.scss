@@ -26,3 +26,15 @@ button.btn-opc{
 
     background-image: linear-gradient(0deg, $focusFieldColor 2px,rgba(156,39,176,0) 0),linear-gradient(0deg,#d2d2d2 1px,hsla(0,0%,82%,0) 0) !important;
 }
+
+a.actions-menu:after{
+
+    content: '\2807';
+    cursor: pointer;
+    font-size: 30px;
+}
+
+table thead tr th{
+    color: $titleTableColor !important;
+    font-weight: bold !important;
+}

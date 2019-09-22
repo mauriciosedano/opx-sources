@@ -17,29 +17,28 @@
               <div class="table-responsive">
                 <table class="table">
                   <thead class=" text-primary">
-                    <th></th>
                     <th>
                       Descripción
                     </th>
+                    <th></th>
                   </thead>
                   <tbody>
                     <tr v-for="contexto in contextos">
                       <td>
-                        <button @click="edicionContexto = contexto" class="btn" data-toggle="modal" data-target="#editar-contexto">
-                          Edición
-                        </button>
-                        <button class="btn" @click="eliminarContexto(contexto.contextoid)">
-                          Eliminar
-                        </button>
-                        <button class="btn">
-                          <a :href="'/contextos/datos/' + contexto.contextoid">
-                            Datos
-                          </a>
-                        </button>
-                      </td>
-                      <td>
                         [[ contexto.descripcion ]]
                       </td>
+                       <td>
+                          <div class="dropdown">
+                            <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                              <a  @click.prevent="edicionContexto = contexto" data-toggle="modal" data-target="#editar-contexto" class="dropdown-item" href="#"> Edición </a>
+                              <a @click.prevent="eliminarContexto(contexto.contextoid)" class="dropdown-item" href="#"> Eliminación </a>
+                              <a class="dropdown-item" :href="'/contextos/datos/' + contexto.contextoid"> Datos </a>
+                            </div>
+                          </div>
+                        </td>
                     </tr>
                   </tbody>
                 </table>

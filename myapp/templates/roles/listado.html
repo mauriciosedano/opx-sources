@@ -17,34 +17,33 @@
                   <div class="table-responsive">
                     <table class="table">
                       <thead class=" text-primary">
-                        <th></th>
                         <th>
                           Nombre
                         </th>
                         <th>
                           Descripción
                         </th>
+                        <th></th>
                       </thead>
                       <tbody>
                         <tr v-for="rol in roles">
-                          <td>
-                            <button @click="edicionRol = rol" class="btn" data-toggle="modal" data-target="#editar-rol">
-                              Edición
-                            </button>
-                            <button class="btn" @click="eliminarRol(rol.rolid)">
-                              Eliminar
-                            </button>
-                            <button class="btn">
-                              <a :href="'/roles/permisos/' + rol.rolid">
-                                Permisos
-                              </a>
-                            </button>
-                          </td>
                           <td>
                             [[ rol.rolname ]]
                           </td>
                           <td class="text-primary">
                             [[ rol.roldescripcion  ]]
+                          </td>
+                          <td>
+                            <div class="dropdown">
+                              <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                              </a>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a @click.prevent="edicionRol = rol" data-toggle="modal" data-target="#editar-rol" class="dropdown-item" href="#"> Edición </a>
+                                <a @click.prevent="eliminarRol(rol.rolid)" class="dropdown-item" href="#"> Eliminación </a>
+                                <a :href="'/roles/permisos/' + rol.rolid" class="dropdown-item" > Permisos </a>
+                              </div>
+                            </div>
                           </td>
                         </tr>
                       </tbody>

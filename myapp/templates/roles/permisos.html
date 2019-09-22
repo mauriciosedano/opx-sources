@@ -17,23 +17,25 @@
                   <div class="table-responsive">
                     <table class="table">
                       <thead class=" text-primary">
-                        <th></th>
                         <th>
                           Nombre
                         </th>
+                        <th></th>
                       </thead>
                       <tbody>
                         <tr v-for="permiso in permisos">
                           <td>
-                            <!--<button @click="edicionPermiso = permiso" class="btn" data-toggle="modal" data-target="#editar-permiso">
-                              Edición
-                            </button>-->
-                            <button class="btn" @click="eliminarPermiso(permiso.funcrolid)">
-                              Eliminar
-                            </button>
+                            [[ permiso.nombre ]]
                           </td>
                           <td>
-                            [[ permiso.nombre ]]
+                            <div class="dropdown">
+                              <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                              </a>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a @click="eliminarPermiso(permiso.funcrolid)" class="dropdown-item" href="#"> Eliminación </a>
+                              </div>
+                            </div>
                           </td>
                         </tr>
                       </tbody>

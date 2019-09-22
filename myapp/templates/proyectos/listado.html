@@ -17,7 +17,9 @@
                   <div class="table-responsive">
                     <table class="table">
                       <thead class=" text-primary">
-                        <th></th>
+                        <th>
+                          Estado
+                        </th>
                         <th>
                           Nombre
                         </th>
@@ -25,24 +27,17 @@
                           Descripción
                         </th>
                         <th>
-                          Fecha Creación
+                          Creación
                         </th>
                         <th>
-                          Fecha Cierre
+                          Cierre
                         </th>
-                        <th>
-                          Estado
-                        </th>
+                        <th></th>
                       </thead>
                       <tbody>
                         <tr v-for="proyecto in proyectos">
-                          <td>
-                            <button @click="edicionProyecto = proyecto" class="btn" data-toggle="modal" data-target="#editar-proyecto">
-                              Edición
-                            </button>
-                            <button class="btn" @click="eliminarProyecto(proyecto.proyid)">
-                              Eliminar
-                            </button>
+                          <td class="text-primary">
+                            [[ proyecto.proyestado | estado-entidad ]]
                           </td>
                           <td>
                             [[ proyecto.proynombre ]]
@@ -56,8 +51,16 @@
                           <td>
                             [[ proyecto.proyfechacierre ]]
                           </td>
-                          <td class="text-primary">
-                            [[ proyecto.proyestado | estado-entidad ]]
+                          <td>
+                            <div class="dropdown">
+                              <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                              </a>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a @click.prevent="edicionProyecto = proyecto" data-toggle="modal" data-target="#editar-proyecto" class="dropdown-item" href="#"> Edición </a>
+                                <a @click="eliminarProyecto(proyecto.proyid)" class="dropdown-item" href="#"> Eliminación </a>
+                              </div>
+                            </div>
                           </td>
                         </tr>
                       </tbody>

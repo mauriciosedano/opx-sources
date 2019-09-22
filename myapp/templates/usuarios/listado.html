@@ -17,7 +17,9 @@
                   <div class="table-responsive">
                     <table class="table">
                       <thead class=" text-primary">
-                        <th></th>
+                        <th>
+                          Estado
+                        </th>
                         <th>
                           Nombre
                         </th>
@@ -27,19 +29,12 @@
                         <th>
                           Rol
                         </th>
-                        <th>
-                          Estado
-                        </th>
+                        <th></th>
                       </thead>
                       <tbody>
                         <tr v-for="usuario in usuarios">
                           <td>
-                            <button @click="edicionUsuario = usuario" class="btn" data-toggle="modal" data-target="#editar-usuario">
-                              Edición
-                            </button>
-                            <button class="btn" @click="eliminarUsuario(usuario.userid)">
-                              Eliminar
-                            </button>
+                            [[ usuario.userestado | estado-entidad ]]
                           </td>
                           <td>
                             [[ usuario.userfullname ]]
@@ -51,7 +46,15 @@
                             [[ usuario.rolname ]]
                           </td>
                           <td>
-                            [[ usuario.userestado | estado-entidad ]]
+                            <div class="dropdown">
+                              <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                              </a>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a @click.prevent="edicionUsuario = usuario"  data-toggle="modal" data-target="#editar-usuario" class="dropdown-item" href="#"> Edición </a>
+                                <a @click="eliminarUsuario(usuario.userid)" class="dropdown-item" href="#"> Eliminación </a>
+                              </div>
+                            </div>
                           </td>
                         </tr>
                       </tbody>

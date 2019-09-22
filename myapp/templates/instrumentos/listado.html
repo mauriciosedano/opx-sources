@@ -17,7 +17,6 @@
                   <div class="table-responsive">
                     <table class="table">
                       <thead class=" text-primary">
-                        <th></th>
                         <th>
                           Tipo
                         </th>
@@ -27,23 +26,10 @@
                       <th>
                         Descripción
                       </th>
+                      <th></th>
                       </thead>
                       <tbody>
                         <tr v-for="instrumento in instrumentos">
-                          <td>
-                            <button @click="edicionInstrumento = instrumento" class="btn" data-toggle="modal" data-target="#editar-instrumento">
-                              Edición
-                            </button>
-                            <button class="btn" @click="eliminarInstrumento(instrumento.instrid)">
-                              Eliminar
-                            </button>
-                            <button v-if="instrumento.instrtipo == 1" class="btn" @click.prevent="implementarEncuesta(instrumento.instrid)">
-                              Implementar
-                            </button>
-                            <button v-if="instrumento.instrtipo == 1" class="btn" @click.prevent="informacionEncuesta(instrumento.instrid)">
-                              Información
-                            </button>
-                          </td>
                           <td>
                             [[ instrumento.instrtipo | tipoInstrumento ]]
                           </td>
@@ -52,6 +38,19 @@
                           </td>
                           <td>
                             [[ instrumento.instrdescripcion ]]
+                          </td>
+                          <td>
+                            <div class="dropdown">
+                              <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                              </a>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a @click.prevent="edicionInstrumento = instrumento" data-toggle="modal" data-target="#editar-instrumento" class="dropdown-item" href="#"> Edición </a>
+                                <a @click.prevent="eliminarInstrumento(instrumento.instrid)" class="dropdown-item" href="#"> Eliminación </a>
+                                <a v-if="instrumento.instrtipo == 1" @click.prevent="implementarEncuesta(instrumento.instrid)" class="dropdown-item" href="#"> Implementar </a>
+                                <a v-if="instrumento.instrtipo == 1" @click.prevent="informacionEncuesta(instrumento.instrid)" class="dropdown-item" href="#"> Información </a>
+                              </div>
+                            </div>
                           </td>
                         </tr>
                       </tbody>
@@ -162,7 +161,7 @@
         </div>
     </div>
 
-<!--    <iframe src="http://kf.oim-opc.pre/accounts/login/?next=/#/" frameborder="0" height="500"></iframe>-->
-        <iframe src="http://kf.oim-opc.pre/#/forms"></iframe>
+        <!-- <iframe src="http://kf.oim-opc.pre/accounts/login/?next=/#/" frameborder="0" height="500"></iframe> -->
+        <!-- <iframe src="http://kf.oim-opc.pre/#/forms"></iframe> -->
 
 {% endblock %}

@@ -17,29 +17,32 @@
                   <div class="table-responsive">
                     <table class="table">
                       <thead class=" text-primary">
-                        <th></th>
                         <th>
                           Descripción
                         </th>
                         <th>
                           Usuario
                         </th>
+                        <th></th>
                       </thead>
                       <tbody>
                         <tr v-for="decision in decisiones">
-                          <td>
-                            <button @click="edicionDecision = decision" class="btn" data-toggle="modal" data-target="#editar-decision">
-                              Edición
-                            </button>
-                            <button class="btn" @click="eliminarDecision(decision.desiid)">
-                              Eliminar
-                            </button>
-                          </td>
                           <td>
                             [[ decision.desidescripcion ]]
                           </td>
                           <td>
                             [[ decision.userfullname ]]
+                          </td>
+                          <td>
+                            <div class="dropdown">
+                              <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                              </a>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a @click.prevent="edicionDecision = decision" data-toggle="modal" data-target="#editar-decision" class="dropdown-item" href="#"> Edición </a>
+                                <a @click.prevent="eliminarDecision(decision.desiid)" class="dropdown-item" href="#"> Eliminación </a>
+                              </div>
+                            </div>
                           </td>
                         </tr>
                       </tbody>

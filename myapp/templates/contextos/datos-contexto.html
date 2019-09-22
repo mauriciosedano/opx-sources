@@ -17,20 +17,12 @@
               <div class="table-responsive">
                 <table class="table">
                   <thead class=" text-primary">
-                    <th></th>
                     <th> HDX </th>
                     <th> Archivo </th>
+                    <th></th>
                   </thead>
                   <tbody>
                     <tr v-for="datoContexto in datosContexto">
-                      <td>
-                        <button @click="edicionDatoContexto = datoContexto" class="btn" data-toggle="modal" data-target="#editar-dato-contexto">
-                          Edición
-                        </button>
-                        <button class="btn" @click="eliminarDatoContexto(datoContexto.dataid)">
-                          Eliminar
-                        </button>
-                      </td>
                       <td>
                         [[ datoContexto.hdxtag ]]
                       </td>
@@ -38,6 +30,17 @@
                         <a :href="'/static/uploads/datoscontexto/' + datoContexto.dataid + '.csv'" target="_blank">
                             Ver Archivo
                         </a>
+                      </td>
+                      <td>
+                        <div class="dropdown">
+                          <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                          </a>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a @click.prevent="edicionDatoContexto = datoContexto" data-toggle="modal" data-target="#editar-dato-contexto" class="dropdown-item" href="#"> Edición </a>
+                            <a @click.prevent="eliminarDatoContexto(datoContexto.dataid)" class="dropdown-item" href="#"> Eliminación </a>
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   </tbody>
