@@ -71,43 +71,45 @@
       <!--   you can change the color of the filter page using: data-color="blue | purple | green | orange | red | rose " -->
       <div class="container-fluid">
         <div class="row" id="login">
-          <div class="col-md-4" id="left">
+          <div class="col-md-5" id="left">
             <form class="form" method="" action="">
               <div class="card card-login card-hidden">
                 <div class="card-body">
                   <div align="center" id="logo">
                     <img src="{% static 'img/app/logo-dashboard.png' %}" alt="">
                   </div>
-                  <span class="bmd-form-group">
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text">
-                          <i class="material-icons">email</i>
-                        </span>
+                  <div class="form-row">
+                    <span class="bmd-form-group offset-md-2 col-md-8">
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">
+                            <i class="material-icons">email</i>
+                          </span>
+                        </div>
+                        <input v-model="loginInfo.username" type="email" class="form-control" placeholder="E-mail">
                       </div>
-                      <input v-model="loginInfo.username" type="email" class="form-control" placeholder="E-mail">
-                    </div>
-                  </span>
-                  <span class="bmd-form-group">
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text">
-                          <i class="material-icons">lock_outline</i>
-                        </span>
+                    </span>
+                    <span class="bmd-form-group offset-md-2 col-md-8">
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">
+                            <i class="material-icons">lock_outline</i>
+                          </span>
+                        </div>
+                        <input v-model="loginInfo.password" type="password" class="form-control" placeholder="Contraseña">
                       </div>
-                      <input v-model="loginInfo.password" type="password" class="form-control" placeholder="Contraseña">
-                    </div>
-                  </span>
-                  <span class="bmd-form-group">
-                    <div align="center">
-                      <button @click.prevent="login" class="btn btn-opc">Iniciar sesión</a>
-                    </div>
-                  </span>
+                    </span>
+                    <span class="bmd-form-group offset-md-2 col-md-8">
+                      <div align="center">
+                        <button @click.prevent="login" class="btn btn-opc">Iniciar sesión</a>
+                      </div>
+                    </span>
+                  </div>
                 </div>
               </div>
             </form>
           </div>
-          <div class="col-md-8" id="right">
+          <div class="col-md-7" id="right">
             <p>
               <span class="thin">Bienvenido al</span>
               <span class="bold">Observatorio</span>

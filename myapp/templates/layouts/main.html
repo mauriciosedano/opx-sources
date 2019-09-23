@@ -49,12 +49,13 @@
 
         Tip 2: you can also add an image using data-image tag
     -->
-      <div class="logo">
+
+      <div class="sidebar-wrapper">
+        <div class="logo">
         <a href="/proyectos/" class="simple-text logo-normal">
           <img src="{% static 'img/app/logo-dashboard.png' %}" alt="">
         </a>
       </div>
-      <div class="sidebar-wrapper">
         <ul class="nav">
           {% if '0ff17033-7e9a-4f6d-a66b-b80b69860ec0' in request.session.permisos %}
             <li class="nav-item  ">
@@ -113,7 +114,7 @@
             </li>
           {% endif %}
         </ul>
-        <div align="center">
+        <div align="center" class="logo-footer">
          <img class="img-fluid" src="{% static 'img/app/alcaldia-cali.png' %}" alt="">
         </div>
       </div>

@@ -9,7 +9,13 @@ button.button-right{
     background: #FFFFFF !important;
     color: #343434 !important;
     font-size: 11pt;
+    font-weight: bold;
+    padding: 8px 17px !important;
     text-transform: capitalize;
+    &:before{
+        content: url(/static/img/app/icons/add.png);
+        padding-right: 5px;
+    }
 }
 
 button.btn-opc{
@@ -28,7 +34,7 @@ button.btn-opc{
 }
 
 a.actions-menu:after{
-
+    color: $actionsMenuColor;
     content: '\2807';
     cursor: pointer;
     font-size: 30px;
@@ -37,4 +43,24 @@ a.actions-menu:after{
 table thead tr th{
     color: $titleTableColor !important;
     font-weight: bold !important;
+}
+
+.sidebar-wrapper{
+    height: 100vh !important;
+    .logo-footer{
+        bottom: 5px;
+        left: 19%;
+        position: absolute;
+        width: 150px;
+    }
+}
+
+.sidebar .nav li a, .sidebar .nav li .dropdown-menu a{
+
+    padding: 5px 15px !important;
+}
+
+.sidebar .nav li a, .sidebar .nav li .dropdown-menu a{
+
+    color: $menuItemsColor !important;
 }

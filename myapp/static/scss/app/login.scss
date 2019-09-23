@@ -23,6 +23,19 @@
             button{
                 margin-top: 50px;
             }
+            .card-body{
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                margin-top: -100px;
+            }
+        }
+        .bmd-form-group input::-webkit-input-placeholder{
+            color: #B4B4B4;
+            font-size: 13pt;
+        }
+        .bmd-form-group:nth-child(1){
+            margin-bottom: 25px;
         }
     }
     #right{
