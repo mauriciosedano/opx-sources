@@ -35,8 +35,13 @@
   <!-- CSS Just for demo purpose, don't include it in your project -->
   <link href="{% static 'demo/demo.css' %}" rel="stylesheet" />
 
+  <!-- Vue multiselect -->
   <link rel="stylesheet" href="{% static 'css/vue-multiselect.min.css' %}">
 
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="{% static 'js/plugins/leaflet/leaflet.css' %}">
+
+  <!-- Estilos App -->
   <link rel="stylesheet" href="{% static 'webpack_bundles/styles.css' %}">
 </head>
 
@@ -346,6 +351,9 @@
   <script src="{% static 'js/material-dashboard.js' %}" type="text/javascript"></script>
   <!-- Material Dashboard DEMO methods, don't include it in your project! -->
   <script src="{% static 'demo/demo.js' %}"></script>
+
+    <script src="{% static 'js/plugins/leaflet/leaflet.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
   <script src="{% static 'webpack_bundles/main.js' %}"></script>
 

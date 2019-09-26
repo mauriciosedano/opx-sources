@@ -74,6 +74,7 @@ urlpatterns = [
     path('instrumentos/<str:id>/implementar/', views.implementarFormularioKoboToolbox),
     path('instrumentos/<str:id>/verificar-implementacion/', views.verificarImplementaciónFormulario),
     path('instrumentos/informacion/<str:id>', views.informacionInstrumentoView),
+    path('instrumentos/encuesta/crear', views.creacionEncuestaView),
 
     path('proyectos/', views.listadoProyectosView),
     path('proyectos/list/', views.listadoProyectos),

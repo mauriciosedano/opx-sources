@@ -853,6 +853,10 @@ def informacionInstrumentoView(request, id):
     except ValidationError:
         return HttpResponse("", 400)
 
+def creacionEncuestaView(request):
+
+    return render(request, "instrumentos/creacion-encuesta.html")
+
 # ============================= Proyectos ========================
 
 @api_view(["GET"])

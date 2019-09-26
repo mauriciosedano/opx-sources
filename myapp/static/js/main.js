@@ -49,6 +49,9 @@ import Multiselect from 'vue-multiselect';
 
 Vue.component('multiselect', Multiselect);
 
+// Leaflet
+//require('./plugins/leaflet/leaflet.js');
+
 // Filtro de estado de las entidades
 Vue.filter('estado-entidad', function(value){
 
@@ -99,5 +102,8 @@ require('./components/datosContexto').datoContexto;
 // Información de Encuestas
 require('./components/informacion-encuesta').informacionEncuesta;
 
+// Registro de Encuestas
+require('./components/registro-encuesta').registroEncuesta;
+
 // Estilos
-import './../scss/app/app.scss'
+import './../scss/app/app.scss';
