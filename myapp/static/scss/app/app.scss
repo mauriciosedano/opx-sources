@@ -1,5 +1,6 @@
 @import 'configuration.scss';
 @import 'login.scss';
+@import "instrumentos.scss";
 
 .card .card-header-primary .card-icon, .card .card-header-primary:not(.card-header-icon):not(.card-header-text), .card .card-header-primary .card-text{
     background: $cardHeaderColor;

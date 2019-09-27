@@ -11,7 +11,9 @@ let instrumento = new Vue({
     data: {
         instrumentos: [],
         almacenamientoInstrumento: {},
-        edicionInstrumento: {}
+        edicionInstrumento: {},
+        fase1: true,
+        fase2Cartografia: false
     },
     methods: {
         listadoInstrumentos(){
@@ -30,44 +32,55 @@ let instrumento = new Vue({
         },
         almacenarInstrumento(){
 
-            var queryString = Object.keys(this.almacenamientoInstrumento).map(key => {
-                return key + '=' + this.almacenamientoInstrumento[key]
-            }).join('&');
+            if(this.almacenamientoInstrumento.instrtipo == "2"){
 
-            axios({
-                method: 'post',
-                url: '/instrumentos/store/',
-                data: queryString,
-                headers: {
-                    'Content-type': 'application/x-www-form-urlencoded',
-                    Authorization: getToken()
-                }
-            })
-            .then(response => {
+                this.fase1 = false;
+                this.fase2Cartografia = true;
 
-                $("#agregar-instrumento").modal('hide')
-                this.almacenamientoInstrumento = {};
-                this.listadoInstrumentos();
+                window.setTimeout(() => {
+                    this.cargarMapaRegistro();
+                }, 1000);
 
-                Swal.fire({
-                  title: 'Exito!',
-                  text: 'Instrumento creado satisfactoriamente',
-                  type: 'success',
-                  confirmButtonText: 'Acepto'
-                });
-            })
-            .catch(response => {
+            }
 
-                $("#agregar-instrumento").modal('hide')
-                this.almacenamientoInstrumento = {};
-
-                Swal.fire({
-                  title: 'Error!',
-                  text: 'Ocurrio un error. Por favor intenta de nuevo',
-                  type: 'error',
-                  confirmButtonText: 'Acepto'
-                });
-            });
+//            var queryString = Object.keys(this.almacenamientoInstrumento).map(key => {
+//                return key + '=' + this.almacenamientoInstrumento[key]
+//            }).join('&');
+//
+//            axios({
+//                method: 'post',
+//                url: '/instrumentos/store/',
+//                data: queryString,
+//                headers: {
+//                    'Content-type': 'application/x-www-form-urlencoded',
+//                    Authorization: getToken()
+//                }
+//            })
+//            .then(response => {
+//
+//                $("#agregar-instrumento").modal('hide')
+//                this.almacenamientoInstrumento = {};
+//                this.listadoInstrumentos();
+//
+//                Swal.fire({
+//                  title: 'Exito!',
+//                  text: 'Instrumento creado satisfactoriamente',
+//                  type: 'success',
+//                  confirmButtonText: 'Acepto'
+//                });
+//            })
+//            .catch(response => {
+//
+//                $("#agregar-instrumento").modal('hide')
+//                this.almacenamientoInstrumento = {};
+//
+//                Swal.fire({
+//                  title: 'Error!',
+//                  text: 'Ocurrio un error. Por favor intenta de nuevo',
+//                  type: 'error',
+//                  confirmButtonText: 'Acepto'
+//                });
+//            });
         },
         eliminarInstrumento(id){
 
@@ -253,6 +266,74 @@ let instrumento = new Vue({
                     type: 'warning'
                 });
             });
+        },
+        cargarMapaRegistro(){
+
+            var mymap = L.map('tmmap',  {
+                center: [3.450572, -76.538705],
+                drawControl: false,
+                zoom: 13
+            });
+
+            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibmV1cm9tZWRpYSIsImEiOiJjazExNHZiaWQwNDl1M2Vxc3I5eWo2em5zIn0.UBBEXWDurA8wHC8-8DjdwA',
+            {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 18,
+                id: 'mapbox.streets',
+                accessToken: 'pk.eyJ1IjoibmV1cm9tZWRpYSIsImEiOiJjazExNHZiaWQwNDl1M2Vxc3I5eWo2em5zIn0.UBBEXWDurA8wHC8-8DjdwA'
+            }).addTo(mymap);
+
+            var editableLayers = new L.FeatureGroup();
+
+            mymap.addLayer(editableLayers);
+
+            var options = {
+                // position: 'topright',
+                draw: {
+                    polygon: {
+                        allowIntersection: true, // Restricts shapes to simple polygons
+                        drawError: {
+                            color: '#e1e100', // Color the shape will turn when intersects
+                            message: '<strong>Oh snap!</strong> you can\'t draw that!' // Message that will show when intersect
+                        },
+                        shapeOptions: {
+                            color: '#0CBAEF'
+                        }
+                    },
+                    polyline: false,
+                    circle: false, // Turns off this drawing tool
+                    rectangle: false,
+                    marker: false,
+                    circlemaker: false
+                },
+                edit: {
+                    featureGroup: editableLayers, //REQUIRED!!
+                    //remove: false
+                }
+            };
+
+            var drawControl = new L.Control.Draw(options);
+
+            mymap.addControl(drawControl);
+
+            mymap.on(L.Draw.Event.CREATED, (e) => {
+                type = e.layerType;
+                layer = e.layer;
+                layersCant = Object.keys(editableLayers._layers).length;
+
+                if (type === 'polygon' && layersCant == 0) {
+                    editableLayers.addLayer(layer);
+                    this.almacenamientoInstrumento.areaInteres = layer.toGeoJSON();
+                }
+            });
+
+            /*var polygon = L.polygon([
+                [51.10, -0.10],
+                [51.10, -0.50],
+                [51.50, -0.50],
+                [51.50, -0.10]
+            ]).addTo(mymap);*/
+
         }
     },
     filters: {
