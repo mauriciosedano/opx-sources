@@ -13,7 +13,8 @@ let instrumento = new Vue({
         almacenamientoInstrumento: {},
         edicionInstrumento: {},
         fase1: true,
-        fase2Cartografia: false
+        fase2Cartografia: false,
+        allowRegister: false
     },
     methods: {
         listadoInstrumentos(){
@@ -30,9 +31,11 @@ let instrumento = new Vue({
               this.instrumentos = response.data;
             });
         },
-        almacenarInstrumento(){
+        prepararInstrumento(){
 
-            if(this.almacenamientoInstrumento.instrtipo == "2"){
+            if(this.almacenamientoInstrumento.instrtipo == "1"){
+
+            } else if(this.almacenamientoInstrumento.instrtipo == "2"){
 
                 this.fase1 = false;
                 this.fase2Cartografia = true;
@@ -40,47 +43,65 @@ let instrumento = new Vue({
                 window.setTimeout(() => {
                     this.cargarMapaRegistro();
                 }, 1000);
-
             }
+        },
+        almacenarInstrumento(){
 
-//            var queryString = Object.keys(this.almacenamientoInstrumento).map(key => {
-//                return key + '=' + this.almacenamientoInstrumento[key]
-//            }).join('&');
-//
-//            axios({
-//                method: 'post',
-//                url: '/instrumentos/store/',
-//                data: queryString,
-//                headers: {
-//                    'Content-type': 'application/x-www-form-urlencoded',
-//                    Authorization: getToken()
-//                }
-//            })
-//            .then(response => {
-//
-//                $("#agregar-instrumento").modal('hide')
-//                this.almacenamientoInstrumento = {};
-//                this.listadoInstrumentos();
-//
-//                Swal.fire({
-//                  title: 'Exito!',
-//                  text: 'Instrumento creado satisfactoriamente',
-//                  type: 'success',
-//                  confirmButtonText: 'Acepto'
-//                });
-//            })
-//            .catch(response => {
-//
-//                $("#agregar-instrumento").modal('hide')
-//                this.almacenamientoInstrumento = {};
-//
-//                Swal.fire({
-//                  title: 'Error!',
-//                  text: 'Ocurrio un error. Por favor intenta de nuevo',
-//                  type: 'error',
-//                  confirmButtonText: 'Acepto'
-//                });
-//            });
+            var queryString = Object.keys(this.almacenamientoInstrumento).map(key => {
+
+                if(key == 'areaInteres'){
+
+                    return key + "=" + JSON.stringify(this.almacenamientoInstrumento[key])
+
+                } else{
+
+                    return key + '=' + this.almacenamientoInstrumento[key];
+                }
+
+            }).join('&');
+
+            axios({
+                method: 'post',
+                url: '/instrumentos/store/',
+                data: queryString,
+                headers: {
+                    'Content-type': 'application/x-www-form-urlencoded',
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                $("#agregar-instrumento").modal('hide')
+                this.almacenamientoInstrumento = {};
+                this.listadoInstrumentos();
+
+                this.fase1 = true;
+                this.fase2Cartografia = false;
+                this.allowRegister = false;
+
+                Swal.fire({
+                  title: 'Exito!',
+                  text: 'Instrumento creado satisfactoriamente',
+                  type: 'success',
+                  confirmButtonText: 'Acepto'
+                });
+            })
+            .catch(response => {
+
+                $("#agregar-instrumento").modal('hide')
+                this.almacenamientoInstrumento = {};
+
+                this.fase1 = true;
+                this.fase2Cartografia = false;
+                this.allowRegister = false;
+
+                Swal.fire({
+                  title: 'Error!',
+                  text: 'Ocurrio un error. Por favor intenta de nuevo',
+                  type: 'error',
+                  confirmButtonText: 'Acepto'
+                });
+            });
         },
         eliminarInstrumento(id){
 
@@ -319,11 +340,24 @@ let instrumento = new Vue({
             mymap.on(L.Draw.Event.CREATED, (e) => {
                 type = e.layerType;
                 layer = e.layer;
-                layersCant = Object.keys(editableLayers._layers).length;
 
-                if (type === 'polygon' && layersCant == 0) {
+                if (type === 'polygon' && this.cantidadAreasMapa(editableLayers) == 0) {
+
                     editableLayers.addLayer(layer);
                     this.almacenamientoInstrumento.areaInteres = layer.toGeoJSON();
+                }
+
+                if(this.cantidadAreasMapa(editableLayers) == 1){
+
+                    this.allowRegister = true;
+                }
+            });
+
+            mymap.on(L.Draw.Event.DELETED, (e) => {
+
+                if(this.cantidadAreasMapa(editableLayers) == 0){
+
+                    this.allowRegister = false;
                 }
             });
 
@@ -334,6 +368,10 @@ let instrumento = new Vue({
                 [51.50, -0.10]
             ]).addTo(mymap);*/
 
+        },
+        cantidadAreasMapa(editableLayers){
+
+            return Object.keys(editableLayers._layers).length;
         }
     },
     filters: {

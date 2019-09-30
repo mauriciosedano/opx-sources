@@ -75,6 +75,7 @@
                   </button>
                 </div>
                 <div class="modal-body">
+
                   <!-- Formulario de registro -->
                   <form action="" v-if="fase1">
                     <div class="row">
@@ -102,19 +103,25 @@
                       </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!almacenamientoInstrumento.instrtipo || !almacenamientoInstrumento.instrnombre" class="btn" @click="almacenarInstrumento()" type="button">Guardar</button>
+                          <button :disabled="!almacenamientoInstrumento.instrtipo || !almacenamientoInstrumento.instrnombre" class="btn" @click="prepararInstrumento()" type="button">Guardar</button>
                         </div>
                       </div>
                     </div>
                   </form>
+
                   <!-- Mapa para instrumento Tipo Cartografía -->
                   <div id="tmmap" v-if="fase2Cartografia"></div>
+
+                  <!-- Botón de almacenamiento de instrumentos -->
+                  <div align="center">
+                    <button class="btn" v-if="allowRegister" @click.prevent="almacenarInstrumento()"> Guardar </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-        <!-- Edición de Instrumento -->
+          <!-- Edición de Instrumento -->
           <div class="modal fade" id="editar-instrumento">
             <div class="modal-dialog">
               <div class="modal-content">

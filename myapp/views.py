@@ -766,8 +766,6 @@ def listadoInstrumentos(request):
 
     response = JsonResponse(list(instrumentos), safe = False)
 
-    response['Set-Cookie'] = "pruebas=123456"
-
     return response
 
 @csrf_exempt
@@ -775,10 +773,21 @@ def listadoInstrumentos(request):
 @permission_classes((IsAuthenticated,))
 def almacenamientoInstrumento(request):
 
-    instrIdExterno = "12345"
     instrTipo = request.POST.get('instrtipo')
     instrNombre = request.POST.get('instrnombre')
     instrDescripcion = request.POST.get('instrdescripcion')
+
+    if(instrTipo is None):
+        return JsonResponse({'status': 'error'}, status = 400)
+
+    if instrTipo == "2":
+
+        areaInteres = json.loads(request.POST.get('areaInteres'))
+        instrIdExterno = almacenarProyectoTM(instrNombre, areaInteres)
+
+    else:
+
+        instrIdExterno = "12345"
 
     instrumento = models.Instrumento(instridexterno = instrIdExterno, instrtipo = instrTipo, instrnombre = instrNombre, instrdescripcion = instrDescripcion)
 
@@ -791,6 +800,7 @@ def almacenamientoInstrumento(request):
 
     except ValidationError as e:
         return JsonResponse(dict(e), safe = True, status = 400)
+
 
 @csrf_exempt
 @api_view(["DELETE"])
@@ -835,6 +845,65 @@ def actualizarInstrumento(request, instrid):
     except ValidationError as e:
 
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
+
+def informacionInstrumento(request, id):
+
+    try:
+        instrumento = models.Instrumento.objects.get(pk = id)
+
+        if instrumento.instrtipo == 1:
+
+            informacion = informacionFormularioKoboToolbox(instrumento.instridexterno)
+
+            if(isinstance(informacion, dict)):
+
+                data = {
+                    'status': 'success',
+                    'code': 200,
+                    'info': informacion
+                }
+
+            else:
+
+                data = {
+                    'status': 'error',
+                    'code': 500
+                }
+
+        elif instrumento.instrtipo == 2:
+
+            informacion = informacionProyectoTM(instrumento.instridexterno)
+
+            if (isinstance(informacion, dict)):
+
+                data = {
+                    'status': 'success',
+                    'code': 200,
+                    'info': informacion
+                }
+
+            else:
+
+                data = {
+                    'status': 'error',
+                    'code': 500
+                }
+
+    except ObjectDoesNotExist:
+
+        data = {
+            'status': 'error',
+            'code': 404
+        }
+
+    except ValidationError:
+
+        data = {
+            'status': 'error',
+            'code': 400
+        }
+
+    return JsonResponse(data, status = data['code'])
 
 def listadoInstrumentosView(request):
 
@@ -1195,55 +1264,6 @@ def listadoTareasView(request):
 
 # ================= Kobo Toolbox ========================
 
-def informacionInstrumento(request, id):
-
-    try:
-        instrumento = models.Instrumento.objects.get(pk = id)
-
-        if instrumento.instrtipo == 1:
-
-            informacion = informacionFormularioKoboToolbox(instrumento.instridexterno)
-            print(type(informacion))
-
-            if(isinstance(informacion, dict)):
-
-                data = {
-                    'status': 'success',
-                    'code': 200,
-                    'info': informacion
-                }
-
-            else:
-
-                data = {
-                    'status': 'error',
-                    'code': 500
-                }
-
-        else:
-
-            data = {
-                'status': 'error',
-                'code': 404
-            }
-
-    except ObjectDoesNotExist:
-
-        data = {
-            'status': 'error',
-            'code': 404
-        }
-
-    except ValidationError:
-
-        data = {
-            'status': 'error',
-            'code': 400
-        }
-
-    return JsonResponse(data, status = data['code'])
-
-
 def informacionFormularioKoboToolbox(id):
 
     headers = {'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d'}
@@ -1424,3 +1444,51 @@ def constructorKobo(request):
     if(response.status == 200):
 
         return HttpResponse(response.read())
+
+# ==================== Tasking Manager ==================
+
+def almacenarProyectoTM(nombre, areaInteres):
+
+    headers = {
+        'Authorization': 'Token T1RNM09UQTJOUS5FRzF0Z1EuYnd4V2hIRjYwOHlENnY3ZVdZcWpnSmRpY3FJ',
+        'Accept-Language': 'en',
+        'Content-Type': 'application/json; charset=UTF-8'
+    }
+
+    info = {
+        "areaOfInterest": {
+            "type": "FeatureCollection",
+            "features": [areaInteres]
+        },
+        "projectName": nombre,
+        "arbitraryTasks": True
+    }
+
+    client = http.client.HTTPConnection('oim-opc.pre', 30802, timeout = 10)
+    client.request('PUT', '/api/v1/admin/project', json.dumps(info), headers)
+    response = client.getresponse()
+
+    if response.status == 201:
+        return json.loads(response.read())['projectId']
+
+    else:
+        return False
+
+def informacionProyectoTM(id):
+    headers = {
+        'Authorization': 'Token T1RNM09UQTJOUS5FRzF0Z1EuYnd4V2hIRjYwOHlENnY3ZVdZcWpnSmRpY3FJ'
+    }
+
+    client = http.client.HTTPConnection('oim-opc.pre', 30802, timeout = 10)
+    client.request('GET', '/api/v1/project/' + id, {}, headers)
+    response = client.getresponse()
+
+    if (response.status != 200):
+
+        data =  False
+
+    else:
+
+        data =  json.loads(response.read())
+
+    return data
