@@ -196,8 +196,15 @@ def actualizarUsuario(request, userid):
         usuario.rolid = request.POST.get('rolid')
         usuario.userfullname = request.POST.get('userfullname')
 
-
         usuario.full_clean()
+
+        # Contexto Passlib
+        pwd_context = CryptContext(
+            schemes=["pbkdf2_sha256"],
+            default="pbkdf2_sha256",
+            pbkdf2_sha256__default_rounds=30000
+        )
+        usuario.password = pwd_context.encrypt(usuario.password)
 
         usuario.save()
 
@@ -857,6 +864,8 @@ def informacionInstrumento(request, id):
 
             if(isinstance(informacion, dict)):
 
+                informacion['tipoInstrumento'] = instrumento.instrtipo
+
                 data = {
                     'status': 'success',
                     'code': 200,
@@ -875,6 +884,8 @@ def informacionInstrumento(request, id):
             informacion = informacionProyectoTM(instrumento.instridexterno)
 
             if (isinstance(informacion, dict)):
+
+                informacion['tipoInstrumento'] = instrumento.instrtipo
 
                 data = {
                     'status': 'success',

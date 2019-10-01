@@ -361,13 +361,6 @@ let instrumento = new Vue({
                 }
             });
 
-            /*var polygon = L.polygon([
-                [51.10, -0.10],
-                [51.10, -0.50],
-                [51.50, -0.50],
-                [51.50, -0.10]
-            ]).addTo(mymap);*/
-
         },
         cantidadAreasMapa(editableLayers){
 

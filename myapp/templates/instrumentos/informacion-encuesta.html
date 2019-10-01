@@ -14,7 +14,9 @@
                   <!--<p class="card-category"> Gestión de Instrumento </p>-->
                 </div>
                 <div class="card-body">
-                  <div class="table-responsive">
+
+                  {% if instrumento.instrtipo == 1 %}
+                    <div class="table-responsive">
                     <table class="table">
                       <thead class=" text-primary">
                         <th></th>
@@ -32,6 +34,10 @@
                       </tbody>
                     </table>
                   </div>
+                  {% elif instrumento.instrtipo == 2 %}
+                    <div id="tmmap"></div>
+                  {% endif %}
+
                 </div>
               </div>
             </div>

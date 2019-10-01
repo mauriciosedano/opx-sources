@@ -49,6 +49,7 @@
                                 <a @click.prevent="eliminarInstrumento(instrumento.instrid)" class="dropdown-item" href="#"> Eliminación </a>
                                 <a v-if="instrumento.instrtipo == 1" @click.prevent="implementarEncuesta(instrumento.instrid)" class="dropdown-item" href="#"> Implementar </a>
                                 <a v-if="instrumento.instrtipo == 1" @click.prevent="informacionEncuesta(instrumento.instrid)" class="dropdown-item" href="#"> Información </a>
+                                <a v-if="instrumento.instrtipo == 2" class="dropdown-item" :href="'/instrumentos/informacion/' + instrumento.instrid"> Información </a>
                               </div>
                             </div>
                           </td>
