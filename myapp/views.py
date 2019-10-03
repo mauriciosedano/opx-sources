@@ -1087,6 +1087,43 @@ def actualizarProyecto(request, proyid):
 
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def detalleProyecto(request, proyid):
+
+    try:
+
+        proyecto = models.Proyecto.objects.get(pk = proyid)
+
+        # Obtención de Tareas
+        tareas = models.Tarea.objects.filter(proyid__exact = proyid)
+
+        data = {
+            'code': 200,
+            'detail':{
+              'proyecto': serializers.serialize('python', [proyecto])[0],
+              'tareas': serializers.serialize('python', tareas)
+            },
+            'status': 'success'
+        }
+
+    except ObjectDoesNotExist:
+
+        data = {
+            'code': 404,
+            'status': "error",
+        }
+
+    except ValidationError:
+
+        data = {
+            'code': 400,
+            'status': 'error'
+        }
+
+    return JsonResponse(data, status = data['code'], safe = False)
+
+
 def listadoProyectosView(request):
 
     return render(request, 'proyectos/listado.html')

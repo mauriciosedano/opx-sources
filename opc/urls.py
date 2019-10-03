@@ -81,6 +81,7 @@ urlpatterns = [
     path('proyectos/store/', views.almacenamientoProyecto),
     path('proyectos/delete/<str:proyid>/', views.eliminarProyecto),
     path('proyectos/<str:proyid>', views.actualizarProyecto),
+    path('proyectos/detail/<str:proyid>', views.detalleProyecto),
 
     path('roles/', views.listadoRolesView),
     path('roles/list/', views.listadoRoles),

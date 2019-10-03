@@ -88,14 +88,20 @@ let informacionEncuesta = new Vue({
         },
         informacionCartografia(info){
 
-            console.log(info);
-            /*{
-                center: ,
-                drawControl: false,
-                zoom: 13
-            }*/
+            // Obtención de Coordenadas
+            let coordenadasTM = info.areaOfInterest.coordinates[0][0];
+            let coordenadas = [];
 
-            var mymap = L.map('tmmap').setView([3.450572, -76.538705], 13);
+            for(let i = 0; i < coordenadasTM.length; i++){
+
+                coordenadas.push(coordenadasTM[i].reverse());
+            }
+
+            // Obtención del centro de las Coordenadas
+            let centroCoordenadas = this.obtenerCentroCoordenadas(coordenadas);
+
+            // Configuración del Mapa
+            var mymap = L.map('tmmap').setView(centroCoordenadas, 16);
 
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibmV1cm9tZWRpYSIsImEiOiJjazExNHZiaWQwNDl1M2Vxc3I5eWo2em5zIn0.UBBEXWDurA8wHC8-8DjdwA',
             {
@@ -105,18 +111,46 @@ let informacionEncuesta = new Vue({
                 accessToken: 'pk.eyJ1IjoibmV1cm9tZWRpYSIsImEiOiJjazExNHZiaWQwNDl1M2Vxc3I5eWo2em5zIn0.UBBEXWDurA8wHC8-8DjdwA'
             }).addTo(mymap);
 
-            let coordenadasTM = info.areaOfInterest.coordinates[0][0];
-            let coordenadas = [];
-
-           for(let i = 0; i < coordenadasTM.length; i++){
-
-            coordenadas.push(coordenadasTM[i].reverse());
-           }
-
-           console.log(coordenadas);
-
             var polygon = L.polygon(coordenadas).addTo(mymap);
 
+        },
+        obtenerCentroCoordenadas(data){
+
+            if (!(data.length > 0)){
+                return false;
+            }
+
+            var num_coords = data.length;
+
+            var X = 0.0;
+            var Y = 0.0;
+            var Z = 0.0;
+
+            for(i = 0; i < data.length; i++){
+                var lat = data[i][0] * Math.PI / 180;
+                var lon = data[i][1] * Math.PI / 180;
+
+                var a = Math.cos(lat) * Math.cos(lon);
+                var b = Math.cos(lat) * Math.sin(lon);
+                var c = Math.sin(lat);
+
+                X += a;
+                Y += b;
+                Z += c;
+            }
+
+            X /= num_coords;
+            Y /= num_coords;
+            Z /= num_coords;
+
+            var lon = Math.atan2(Y, X);
+            var hyp = Math.sqrt(X * X + Y * Y);
+            var lat = Math.atan2(Z, hyp);
+
+            var newX = (lat * 180 / Math.PI);
+            var newY = (lon * 180 / Math.PI);
+
+            return new Array(newX, newY);
         }
     }
 });
