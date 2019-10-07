@@ -792,6 +792,10 @@ def almacenamientoInstrumento(request):
         areaInteres = json.loads(request.POST.get('areaInteres'))
         instrIdExterno = almacenarProyectoTM(instrNombre, areaInteres)
 
+        if not instrIdExterno:
+            instrIdExterno = "12345"
+
+
     else:
 
         instrIdExterno = "12345"
@@ -1498,7 +1502,7 @@ def constructorKobo(request):
 def almacenarProyectoTM(nombre, areaInteres):
 
     headers = {
-        'Authorization': 'Token T1RNM09UQTJOUS5FRzF0Z1EuYnd4V2hIRjYwOHlENnY3ZVdZcWpnSmRpY3FJ',
+        'Authorization': 'Token T1RNM09UQTJOUS5FSDBwNXcuQmdDeWx0aHVueEpreEE5N1VXcUNXamdTNjJj',
         'Accept-Language': 'en',
         'Content-Type': 'application/json; charset=UTF-8'
     }
