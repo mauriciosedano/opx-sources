@@ -17,12 +17,18 @@ from django.contrib import admin
 from django.urls import path
 
 from myapp import views
+from myapp.view import auth
 
 urlpatterns = [
     #path('admin/', admin.site.urls),
 
     path('', views.loginView),
     path('login/', views.login),
+
+    path('auth/password-reset/', auth.passwordReset),
+    path('auth/password-reset-verification/', auth.passwordResetVerification),
+    path('auth/password-reset/<str:token>', auth.passwordResetConfirmation),
+    path('auth/password-resett/', auth.passwordResetDone),
 
     path('usuarios/', views.listadoUsuariosView),
     path('usuarios/list/', views.listadoUsuarios),

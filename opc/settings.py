@@ -165,3 +165,11 @@ SIMPLE_JWT = {
 }
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+
+# SMTP CONFIGURATION
+
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = "587"
+EMAIL_HOST_USER = "inge4neuromedia@gmail.com"
+EMAIL_HOST_PASSWORD = "neuromedia2018"
+EMAIL_USE_TLS = True

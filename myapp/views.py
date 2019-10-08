@@ -947,9 +947,26 @@ def creacionEncuestaView(request):
 @permission_classes((IsAuthenticated,))
 def listadoProyectos(request):
 
-    proyectos =  models.Proyecto.objects.all().values()
+    search = request.GET.get('search')
 
-    return JsonResponse(list(proyectos), safe = False)
+    # Consultando proyectos
+    if search is None:
+
+        proyectos =  models.Proyecto.objects.all()
+
+    else:
+        proyectos = models.Proyecto.objects.filter(proynombre__icontains = search)
+
+    # Serializando QueryDict
+    proyectos = serializers.serialize('python', proyectos)
+
+    data = {
+        'code': 200,
+        'status': 'success',
+        'proyectos': proyectos
+    }
+
+    return JsonResponse(data, safe = False)
 
 @csrf_exempt
 @api_view(["POST"])
