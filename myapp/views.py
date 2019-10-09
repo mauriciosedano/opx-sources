@@ -963,7 +963,7 @@ def listadoProyectos(request):
     data = {
         'code': 200,
         'status': 'success',
-        'proyectos': proyectos
+        'proyectos': proyectos.values
     }
 
     return JsonResponse(data, safe = False)

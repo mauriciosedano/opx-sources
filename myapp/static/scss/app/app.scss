@@ -2,6 +2,12 @@
 @import 'login.scss';
 @import "instrumentos.scss";
 
+body.template-logout{
+    .main-panel{
+        width: 100% !important;
+    }
+}
+
 .card .card-header-primary .card-icon, .card .card-header-primary:not(.card-header-icon):not(.card-header-text), .card .card-header-primary .card-text{
     background: $cardHeaderColor;
 }

@@ -105,5 +105,8 @@ require('./components/datosContexto').datoContexto;
 // Información de Encuestas
 require('./components/informacion-encuesta').informacionEncuesta;
 
+// Recuperación de contraseña
+require('./components/passwordReset').passwordReset;
+
 // Estilos
 import './../scss/app/app.scss';

@@ -29,7 +29,10 @@ proyecto = new Vue({
             })
             .then(response => {
 
-                this.proyectos = response.data;
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.proyectos = response.data.proyectos;
+                }
             });
         },
         almacenarProyecto(){

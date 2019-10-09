@@ -173,3 +173,6 @@ EMAIL_PORT = "587"
 EMAIL_HOST_USER = "inge4neuromedia@gmail.com"
 EMAIL_HOST_PASSWORD = "neuromedia2018"
 EMAIL_USE_TLS = True
+
+URL_DEV_APP = "http://localhost:7000/"
+URL_PROD_APP = "http://167.99.11.184:90/"

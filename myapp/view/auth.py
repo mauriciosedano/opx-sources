@@ -30,6 +30,7 @@ def passwordReset(request):
     return render(request, "auth/password-reset.html")
 
 @api_view(["POST"])
+@permission_classes((AllowAny,))
 def passwordResetVerification(request):
 
     try:
@@ -60,7 +61,7 @@ def passwordResetVerification(request):
             usuario.save()
 
             # Mensaje del correo
-            message = "<p> El token es: " + token + "</p>"
+            message = "<p> Cambia tu clave <a href='" + settings.URL_DEV_APP + "auth/password-reset/" + token + "'> Aquí </a> </p>"
 
             # Envío de correo electrónico
             send_mail(
@@ -99,12 +100,12 @@ def passwordResetConfirmation(request, token):
         status = False
 
     data = {
-        'status': status
+        'status': status,
+        'token': token
     }
 
     return render(request, "auth/password-reset-confirmation.html", context = data)
 
-@csrf_exempt
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def passwordResetDone(request):
@@ -114,7 +115,7 @@ def passwordResetDone(request):
         token = request.POST.get('token')
         password = request.POST.get('password')
 
-        if password is None or password is None:
+        if token is None or password is None:
 
             data = {
                 'code': 400,

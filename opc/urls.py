@@ -28,7 +28,7 @@ urlpatterns = [
     path('auth/password-reset/', auth.passwordReset),
     path('auth/password-reset-verification/', auth.passwordResetVerification),
     path('auth/password-reset/<str:token>', auth.passwordResetConfirmation),
-    path('auth/password-resett/', auth.passwordResetDone),
+    path('auth/password-reset-done/', auth.passwordResetDone),
 
     path('usuarios/', views.listadoUsuariosView),
     path('usuarios/list/', views.listadoUsuarios),
