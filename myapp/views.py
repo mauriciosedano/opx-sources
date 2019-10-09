@@ -957,13 +957,10 @@ def listadoProyectos(request):
     else:
         proyectos = models.Proyecto.objects.filter(proynombre__icontains = search)
 
-    # Serializando QueryDict
-    proyectos = serializers.serialize('python', proyectos)
-
     data = {
         'code': 200,
         'status': 'success',
-        'proyectos': proyectos.values
+        'proyectos': list(proyectos.order_by('-proyfechacreacion').values())
     }
 
     return JsonResponse(data, safe = False)

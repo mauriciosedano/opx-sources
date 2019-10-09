@@ -61,7 +61,7 @@ def passwordResetVerification(request):
             usuario.save()
 
             # Mensaje del correo
-            message = "<p> Cambia tu clave <a href='" + settings.URL_DEV_APP + "auth/password-reset/" + token + "'> Aquí </a> </p>"
+            message = "<p> Cambia tu clave <a href='" + settings.URL_APP + "auth/password-reset/" + token + "'> Aquí </a> </p>"
 
             # Envío de correo electrónico
             send_mail(

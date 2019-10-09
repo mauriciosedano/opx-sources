@@ -2,6 +2,7 @@ let passwordReset = new Vue({
     el: '#password-reset',
     delimitters: ['[[', ']]'],
     data: {
+        loading: false,
         email: '',
         reset: {
             password: ''
@@ -12,6 +13,8 @@ let passwordReset = new Vue({
 
             let data = "email=" + this.email
 
+            this.loader(true);
+
             axios({
                 url: '/auth/password-reset-verification/',
                 method: 'POST',
@@ -21,6 +24,8 @@ let passwordReset = new Vue({
                 }
             })
             .then(response => {
+
+                this.loader(false);
 
                 Swal.fire({
                     title: 'Éxito',
@@ -35,6 +40,8 @@ let passwordReset = new Vue({
             })
             .catch(response => {
 
+                this.loading = false;
+
                 Swal.fire({
                     title: 'Error',
                     text: 'La cuenta de correo proveida no existe en nuestro sistema',
@@ -48,6 +55,8 @@ let passwordReset = new Vue({
                 return key + "=" + this.reset[key];
             }).join('&');
 
+            this.loader(true);
+
             axios({
                 url: '/auth/password-reset-done/',
                 method: 'POST',
@@ -57,6 +66,8 @@ let passwordReset = new Vue({
                 }
             })
             .then(response => {
+
+                this.loader(false);
 
                 Swal.fire({
                     title: 'Exito',
@@ -71,12 +82,18 @@ let passwordReset = new Vue({
             })
             .catch(response => {
 
+               this.loader(false);
+
                Swal.fire({
                    title: 'Error',
                    text: 'Ocurrio un error. Por favor intenta de nuevo',
                    type: 'error'
                });
             });
+        },
+        loader(status){
+
+            this.loading = status;
         }
     }
 })
