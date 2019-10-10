@@ -50,36 +50,27 @@ def loginView(request):
 @permission_classes((AllowAny,))
 def login(request):
 
-    username = request.POST.get("username")
-    password = request.POST.get("password")
+    try:
 
-    if username is None or password is None:
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-        data = {
-           'status': 'error',
-           'message': 'Por favor especifique usuario y contraseña',
-           'code': 400
-        }
-
-    else:
-
-        user = models.Usuario.objects.get(useremail__exact = username)
-
-        #.filter(password__exact = password)
-        #user = authenticate(email=username, password=password)
-
-        if user is None:
+        if username is None or password is None:
 
             data = {
-                'status': 'error',
-                'message': 'Usuario y/o contraseña incorrecta',
-                'code': 404
+               'status': 'error',
+               'message': 'Por favor especifique usuario y contraseña',
+               'code': 400
             }
 
         else:
 
-            # Si el correo electrónico existe
+            user = models.Usuario.objects.get(useremail__exact = username)
 
+            #.filter(password__exact = password)
+            #user = authenticate(email=username, password=password)
+
+            # Si el correo electrónico existe
             # Contexto Passlib
             pwd_context = CryptContext(
                 schemes=["pbkdf2_sha256"],
@@ -122,6 +113,14 @@ def login(request):
                     'message': 'Usuario y/o contraseña incorrecta',
                     'code': 404
                 }
+
+    except ObjectDoesNotExist:
+
+        data = {
+            'status': 'error',
+            'message': 'Usuario y/o contraseña incorrecta',
+            'code': 404
+        }
 
     return JsonResponse(data, status = data['code'])
 
