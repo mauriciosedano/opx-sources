@@ -9,6 +9,7 @@ from myapp import models
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import connection
+from django.db.utils import IntegrityError
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.http.response import JsonResponse
 from django.shortcuts import render
@@ -20,6 +21,7 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated
 )
+
 # from rest_framework.response import Response
 # from rest_framework.status import (
 #     HTTP_400_BAD_REQUEST,
@@ -61,12 +63,12 @@ def login(request):
 
     else:
 
-        user = models.Usuario.objects.filter(useremail__exact = username)
+        user = models.Usuario.objects.get(useremail__exact = username)
 
         #.filter(password__exact = password)
         #user = authenticate(email=username, password=password)
 
-        if len(user) == 0:
+        if user is None:
 
             data = {
                 'status': 'error',
@@ -76,33 +78,39 @@ def login(request):
 
         else:
 
+            # Si el correo electrónico existe
+
             # Contexto Passlib
             pwd_context = CryptContext(
                 schemes=["pbkdf2_sha256"],
                 default="pbkdf2_sha256",
                 pbkdf2_sha256__default_rounds=30000
             )
-            passwordVerification = pwd_context.verify(password, user[0].password)
+            passwordVerification = pwd_context.verify(password, user.password)
 
             if(passwordVerification):
 
-                refresh = RefreshToken.for_user(user[0])
+                # Generación de tokens
+                refresh = RefreshToken.for_user(user)
 
+                # Almacenando los permisos del usuario en la sesión
                 request.session['permisos'] = []
 
-                permisos = models.FuncionRol.objects.filter(rolid__exact = user[0].rolid);
+                permisos = models.FuncionRol.objects.filter(rolid__exact = user.rolid);
 
                 for i in permisos:
                     request.session['permisos'].append(str(i.accionid))
 
-                print(request.session['permisos'])
+                # Consultando el nombre del rol del usuario autenticado
+                rol = models.Rol.objects.get(pk = user.rolid)
 
                 data = {
                     'token': str(refresh.access_token),
                     'user': {
-                        'id': user[0].userid,
-                        'name': user[0].userfullname,
-                        'email': user[0].useremail
+                        'id': user.userid,
+                        'name': user.userfullname,
+                        'email': user.useremail,
+                        'rol': rol.rolname
                     },
                     'code': 200
                 }
@@ -134,7 +142,7 @@ def listadoUsuarios(request):
 
 @csrf_exempt
 @api_view(["POST"])
-@permission_classes((IsAuthenticated,))
+@permission_classes((AllowAny,))
 def almacenarUsuario(request):
 
     useremail = request.POST.get('useremail')
@@ -159,11 +167,34 @@ def almacenarUsuario(request):
         usuario.password = pwd_context.encrypt(usuario.password)
 
         usuario.save()
-        data = serializers.serialize('python', [usuario])
-        return JsonResponse(data, safe = False, status = 201)
 
-    except ValidationError as e:       
-        return JsonResponse(dict(e), safe = True, status = 400)
+        data = {
+            'code': 201,
+            'usuario': serializers.serialize('python', [usuario])[0],
+            'status': 'success'
+        }
+
+        #return JsonResponse(data, safe = False, status = 201)
+
+    except ValidationError as e:
+
+        data = {
+            'code': 400,
+            'errors': dict(e),
+            'status': 'error'
+        }
+
+        #return JsonResponse(dict(e), safe = True, status = 400)
+
+    except IntegrityError as e:
+
+        data = {
+            'code': 500,
+            'errors': str(e),
+            'status': 'error'
+        }
+
+    return JsonResponse(data, safe = False, status=data['code'])
 
 @csrf_exempt
 @api_view(["DELETE"])
