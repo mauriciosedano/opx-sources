@@ -51,7 +51,7 @@ def listadoProyectos(request):
         proyectos = proyectos.order_by('-proyfechacreacion')
 
         # Paginación
-        paginator = Paginator(proyectos, 2)
+        paginator = Paginator(proyectos, 10)
 
         # Validación de página
         if page is None:
