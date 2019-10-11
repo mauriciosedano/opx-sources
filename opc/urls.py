@@ -17,7 +17,11 @@ from django.contrib import admin
 from django.urls import path
 
 from myapp import views
-from myapp.view import auth
+from myapp.view import (
+    auth,
+    equipo,
+    proyecto
+)
 
 urlpatterns = [
     #path('admin/', admin.site.urls),
@@ -55,14 +59,15 @@ urlpatterns = [
     path('decisiones/<str:desiid>', views.actualizarDecision),
 
     path('decisiones-proyecto/', views.listadoDecisionesProyecto),
-    path('decisiones-proyecto/store/', views.almacenarDecisionProyecto),
+    path('decisiones-proyecto/store/', proyecto.almacenarDecisionProyecto),
     path('decisiones-proyecto/delete/<str:desproid>/', views.eliminarDecisionProyecto),
     path('decisiones-proyecto/<str:desproid>', views.actualizarDecisionProyecto),
 
-    path('equipos/', views.listadoEquipos),
-    path('equipos/store/', views.almacenamientoEquipo),
-    path('equipos/delete/<str:equid>/', views.eliminarEquipo),
-    path('equipos/<str:equid>', views.actualizarEquipo),
+    path('equipos/<str:proyid>', equipo.equipoProyecto),
+    path('equipos/<str:proyid>/usuarios-disponibles/', equipo.usuariosDisponiblesProyecto),
+    path('equipos/store/', equipo.almacenamientoEquipo),
+    path('equipos/delete/<str:equid>', equipo.eliminarEquipo),
+    #path('equipos/<str:equid>', equipo.actualizarEquipo),
 
     path('acciones/list/', views.listadoAcciones),
 
@@ -82,12 +87,12 @@ urlpatterns = [
     path('instrumentos/informacion/<str:id>', views.informacionInstrumentoView),
     path('instrumentos/encuesta/crear', views.creacionEncuestaView),
 
-    path('proyectos/', views.listadoProyectosView),
-    path('proyectos/list/', views.listadoProyectos),
-    path('proyectos/store/', views.almacenamientoProyecto),
-    path('proyectos/delete/<str:proyid>/', views.eliminarProyecto),
-    path('proyectos/<str:proyid>', views.actualizarProyecto),
-    path('proyectos/detail/<str:proyid>', views.detalleProyecto),
+    path('proyectos/', proyecto.listadoProyectosView),
+    path('proyectos/list/', proyecto.listadoProyectos),
+    path('proyectos/store/', proyecto.almacenamientoProyecto),
+    path('proyectos/delete/<str:proyid>/', proyecto.eliminarProyecto),
+    path('proyectos/<str:proyid>', proyecto.actualizarProyecto),
+    path('proyectos/detail/<str:proyid>', proyecto.detalleProyecto),
 
     path('roles/', views.listadoRolesView),
     path('roles/list/', views.listadoRoles),

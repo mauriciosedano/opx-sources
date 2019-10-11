@@ -22,22 +22,14 @@ from rest_framework.permissions import (
     IsAuthenticated
 )
 
+from myapp.view.utilidades import dictfetchall
+
 # from rest_framework.response import Response
 # from rest_framework.status import (
 #     HTTP_400_BAD_REQUEST,
 #     HTTP_404_NOT_FOUND,
 #     HTTP_200_OK
 # )
-
-#========================== Utilidades =============================
-
-def dictfetchall(cursor):
-    "Return all rows from a cursor as a dict"
-    columns = [col[0] for col in cursor.description]
-    return [
-        dict(zip(columns, row))
-        for row in cursor.fetchall()
-    ]
 
 # ================================ Login ================================
 
@@ -635,77 +627,6 @@ def actualizarDecisionProyecto(request, desproid):
     except ValidationError as e:
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
-# ========================== Equipos ==============================
-
-@api_view(["GET"])
-@permission_classes((IsAuthenticated,))
-def listadoEquipos(request):
-
-    equipos = models.Equipo.objects.all().values()
-
-    return JsonResponse(list(equipos), safe = False)
-
-@csrf_exempt
-@api_view(["POST"])
-@permission_classes((IsAuthenticated,))
-def almacenamientoEquipo(request):
-
-    userid = request.POST.get('userid')
-    proyid = request.POST.get('proyid')
-    miembroEstado = request.POST.get('miembroestado')
-
-    equipo = models.Equipo(userid = userid, proyid = proyid, miembroestado = miembroEstado)
-
-    try:
-        equipo.full_clean()
-
-        equipo.save()
-        data = serializers.serialize('python', [equipo])
-        return JsonResponse(data, safe = False, status = 201)
-
-    except ValidationError as e:
-        return JsonResponse(dict(e), safe = True, status = 400)
-
-@csrf_exempt
-@api_view(["DELETE"])
-@permission_classes((IsAuthenticated,))
-def eliminarEquipo(request, equid):
-
-    try:
-        equipo = models.Equipo.objects.get(pk = equid)
-
-        equipo.delete()
-
-        return JsonResponse({'status': 'success'})
-
-    except ObjectDoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'El usuario no existe'}, safe = True, status = 404)
-
-    except ValidationError:
-        return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
-
-@csrf_exempt
-@api_view(["POST"])
-@permission_classes((IsAuthenticated,))
-def actualizarEquipo(request, equid):
-    try:
-        equipo = models.Equipo.objects.get(pk=equid)
-
-        equipo.userid = request.POST.get('userid')
-        equipo.proyid = request.POST.get('proyid')
-
-        equipo.full_clean()
-
-        equipo.save()
-
-        return JsonResponse(serializers.serialize('python', [equipo]), safe=False)
-
-    except ObjectDoesNotExist:
-        return JsonResponse({'status': 'error'}, status=404)
-
-    except ValidationError as e:
-        return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
-
 # ========================= Funciones Rol =========================
 
 @api_view(["GET"])
@@ -971,220 +892,21 @@ def creacionEncuestaView(request):
 
     return render(request, "instrumentos/creacion-encuesta.html")
 
-# ============================= Proyectos ========================
-
-@api_view(["GET"])
-@permission_classes((IsAuthenticated,))
-def listadoProyectos(request):
-
-    search = request.GET.get('search')
-
-    # Consultando proyectos
-    if search is None:
-
-        proyectos =  models.Proyecto.objects.all()
-
-    else:
-        proyectos = models.Proyecto.objects.filter(proynombre__icontains = search)
-
-    data = {
-        'code': 200,
-        'status': 'success',
-        'proyectos': list(proyectos.order_by('-proyfechacreacion').values())
-    }
-
-    return JsonResponse(data, safe = False)
-
-@csrf_exempt
-@api_view(["POST"])
-@permission_classes((IsAuthenticated,))
-def almacenamientoProyecto(request):
-
-    #return HttpResponse(request.POST.get('proynombre'))
-
-    proyNombre = request.POST.get('proynombre')
-    proyDescripcion = request.POST.get('proydescripcion')
-    proyIdExterno = 12345
-    proyFechaCreacion = datetime.today()
-    proyFechaCierre = request.POST.get('proyfechacierre')
-    proyEstado = 1
-    decisiones = json.loads(request.POST.get('decisiones'))
-    contextos = json.loads(request.POST.get('contextos'))
-
-    proyecto = models.Proyecto(proynombre = proyNombre, proydescripcion = proyDescripcion, proyidexterno = proyIdExterno, proyfechacreacion = proyFechaCreacion, proyfechacierre = proyFechaCierre, proyestado = proyEstado)
-
-    try:
-        proyecto.full_clean()
-
-        proyecto.save()
-
-        almacenarDecisionProyecto(proyecto, decisiones)
-        almacenarContextosProyecto(proyecto, contextos)
-
-        data = serializers.serialize('python', [proyecto])
-        return JsonResponse(data, safe = False, status = 201)
-
-    except ValidationError as e:
-        return JsonResponse(dict(e), safe = True, status = 400)
-
-def almacenarDecisionProyecto(proyecto, decisiones):
-
-    try:
-        for decision in decisiones:
-
-            decisionProyecto = None
-
-            decisionProyecto = models.DecisionProyecto(proyid = proyecto.proyid, desiid = decision)
-
-            decisionProyecto.save()
-
-        return True
-
-    except ValidationError as e:
-        return False
-
-def almacenarContextosProyecto(proyecto, contextos):
-
-    try:
-        for contexto in contextos:
-
-            contextoProyecto = models.ContextoProyecto(proyid = proyecto.proyid, contextoid = contexto)
-
-            contextoProyecto.save()
-
-            del contextoProyecto
-
-        return True
-
-    except ValidationError as e:
-        return False
-
-@csrf_exempt
-@api_view(["DELETE"])
-@permission_classes((IsAuthenticated,))
-def eliminarProyecto(request, proyid):
-
-    try:
-        proyecto = models.Proyecto.objects.get(pk = proyid)
-
-        proyecto.delete()
-
-        return JsonResponse({'status': 'success'})
-
-    except ObjectDoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'El usuario no existe'}, safe = True, status = 404)
-
-    except ValidationError:
-        return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
-
-@csrf_exempt
-@api_view(["POST"])
-@permission_classes((IsAuthenticated,))
-def actualizarProyecto(request, proyid):
-    try:
-        proyecto = models.Proyecto.objects.get(pk=proyid)
-
-        proyecto.proynombre = request.POST.get('proynombre')
-        proyecto.proydescripcion = request.POST.get('proydescripcion')
-        decisiones = json.loads(request.POST.get('decisiones'))
-        contextos = json.loads(request.POST.get('contextos'))
-
-        proyecto.full_clean()
-
-        proyecto.save()
-
-        # ================ Actualizacion de decisiones ===============================
-        decisionesProyecto = models.DecisionProyecto.objects.filter(proyid__exact = proyecto.proyid)
-
-        if decisionesProyecto.exists():
-
-            for decisionProyecto in decisionesProyecto:
-
-                decisionProyecto.delete()
-
-        if len(decisiones) > 0:
-
-            for decision in decisiones:
-
-                decisionProyecto = models.DecisionProyecto(proyid = proyecto.proyid, desiid = decision)
-                decisionProyecto.save()
-
-        # ============== Actualización de contextos ================================
-
-        contextosProyecto = models.ContextoProyecto.objects.filter(proyid__exact = proyecto.proyid)
-
-        if contextosProyecto.exists():
-
-            for contextoProyecto in contextosProyecto:
-
-                contextoProyecto.delete()
-
-        if len(contextos) > 0:
-
-            for contexto in contextos:
-
-                contextoProyecto = models.ContextoProyecto(proyid = proyecto.proyid, contextoid = contexto)
-                contextoProyecto.save()
-
-        return JsonResponse(serializers.serialize('python', [proyecto]), safe=False)
-
-    except ObjectDoesNotExist:
-        return JsonResponse({'status': 'error'}, status=404)
-
-    except ValidationError as e:
-
-        return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
-
-@api_view(['GET'])
-@permission_classes((IsAuthenticated,))
-def detalleProyecto(request, proyid):
-
-    try:
-
-        proyecto = models.Proyecto.objects.get(pk = proyid)
-
-        # Obtención de Tareas
-        tareas = models.Tarea.objects.filter(proyid__exact = proyid)
-
-        data = {
-            'code': 200,
-            'detail':{
-              'proyecto': serializers.serialize('python', [proyecto])[0],
-              'tareas': serializers.serialize('python', tareas)
-            },
-            'status': 'success'
-        }
-
-    except ObjectDoesNotExist:
-
-        data = {
-            'code': 404,
-            'status': "error",
-        }
-
-    except ValidationError:
-
-        data = {
-            'code': 400,
-            'status': 'error'
-        }
-
-    return JsonResponse(data, status = data['code'], safe = False)
-
-
-def listadoProyectosView(request):
-
-    return render(request, 'proyectos/listado.html')
-
 # ============================ Roles =============================
 
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def listadoRoles(request):
 
-    roles =  models.Rol.objects.all().values()
+    roles = models.Rol.objects.all().values()
 
-    return JsonResponse(list(roles), safe = False)
+    data = {
+        'code': 200,
+        'roles': list(roles),
+        'status': 'success'
+    }
+
+    return JsonResponse(data, safe = False, status = data['code'])
 
 @csrf_exempt
 @api_view(["POST"])
@@ -1270,10 +992,6 @@ def permisosRolView(request, rolid):
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def listadoTareas(request):
-
-    #tareas =  models.Tarea.objects.all().values()
-
-    #return JsonResponse(list(tareas), safe = False)
 
     query = "select v1.tareas.tareid, v1.tareas.tarenombre, v1.tareas.taretipo, v1.tareas.tarerestriccant, v1.instrumentos.instrid, v1.instrumentos.instrnombre, v1.proyectos.proyid, v1.proyectos.proynombre from v1.tareas inner join v1.proyectos on v1.tareas.proyid = v1.proyectos.proyid inner join v1.instrumentos on v1.tareas.instrid = v1.instrumentos.instrid"
 
