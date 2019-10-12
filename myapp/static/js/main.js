@@ -7,7 +7,7 @@ window.getToken = function(){
 
         return 'Bearer ' + userInfo.token;
 
-    } else{
+    } else if(window.location.pathname != '/'){
 
         return location.href = '/';
     }
@@ -107,6 +107,9 @@ require('./components/informacion-encuesta').informacionEncuesta;
 
 // Recuperación de contraseña
 require('./components/passwordReset').passwordReset;
+
+// Equipos de Proyectos
+require('./components/equipos').equipo;
 
 // Estilos
 import './../scss/app/app.scss';

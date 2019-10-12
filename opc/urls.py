@@ -67,6 +67,7 @@ urlpatterns = [
     path('equipos/<str:proyid>/usuarios-disponibles/', equipo.usuariosDisponiblesProyecto),
     path('equipos/store/', equipo.almacenamientoEquipo),
     path('equipos/delete/<str:equid>', equipo.eliminarEquipo),
+    path('equipos/proyecto/<str:proyid>', equipo.equipoProyectoView),
     #path('equipos/<str:equid>', equipo.actualizarEquipo),
 
     path('acciones/list/', views.listadoAcciones),

@@ -1,0 +1,84 @@
+{% extends "layouts/main.html" %}
+
+{% block content %}
+
+    <div class="row" id="gestion-equipo">
+        <!-- Equipo del proyecto -->
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header card-header-primary">
+              <h4 class="card-title ">Equipo de proyecto</h4>
+              <p class="card-category"> Equipo de Proyecto </p>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead class=" text-primary">
+                    <th>
+                      Nombre
+                    </th>
+                    <th></th>
+                  </thead>
+                  <tbody>
+                    <tr v-for="eq in equipo">
+                      <td>
+                        [[ eq.userfullname ]]
+                      </td>
+                      <td>
+                        <div class="dropdown">
+                          <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                          </a>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a @click.prevent="eliminarIntegrante(eq.equid)" class="dropdown-item" href="#"> Eliminación </a>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Usuarios Disponibles -->
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header card-header-primary">
+              <h4 class="card-title "> Usuarios Disponibles </h4>
+              <p class="card-category"> Usuarios Disponibles </p>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead class=" text-primary">
+                    <th>
+                      Nombre
+                    </th>
+                    <th></th>
+                  </thead>
+                  <tbody>
+                    <tr v-for="u in usuariosDisponibles">
+                      <td>
+                        [[ u.userfullname ]]
+                      </td>
+                      <td>
+                        <div class="dropdown">
+                          <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                          </a>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a @click.prevent="addIntegrante(u.userid)" class="dropdown-item" href="#"> Agregar </a>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+{% endblock %}

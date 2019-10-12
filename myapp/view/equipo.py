@@ -72,7 +72,8 @@ def almacenamientoEquipo(request):
 
     userid = request.POST.get('userid')
     proyid = request.POST.get('proyid')
-    miembroEstado = request.POST.get('miembroestado')
+    miembroEstado = 1
+    #miembroEstado = request.POST.get('miembroestado')
 
     equipo = models.Equipo(userid = userid, proyid = proyid, miembroestado = miembroEstado)
 
@@ -169,7 +170,7 @@ def usuariosDisponiblesProyecto(request, proyid):
 
         proyecto = models.Proyecto.objects.get(pk = proyid)
 
-        query = "select u.userid, u.userfullname from v1.usuarios u where u.userid not in (select e.userid from v1.equipos e where e.proyid = '" + proyid + "')"
+        query = "select u.userid, u.userfullname from v1.usuarios u where u.rolid = '0be58d4e-6735-481a-8740-739a73c3be86' and u.userid not in (select e.userid from v1.equipos e where e.proyid = '" + proyid + "')"
 
         with connection.cursor() as cursor:
             cursor.execute(query)
@@ -199,3 +200,16 @@ def usuariosDisponiblesProyecto(request, proyid):
         }
 
     return JsonResponse(data, safe = False, status = data['code'])
+
+def equipoProyectoView(request, proyid):
+
+    try:
+
+        models.Proyecto.objects.get(pk = proyid)
+        return render(request, "proyectos/equipo.html")
+
+    except ObjectDoesNotExist:
+        return HttpResponse("", status = 404)
+
+    except ValidationError:
+        return HttpResponse("", status = 400)

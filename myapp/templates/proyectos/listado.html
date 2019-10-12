@@ -59,6 +59,7 @@
                               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <a @click.prevent="edicionProyecto = proyecto" data-toggle="modal" data-target="#editar-proyecto" class="dropdown-item" href="#"> Edición </a>
                                 <a @click="eliminarProyecto(proyecto.proyid)" class="dropdown-item" href="#"> Eliminación </a>
+                                <a class="dropdown-item" :href="'/equipos/proyecto/' + proyecto.proyid"> Equipo </a>
                               </div>
                             </div>
                           </td>
