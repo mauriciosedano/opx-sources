@@ -26,7 +26,10 @@ let rol = new Vue({
             })
             .then(response => {
 
-                this.roles = response.data;
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.roles = response.data.roles;
+                }
             });
         },
         almacenarRol(){
