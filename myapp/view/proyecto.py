@@ -6,6 +6,7 @@ from passlib.context import CryptContext
 
 from myapp import models
 
+from django.conf import settings
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.paginator import(
@@ -19,6 +20,7 @@ from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
+from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import (
@@ -34,18 +36,41 @@ from myapp.view.utilidades import dictfetchall
 @permission_classes((IsAuthenticated,))
 def listadoProyectos(request):
 
+    #Decodificando el access token
+    tokenBackend = TokenBackend(settings.SIMPLE_JWT['ALGORITHM'], settings.SIMPLE_JWT['SIGNING_KEY'], settings.SIMPLE_JWT['VERIFYING_KEY'])
+    tokenDecoded = tokenBackend.decode(request.META['HTTP_AUTHORIZATION'].split()[1], verify = True)
+
     try:
+        #consultando el usuario
+        user = models.Usuario.objects.get(pk = tokenDecoded['user_id'])
 
         search = request.GET.get('search')
         page = request.GET.get('page')
 
         # Consultando proyectos
-        if search is None:
 
-            proyectos =  models.Proyecto.objects.all()
+        # Consulta de proyectos para proyectista
+        if str(user.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a':
+            proyectos = models.Proyecto.objects.filter(proypropietario__exact = user.userid)
+
+        # Consulta de proyectos para voluntarios
+        elif str(user.rolid) == '0be58d4e-6735-481a-8740-739a73c3be86':
+
+            proyectosAsignados = models.Equipo.objects.filter(userid__exact = user.userid)
+            proyectosAsignadosID = []
+
+            for p in proyectosAsignados:
+                proyectosAsignadosID.append(p.proyid)
+
+            proyectos = models.Proyecto.objects.filter(pk__in = proyectosAsignadosID)
+
 
         else:
-            proyectos = models.Proyecto.objects.filter(proynombre__icontains = search)
+            proyectos = models.Proyecto.objects.filter(proynombre = 'qwerty')
+
+        if search:
+
+            proyectos = proyectos.filter(proynombre__icontains = search)
 
         # Especificando orden
         proyectos = proyectos.order_by('-proyfechacreacion')
@@ -97,8 +122,9 @@ def almacenamientoProyecto(request):
     proyEstado = 1
     decisiones = json.loads(request.POST.get('decisiones'))
     contextos = json.loads(request.POST.get('contextos'))
+    propietario = request.POST.get('proypropietario')
 
-    proyecto = models.Proyecto(proynombre = proyNombre, proydescripcion = proyDescripcion, proyidexterno = proyIdExterno, proyfechacreacion = proyFechaCreacion, proyfechacierre = proyFechaCierre, proyestado = proyEstado)
+    proyecto = models.Proyecto(proynombre = proyNombre, proydescripcion = proyDescripcion, proyidexterno = proyIdExterno, proyfechacreacion = proyFechaCreacion, proyfechacierre = proyFechaCierre, proyestado = proyEstado, proypropietario = propietario)
 
     try:
         proyecto.full_clean()
@@ -108,11 +134,31 @@ def almacenamientoProyecto(request):
         almacenarDecisionProyecto(proyecto, decisiones)
         almacenarContextosProyecto(proyecto, contextos)
 
-        data = serializers.serialize('python', [proyecto])
-        return JsonResponse(data, safe = False, status = 201)
+        data = serializers.serialize('python', [proyecto])[0]
+
+        data = {
+            'code': 201,
+            'proyecto': data,
+            'status': 'success'
+        }
 
     except ValidationError as e:
-        return JsonResponse(dict(e), safe = True, status = 400)
+
+        data = {
+            'code': 400,
+            'errors': dict(e),
+            'status': 'error'
+        }
+
+    except IntegrityError as e:
+
+        data = {
+            'code': 500,
+            'message': str(e),
+            'status': 'success'
+        }
+
+    return JsonResponse(data, safe = False, status = data['code'])
 
 def almacenarDecisionProyecto(proyecto, decisiones):
 

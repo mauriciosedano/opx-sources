@@ -118,6 +118,7 @@ class Proyecto(models.Model):
     proyfechacreacion = models.DateTimeField()
     proyfechacierre = models.DateTimeField(null = True, blank = True)
     proyestado = models.IntegerField()
+    proypropietario = models.UUIDField()
 
     class Meta:
         db_table = '"v1"."proyectos"'

@@ -37,6 +37,8 @@ proyecto = new Vue({
         },
         almacenarProyecto(){
 
+            this.almacenamientoProyecto.proypropietario = getUser().id;
+
             var queryString = Object.keys(this.almacenamientoProyecto).map(key => {
 
                 if(key == 'decisiones'){
