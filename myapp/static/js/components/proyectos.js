@@ -15,10 +15,13 @@ proyecto = new Vue({
         decisiones: [],
         edicionProyecto: {},
         proyectos: [],
-        contextos: []
+        contextos: [],
+        loading: false
     },
     methods: {
         listadoProyectos(){
+
+            this.loader(true);
 
             axios({
                 method: 'GET',
@@ -29,6 +32,8 @@ proyecto = new Vue({
             })
             .then(response => {
 
+                this.loader(false);
+
                 if(response.data.code == 200 && response.data.status == 'success'){
 
                     this.proyectos = response.data.proyectos;
@@ -37,7 +42,9 @@ proyecto = new Vue({
         },
         almacenarProyecto(){
 
-            this.almacenamientoProyecto.proypropietario = getUser().id;
+            //this.almacenamientoProyecto.proypropietario = getUser().id;
+
+            this.loader(true);
 
             var queryString = Object.keys(this.almacenamientoProyecto).map(key => {
 
@@ -86,6 +93,8 @@ proyecto = new Vue({
                 this.almacenamientoProyecto = {};
                 this.listadoProyectos();
 
+                this.loader(false);
+
                 Swal.fire({
                   title: 'Exito!',
                   text: 'Proyecto creado satisfactoriamente',
@@ -95,7 +104,9 @@ proyecto = new Vue({
             })
             .catch(response => {
 
-                $("#agregar-proyecto").modal('hide')
+                $("#agregar-proyecto").modal('hide');
+
+                this.loader(false);
 
                 Swal.fire({
                   title: 'Error!',
@@ -120,6 +131,8 @@ proyecto = new Vue({
 
               if (result.value) {
 
+                this.loader(true);
+
                 axios({
                     method: 'delete',
                     url: '/proyectos/delete/' + id,
@@ -131,6 +144,8 @@ proyecto = new Vue({
 
                     this.listadoProyectos();
 
+                    this.loader(true);
+
                     Swal.fire(
                       'Eliminado!',
                       'El proyecto fue eliminado de forma exitosa',
@@ -140,6 +155,8 @@ proyecto = new Vue({
                 .catch(response => {
 
                      this.listadoProyectos();
+
+                     this.loader(false);
 
                      Swal.fire(
                       'Error!',
@@ -151,6 +168,8 @@ proyecto = new Vue({
             });
         },
         editarProyecto(){
+
+            this.loader(true);
 
             var queryString = Object.keys(this.edicionProyecto).map(key => {
 
@@ -195,17 +214,20 @@ proyecto = new Vue({
             })
             .then(response => {
 
+                    this.listadoProyectos();
                     $("#editar-proyecto").modal('hide');
+                    this.loader(false);
+
                     Swal.fire(
                         'Exito!',
                         'Proyecto modificado satisfactoriamente',
                         'success'
                     );
-                    this.listadoProyectos();
             })
             .catch(() => {
 
                 $("#editar-proyecto").modal('hide');
+                this.loader(false);
 
                 Swal.fire(
                     'Error!',
@@ -246,6 +268,10 @@ proyecto = new Vue({
 
                 this.contextos = response.data;
             });
+        },
+        loader(status){
+
+            this.loading = status;
         }
     }
 })

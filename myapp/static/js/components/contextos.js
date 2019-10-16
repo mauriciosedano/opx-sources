@@ -10,10 +10,13 @@ let contexto = new Vue({
     data: {
         contextos: [],
         edicionContexto: {},
-        almacenamientoContexto: {}
+        almacenamientoContexto: {},
+        loading: false
     },
     methods: {
         listadoContextos(){
+
+            this.loader(true);
 
             axios({
                 method: 'GET',
@@ -25,9 +28,12 @@ let contexto = new Vue({
             .then(response => {
 
                 this.contextos = response.data;
+                this.loader(false);
             });
         },
         almacenarContexto(){
+
+            this.loader(true);
 
             var queryString = Object.keys(this.almacenamientoContexto).map(key => {
                 return key + '=' + this.almacenamientoContexto[key]
@@ -48,6 +54,8 @@ let contexto = new Vue({
                 this.almacenamientoContexto = {};
                 this.listadoContextos();
 
+                this.loader(false);
+
                 Swal.fire({
                   title: 'Exito!',
                   text: 'Contexto creado satisfactoriamente',
@@ -59,6 +67,8 @@ let contexto = new Vue({
 
                 $("#agregar-contexto").modal('hide')
                 this.almacenamientoContexto = {};
+
+                this.loader(false);
 
                 Swal.fire({
                   title: 'Error!',
@@ -83,6 +93,8 @@ let contexto = new Vue({
 
               if (result.value) {
 
+                this.loader(true);
+
                 axios({
                     method: 'DELETE',
                     url: '/contextos/delete/' + id,
@@ -93,6 +105,7 @@ let contexto = new Vue({
                 .then(response => {
 
                     this.listadoContextos();
+                    this.loader(false);
 
                     Swal.fire(
                       'Eliminado!',
@@ -103,6 +116,7 @@ let contexto = new Vue({
                 .catch(response => {
 
                      this.listadoContextos();
+                     this.loader(false);
 
                      Swal.fire(
                       'Error!',
@@ -114,6 +128,8 @@ let contexto = new Vue({
             });
         },
         editarContexto(){
+
+            this.loader(true);
 
             var queryString = Object.keys(this.edicionContexto).map(key => {
                 return key + '=' + this.edicionContexto[key];
@@ -130,19 +146,20 @@ let contexto = new Vue({
             })
             .then(response => {
 
-                    $("#editar-contexto").modal('hide');
+                this.listadoContextos();
+                $("#editar-contexto").modal('hide');
+                this.loader(false);
 
-                    Swal.fire(
-                        'Exito!',
-                        'Contexto modificado satisfactoriamente',
-                        'success'
-                    );
-
-                    this.listadoContextos();
+                Swal.fire(
+                    'Exito!',
+                    'Contexto modificado satisfactoriamente',
+                    'success'
+                );
             })
             .catch(() => {
 
                 $("#editar-contexto").modal('hide');
+                this.loader(false);
 
                 Swal.fire(
                     'Error!',
@@ -150,6 +167,10 @@ let contexto = new Vue({
                     'error'
                 );
             });
+        },
+        loader(status){
+
+            this.loading = status;
         }
     }
 })

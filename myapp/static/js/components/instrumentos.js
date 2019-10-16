@@ -14,10 +14,13 @@ let instrumento = new Vue({
         edicionInstrumento: {},
         fase1: true,
         fase2Cartografia: false,
-        allowRegister: false
+        allowRegister: false,
+        loading: false
     },
     methods: {
         listadoInstrumentos(){
+
+            this.loader(true);
 
             axios({
                 method: 'GET',
@@ -29,6 +32,7 @@ let instrumento = new Vue({
             .then(response => {
 
               this.instrumentos = response.data;
+              this.loader(false);
             });
         },
         prepararInstrumento(){
@@ -46,6 +50,8 @@ let instrumento = new Vue({
             }
         },
         almacenarInstrumento(){
+
+            this.loader(true);
 
             var queryString = Object.keys(this.almacenamientoInstrumento).map(key => {
 
@@ -79,6 +85,8 @@ let instrumento = new Vue({
                 this.fase2Cartografia = false;
                 this.allowRegister = false;
 
+                this.loader(false);
+
                 Swal.fire({
                   title: 'Exito!',
                   text: 'Instrumento creado satisfactoriamente',
@@ -94,6 +102,8 @@ let instrumento = new Vue({
                 this.fase1 = true;
                 this.fase2Cartografia = false;
                 this.allowRegister = false;
+
+                this.loader(false);
 
                 Swal.fire({
                   title: 'Error!',
@@ -118,6 +128,8 @@ let instrumento = new Vue({
 
               if (result.value) {
 
+                this.loader(true);
+
                 axios({
                     method: 'DELETE',
                     url: '/instrumentos/delete/' + id,
@@ -129,6 +141,8 @@ let instrumento = new Vue({
 
                     this.listadoInstrumentos();
 
+                    this.loader(false);
+
                     Swal.fire(
                       'Eliminado!',
                       'El instrumento fue eliminado de forma exitosa',
@@ -138,6 +152,8 @@ let instrumento = new Vue({
                 .catch(response => {
 
                      this.listadoInstrumentos();
+
+                     this.loader(false);
 
                      Swal.fire(
                       'Error!',
@@ -149,6 +165,8 @@ let instrumento = new Vue({
             });
         },
         editarInstrumento(){
+
+            this.loader(true);
 
             var queryString = Object.keys(this.edicionInstrumento).map(key => {
 
@@ -167,17 +185,20 @@ let instrumento = new Vue({
             })
             .then(response => {
 
-                    $("#editar-instrumento").modal('hide');
-                    Swal.fire(
-                        'Exito!',
-                        'Instrumento modificado satisfactoriamente',
-                        'success'
-                    );
-                    this.listadoInstrumentos();
+                $("#editar-instrumento").modal('hide');
+                this.listadoInstrumentos();
+                this.loader(false);
+
+                Swal.fire(
+                    'Exito!',
+                    'Instrumento modificado satisfactoriamente',
+                    'success'
+                );
             })
             .catch(() => {
 
                 $("#editar-instrumento").modal('hide');
+                this.loader(false);
 
                 Swal.fire(
                     'Error!',
@@ -213,6 +234,8 @@ let instrumento = new Vue({
         },
         async implementarEncuesta(id){
 
+            this.loader(true);
+
             await this.verificarImplementacionEncuesta(id)
             .then(response => {
 
@@ -227,6 +250,8 @@ let instrumento = new Vue({
                     })
                     .then(response => {
 
+                        this.loader(false);
+
                         Swal.fire({
                             title: 'Exito',
                             text: 'La encuesta fue implementada exitosamente',
@@ -235,6 +260,8 @@ let instrumento = new Vue({
 
                     })
                     .catch( error => {
+
+                        this.loader(false);
 
                         Swal.fire({
                             title: 'Error',
@@ -245,6 +272,8 @@ let instrumento = new Vue({
 
                 } else{
 
+                    this.loader(false);
+
                     Swal.fire({
                         title: 'Implementado',
                         text: 'El instrumento ya se encuentra implementado',
@@ -253,6 +282,8 @@ let instrumento = new Vue({
                 }
             })
             .catch( error => {
+
+                this.loader(false);
 
                 Swal.fire({
                     title: 'Error',
@@ -263,6 +294,8 @@ let instrumento = new Vue({
         },
         async informacionEncuesta(id){
 
+            this.loader(true);
+
             await this.verificarImplementacionEncuesta(id)
             .then(response => {
 
@@ -272,6 +305,8 @@ let instrumento = new Vue({
 
                 } else{
 
+                    this.loader(false);
+
                     Swal.fire({
                         title: 'Error',
                         text: 'El formulario no se encuentra implementado',
@@ -280,6 +315,8 @@ let instrumento = new Vue({
                 }
             })
             .catch(error => {
+
+                this.loader(false);
 
                 Swal.fire({
                     title: 'Error',
@@ -365,6 +402,10 @@ let instrumento = new Vue({
         cantidadAreasMapa(editableLayers){
 
             return Object.keys(editableLayers._layers).length;
+        },
+        loader(status){
+
+            this.loading = status;
         }
     },
     filters: {

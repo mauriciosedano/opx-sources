@@ -39,8 +39,8 @@
 
                               </a>
                               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a @click.prevent="edicionRol = rol" data-toggle="modal" data-target="#editar-rol" class="dropdown-item" href="#"> Edición </a>
-                                <a @click.prevent="eliminarRol(rol.rolid)" class="dropdown-item" href="#"> Eliminación </a>
+                                <!--<a @click.prevent="edicionRol = rol" data-toggle="modal" data-target="#editar-rol" class="dropdown-item" href="#"> Edición </a>
+                                <a @click.prevent="eliminarRol(rol.rolid)" class="dropdown-item" href="#"> Eliminación </a>-->
                                 <a :href="'/roles/permisos/' + rol.rolid" class="dropdown-item" > Permisos </a>
                               </div>
                             </div>

@@ -13,10 +13,13 @@ let usuario = new Vue({
         usuarios: [],
         edicionUsuario: {},
         almacenamientoUsuario: {},
-        roles: []
+        roles: [],
+        loading: false
     },
     methods: {
         listadoUsuarios(){
+
+            this.loader(true);
 
             axios({
                 method: 'GET',
@@ -28,9 +31,12 @@ let usuario = new Vue({
             .then(response => {
 
                 this.usuarios = response.data;
+                this.loader(false);
             });
         },
         almacenarUsuario(){
+
+            this.loader(true);
 
             var queryString = Object.keys(this.almacenamientoUsuario).map(key => {
                 return key + '=' + this.almacenamientoUsuario[key]
@@ -51,6 +57,8 @@ let usuario = new Vue({
                 this.almacenamientoUsuario = {};
                 this.listadoUsuarios();
 
+                this.loader(false);
+
                 Swal.fire({
                   title: 'Exito!',
                   text: 'Usuario creado satisfactoriamente',
@@ -62,6 +70,8 @@ let usuario = new Vue({
 
                 $("#agregar-usuario").modal('hide')
                 this.almacenamientoUsuario = {};
+
+                this.loader(false);
 
                 Swal.fire({
                   title: 'Error!',
@@ -86,6 +96,8 @@ let usuario = new Vue({
 
               if (result.value) {
 
+                this.loader(true);
+
                 axios({
                     method: "DELETE",
                     url: '/usuarios/delete/' + id,
@@ -97,6 +109,8 @@ let usuario = new Vue({
 
                     this.listadoUsuarios();
 
+                    this.loader(false);
+
                     Swal.fire(
                       'Eliminado!',
                       'El usuario fue eliminado de forma exitosa',
@@ -105,7 +119,9 @@ let usuario = new Vue({
                 })
                 .catch(response => {
 
-                             this.listadoUsuarios();
+                     this.listadoUsuarios();
+
+                     this.loader(false);
 
                      Swal.fire(
                       'Error!',
@@ -117,6 +133,8 @@ let usuario = new Vue({
             });
         },
         editarUsuario(){
+
+            this.loader(true);
 
             var queryString = Object.keys(this.edicionUsuario).map(key => {
                 return key + '=' + this.edicionUsuario[key];
@@ -137,6 +155,8 @@ let usuario = new Vue({
 
                     this.listadoUsuarios();
 
+                    this.loader(false);
+
                     Swal.fire(
                         'Exito!',
                         'Usuario modificado satisfactoriamente',
@@ -146,6 +166,8 @@ let usuario = new Vue({
             .catch(() => {
 
                 $("#editar-usuario").modal('hide');
+
+                this.loader(false);
 
                 Swal.fire(
                     'Error!',
@@ -164,8 +186,15 @@ let usuario = new Vue({
                 }
             }).then(response => {
 
-                this.roles = response.data;
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.roles = response.data.roles;
+                }
             });
+        },
+        loader(status){
+
+            this.loading = status;
         }
     },
     filters: {

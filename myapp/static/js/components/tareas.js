@@ -15,10 +15,13 @@ let tarea = new Vue({
         edicionTarea: {},
         almacenamientoTarea: {},
         proyectos: [],
-        instrumentos: []
+        instrumentos: [],
+        loading: false
     },
     methods: {
         listadoTareas(){
+
+            this.loader(true);
 
             axios({
                 method: 'GET',
@@ -30,9 +33,12 @@ let tarea = new Vue({
             .then(response => {
 
                 this.tareas = response.data;
+                this.loader(false);
             });
         },
         almacenarTarea(){
+
+            this.loader(true);
 
             var queryString = Object.keys(this.almacenamientoTarea).map(key => {
                 return key + '=' + this.almacenamientoTarea[key]
@@ -53,6 +59,8 @@ let tarea = new Vue({
                 this.almacenamientoTarea = {};
                 this.listadoTareas();
 
+                this.loader(false);
+
                 Swal.fire({
                   title: 'Exito!',
                   text: 'Tarea creada satisfactoriamente',
@@ -64,6 +72,8 @@ let tarea = new Vue({
 
                 $("#agregar-tarea").modal('hide')
                 this.almacenamientoTarea = {};
+
+                this.loader(false);
 
                 Swal.fire({
                   title: 'Error!',
@@ -88,6 +98,8 @@ let tarea = new Vue({
 
               if (result.value) {
 
+                this.loader(true);
+
                 axios({
                     method: 'DELETE',
                     url: '/tareas/delete/' + id,
@@ -96,6 +108,8 @@ let tarea = new Vue({
                     }
                 })
                 .then(response => {
+
+                    this.loader(false);
 
                     this.listadoTareas();
 
@@ -109,6 +123,8 @@ let tarea = new Vue({
 
                      this.listadoTareas();
 
+                     this.loader(false);
+
                      Swal.fire(
                       'Error!',
                       'Ocurrio un error por favor intenta de nuevo',
@@ -119,6 +135,8 @@ let tarea = new Vue({
             });
         },
         editarTarea(){
+
+            this.loader(true);
 
             var queryString = Object.keys(this.edicionTarea).map(key => {
 
@@ -153,8 +171,8 @@ let tarea = new Vue({
             .then(response => {
 
                 $("#editar-tarea").modal('hide');
-
                 this.listadoTareas();
+                this.loader(false);
 
                 Swal.fire(
                     'Exito!',
@@ -165,6 +183,7 @@ let tarea = new Vue({
             .catch(() => {
 
                 $("#editar-tarea").modal('hide');
+                this.loader(false);
 
                 Swal.fire(
                     'Error!',
@@ -184,7 +203,10 @@ let tarea = new Vue({
             })
             .then(response => {
 
-                this.proyectos = response.data;
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.proyectos = response.data.proyectos;
+                }
             });
         },
         listadoInstrumentos(){
@@ -200,6 +222,10 @@ let tarea = new Vue({
 
               this.instrumentos = response.data;
             });
+        },
+        loader(status){
+
+            this.loading = status;
         }
     },
     filters: {

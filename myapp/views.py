@@ -756,9 +756,15 @@ def almacenamientoInstrumento(request):
     try:
         instrumento.full_clean()
 
-        instrumento.save()
-        data = serializers.serialize('python', [instrumento])
-        return JsonResponse(data, safe = False, status = 201)
+        if instrumento.instridexterno == '12345':
+
+            return JsonResponse({}, safe = False, status = 500)
+
+        else:
+
+            instrumento.save()
+            data = serializers.serialize('python', [instrumento])
+            return JsonResponse(data, safe = False, status = 201)
 
     except ValidationError as e:
         return JsonResponse(dict(e), safe = True, status = 400)
@@ -791,7 +797,7 @@ def actualizarInstrumento(request, instrid):
         instrumento = models.Instrumento.objects.get(pk=instrid)
 
         #instrumento.instridexterno = request.POST.get('instridexterno')
-        instrumento.instrtipo = request.POST.get('instrtipo')
+        #instrumento.instrtipo = request.POST.get('instrtipo')
         instrumento.instrnombre = request.POST.get('instrnombre')
         instrumento.instrdescripcion = request.POST.get('instrdescripcion')
 

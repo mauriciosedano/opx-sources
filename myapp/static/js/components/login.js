@@ -2,7 +2,8 @@ let login = new Vue({
     delimiters: ['[[', ']]'],
     el: '#login',
     data: {
-        loginInfo: {}
+        loginInfo: {},
+        loading: false
     },
     methods: {
         login(){
@@ -16,6 +17,8 @@ let login = new Vue({
                 });
 
             } else{
+
+                this.loader(true);
 
                 let queryString = Object.keys(this.loginInfo).map(key => {
 
@@ -35,6 +38,8 @@ let login = new Vue({
 
                     sessionStorage.setItem('userinfo', JSON.stringify(response.data));
 
+                    this.loader(false);
+
                     /*document.cookie = "csrftoken=wG2xUInpzPR787Bz8FXDIONSDYoemwW3;domain=http://kf.oim-opc.pre;path=/"
                     document.cookie = "kobonaut=y4rd7ywp5yz57fjmnv1ca8wzpc1in09m;domain=http://kf.oim-opc.pre;path=/"
                     document.cookie = "selectedAssetUid=aJypqscWMCu3J3URaN2JKf;domain=http://kf.oim-opc.pre;path=/"*/
@@ -43,6 +48,8 @@ let login = new Vue({
                 })
                 .catch(error => {
 
+                    this.loader(false);
+
                     Swal.fire({
                         title: 'Error',
                         text: 'Usuario y/o contraseña incorrecto(s)',
@@ -50,6 +57,10 @@ let login = new Vue({
                     });
                 });
             }
+        },
+        loader(status){
+
+            this.loading = status;
         }
     }
 })

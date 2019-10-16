@@ -12,10 +12,13 @@ let decision = new Vue({
         decisiones: [],
         edicionDecision: {},
         almacenamientoDecision: {},
-        usuarios: []
+        usuarios: [],
+        loading: false
     },
     methods: {
         listadoDecisiones(){
+
+            this.loader(true);
 
             axios({
                 method: 'GET',
@@ -27,9 +30,12 @@ let decision = new Vue({
             .then(response => {
 
                 this.decisiones = response.data;
+                this.loader(false);
             });
         },
         almacenarDecision(){
+
+            this.loader(true);
 
             this.almacenamientoDecision.userid = getUser().id;
 
@@ -52,6 +58,8 @@ let decision = new Vue({
                 this.almacenamientoDecision = {};
                 this.listadoDecisiones();
 
+                this.loader(false);
+
                 Swal.fire({
                   title: 'Exito!',
                   text: 'Decisión creada satisfactoriamente',
@@ -63,6 +71,8 @@ let decision = new Vue({
 
                 $("#agregar-decision").modal('hide')
                 this.almacenamientoDecision = {};
+
+                this.loader(false);
 
                 Swal.fire({
                   title: 'Error!',
@@ -87,6 +97,8 @@ let decision = new Vue({
 
               if (result.value) {
 
+                this.loader(true);
+
                 axios({
                     method: 'DELETE',
                     url: '/decisiones/delete/' + id,
@@ -97,6 +109,7 @@ let decision = new Vue({
                 .then(response => {
 
                     this.listadoDecisiones();
+                    this.loader(false);
 
                     Swal.fire(
                       'Eliminado!',
@@ -107,6 +120,7 @@ let decision = new Vue({
                 .catch(response => {
 
                      this.listadoDecisiones();
+                     this.loader(false);
 
                      Swal.fire(
                       'Error!',
@@ -118,6 +132,8 @@ let decision = new Vue({
             });
         },
         editarDecision(){
+
+            this.loader(true);
 
             var queryString = Object.keys(this.edicionDecision).map(key => {
                 return key + '=' + this.edicionDecision[key];
@@ -134,17 +150,20 @@ let decision = new Vue({
             })
             .then(response => {
 
-                    $("#editar-decision").modal('hide');
-                    Swal.fire(
-                        'Exito!',
-                        'Decisión modificada satisfactoriamente',
-                        'success'
-                    );
-                    this.listadoDecisiones();
+                this.listadoDecisiones();
+                $("#editar-decision").modal('hide');
+                this.loader(false);
+
+                Swal.fire(
+                    'Exito!',
+                    'Decisión modificada satisfactoriamente',
+                    'success'
+                );
             })
             .catch(() => {
 
                 $("#editar-decision").modal('hide');
+                this.loader(false);
 
                 Swal.fire(
                     'Error!',
@@ -166,6 +185,10 @@ let decision = new Vue({
 
                 this.usuarios = response.data;
             });
+        },
+        loader(status){
+
+            this.loading = status;
         }
     }
 })

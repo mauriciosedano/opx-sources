@@ -47,10 +47,14 @@ def listadoProyectos(request):
         search = request.GET.get('search')
         page = request.GET.get('page')
 
-        # Consultando proyectos
+        # ============================ Consultando proyectos ====================================
+
+        #Consulta de proyectos para super administrador
+        if str(user.rolid) == '8945979e-8ca5-481e-92a2-219dd42ae9fc':
+            proyectos = models.Proyecto.objects.all()
 
         # Consulta de proyectos para proyectista
-        if str(user.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a':
+        elif str(user.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a':
             proyectos = models.Proyecto.objects.filter(proypropietario__exact = user.userid)
 
         # Consulta de proyectos para voluntarios
@@ -68,22 +72,30 @@ def listadoProyectos(request):
         else:
             proyectos = models.Proyecto.objects.filter(proynombre = 'qwerty')
 
+        # Busqueda de proyectos
         if search:
-
             proyectos = proyectos.filter(proynombre__icontains = search)
 
         # Especificando orden
         proyectos = proyectos.order_by('-proyfechacreacion')
 
+        # convirtiendo a lista de diccionarios
+        proyectos = list(proyectos.values())
+
+        listadoProyectos = []
+        for p in proyectos:
+            p['proyectista'] = models.Usuario.objects.get(pk = p['proypropietario']).userfullname
+            listadoProyectos.append(p)
+
         # Paginación
-        paginator = Paginator(proyectos, 10)
+        paginator = Paginator(listadoProyectos, 5)
 
         # Validación de página
         if page is None:
             page = 1
 
         #Petición de página
-        proyectos = paginator.page(page).object_list.values()
+        proyectos = paginator.page(page).object_list
 
         data = {
             'code': 200,
@@ -93,7 +105,7 @@ def listadoProyectos(request):
                 'lastPage': paginator.num_pages,
                 'total': paginator.count
             },
-            'proyectos': list(proyectos),
+            'proyectos': proyectos,
             'status': 'success',
         }
 
@@ -112,7 +124,9 @@ def listadoProyectos(request):
 @permission_classes((IsAuthenticated,))
 def almacenamientoProyecto(request):
 
-    #return HttpResponse(request.POST.get('proynombre'))
+    # Decodificando el access token
+    tokenBackend = TokenBackend(settings.SIMPLE_JWT['ALGORITHM'], settings.SIMPLE_JWT['SIGNING_KEY'], settings.SIMPLE_JWT['VERIFYING_KEY'])
+    tokenDecoded = tokenBackend.decode(request.META['HTTP_AUTHORIZATION'].split()[1], verify=True)
 
     proyNombre = request.POST.get('proynombre')
     proyDescripcion = request.POST.get('proydescripcion')
@@ -122,7 +136,7 @@ def almacenamientoProyecto(request):
     proyEstado = 1
     decisiones = json.loads(request.POST.get('decisiones'))
     contextos = json.loads(request.POST.get('contextos'))
-    propietario = request.POST.get('proypropietario')
+    propietario = tokenDecoded['user_id']
 
     proyecto = models.Proyecto(proynombre = proyNombre, proydescripcion = proyDescripcion, proyidexterno = proyIdExterno, proyfechacreacion = proyFechaCreacion, proyfechacierre = proyFechaCierre, proyestado = proyEstado, proypropietario = propietario)
 
