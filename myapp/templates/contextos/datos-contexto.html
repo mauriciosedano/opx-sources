@@ -4,6 +4,8 @@
 
     <div id="gestion-datos-contexto" class="container-fluid">
 
+      <div :class="{loading:loading}"></div>
+
       <!-- Datos Contexto -->
       <div class="row">
         <div class="col-md-12">
@@ -18,7 +20,11 @@
                 <table class="table">
                   <thead class=" text-primary">
                     <th> HDX </th>
-<!--                    <th> Archivo </th>-->
+                    <th> Descripción</th>
+                    <th>Valor</th>
+                    <th>Métrica</th>
+                    <th>Latitud</th>
+                    <th>Longitud</th>
                     <th></th>
                   </thead>
                   <tbody>
@@ -26,18 +32,28 @@
                       <td>
                         [[ datoContexto.hdxtag ]]
                       </td>
-<!--                      <td>-->
-<!--                        <a :href="'/static/uploads/datoscontexto/' + datoContexto.dataid + '.csv'" target="_blank">-->
-<!--                            Ver Archivo-->
-<!--                        </a>-->
-<!--                      </td>-->
+                      <td>
+                        [[ datoContexto.descripcion ]]
+                      </td>
+                      <td>
+                        [[ datoContexto.datavalor ]]
+                      </td>
+                      <td>
+                        [[ datoContexto.datatipe ]]
+                      </td>
+                      <td>
+                        [[ datoContexto.latitud ]]
+                      </td>
+                      <td>
+                        [[ datoContexto.longitud ]]
+                      </td>
                       <td>
                         <div class="dropdown">
                           <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
                           </a>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <!--  <a @click.prevent="edicionDatoContexto = datoContexto" data-toggle="modal" data-target="#editar-dato-contexto" class="dropdown-item" href="#"> Edición </a>-->
+                            <a @click.prevent="edicionDatoContexto = datoContexto" data-toggle="modal" data-target="#editar-dato-contexto" class="dropdown-item" href="#"> Edición </a>
                             <a @click.prevent="eliminarDatoContexto(datoContexto.dataid)" class="dropdown-item" href="#"> Eliminación </a>
                           </div>
                         </div>
@@ -112,23 +128,42 @@
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Etiqueta HDX</label>
-                          <input name="hdxtag" type="text" v-model="edicionDatoContexto.hdxtag" class="form-control"/>
+                          <input type="text" v-model="edicionDatoContexto.hdxtag" class="form-control"/>
                         </div>
                       </div>
                       <div class="col-md-12">
                         <div class="form-group">
-                          <div>
-                            <span class="btn btn-round btn-rose btn-file">
-                              <span class="fileinput-new btn-file">Archivo separado por comas</span>
-                              <input type="hidden"><input type="file" name="file">
-                              <div class="ripple-container"></div>
-                            </span>
-                          </div>
+                          <label class="bmd-label-floating">Descripción</label>
+                          <textarea v-model="edicionDatoContexto.descripcion" class="form-control"></textarea>
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Valor</label>
+                          <input type="text" v-model="edicionDatoContexto.datavalor" class="form-control"/>
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Métrica</label>
+                          <input type="text" v-model="edicionDatoContexto.datatipe" class="form-control"/>
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Latitud</label>
+                          <input type="text" v-model="edicionDatoContexto.latitud" class="form-control"/>
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Longitud</label>
+                          <input type="text" v-model="edicionDatoContexto.longitud" class="form-control"/>
                         </div>
                       </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!edicionDatoContexto.hdxtag" class="btn" @click="editarDatoContexto()" type="button">Editar</button>
+                          <button :disabled="!edicionDatoContexto.hdxtag || !edicionDatoContexto.descripcion || !edicionDatoContexto.datavalor || !edicionDatoContexto.datatipe || !edicionDatoContexto.latitud || !edicionDatoContexto.longitud" class="btn" @click="editarDatoContexto()" type="button">Editar</button>
                         </div>
                       </div>
                     </div>

@@ -520,38 +520,56 @@ def actualizarDatoContexto(request, dataid):
         datoContexto = models.DatosContexto.objects.get(pk=dataid)
 
         datoContexto.hdxtag = request.POST.get('hdxtag')
-        #datoContexto.datavalor = request.POST.get('datavalor')
-        #datoContexto.datatipe = request.POST.get('datatipe')
+        datoContexto.datavalor = request.POST.get('datavalor')
+        datoContexto.datatipe = request.POST.get('datatipe')
+        datoContexto.descripcion = request.POST.get('descripcion')
+        datoContexto.latitud = request.POST.get('latitud')
+        datoContexto.longitud = request.POST.get('longitud')
 
         datoContexto.full_clean()
 
-        if "file" in request.FILES.keys():
-
-            file = request.FILES['file']
-
-            if file.content_type != "text/csv" and file.content_type != "application/vnd.ms-excel":
-
-                data = {
-                    'status': 'error',
-                    'errors': 'El tipo de archivo no es permitido',
-                    'code': 400
-                }
-                raise ValidationError(data)
-
-            with open('/home/vagrant/code/opc-webpack/myapp/static/uploads/datoscontexto/' + str(
-                    datoContexto.dataid) + '.csv', 'wb+') as destination:
-                for chunk in file.chunks():
-                    destination.write(chunk)
+        # if "file" in request.FILES.keys():
+        #
+        #     file = request.FILES['file']
+        #
+        #     if file.content_type != "text/csv" and file.content_type != "application/vnd.ms-excel":
+        #
+        #         data = {
+        #             'status': 'error',
+        #             'errors': 'El tipo de archivo no es permitido',
+        #             'code': 400
+        #         }
+        #         raise ValidationError(data)
+        #
+        #     with open('/home/vagrant/code/opc-webpack/myapp/static/uploads/datoscontexto/' + str(
+        #             datoContexto.dataid) + '.csv', 'wb+') as destination:
+        #         for chunk in file.chunks():
+        #             destination.write(chunk)
 
         datoContexto.save()
 
-        return JsonResponse(serializers.serialize('python', [datoContexto]), safe=False)
+        data = {
+            'code': 200,
+            'datoContexto': serializers.serialize('python', [datoContexto])[0],
+            'status': 'success'
+        }
 
     except ObjectDoesNotExist:
-        return JsonResponse({'status': 'error'}, status=404)
+
+        data = {
+            'code': 404,
+            'status': 'error'
+        }
 
     except ValidationError as e:
-        return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
+
+        data = {
+            'code': 400,
+            'errors': dict(e),
+            'status': 'error'
+        }
+
+    return JsonResponse(data, safe = False, status = data['code'])
 
 def listadoDatosContextoView(request, contextoid):
 

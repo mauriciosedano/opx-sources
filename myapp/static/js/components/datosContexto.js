@@ -13,10 +13,13 @@ let datoContexto = new Vue({
         contextoID: 0,
         datosContexto: [],
         edicionDatoContexto: {},
-        almacenamientoDatoContexto: {}
+        almacenamientoDatoContexto: {},
+        loading: false
     },
     methods: {
         listadoDatosContexto(){
+
+            this.loader(true);
 
             axios({
                 method: 'GET',
@@ -28,9 +31,12 @@ let datoContexto = new Vue({
             .then(response => {
 
                 this.datosContexto = response.data.datosContexto;
+                this.loader(false);
             });
         },
         almacenarDatoContexto(){
+
+            this.loader(true);
 
             formData = new FormData(document.getElementById('registro-dato-contexto'))
             formData.append('contextoid', this.contextoID);
@@ -50,6 +56,8 @@ let datoContexto = new Vue({
                 this.almacenamientoDatoContexto = {};
                 this.listadoDatosContexto();
 
+                this.loader(false);
+
                 Swal.fire({
                   title: 'Exito!',
                   text: 'Dato de Contexto creado satisfactoriamente',
@@ -58,6 +66,8 @@ let datoContexto = new Vue({
                 });
             })
             .catch(error => {
+
+                this.loader(false);
 
                 if(error.response.status == 400){
 
@@ -94,6 +104,8 @@ let datoContexto = new Vue({
 
               if (result.value) {
 
+                this.loader(true);
+
                 axios({
                     method: 'DELETE',
                     url: '/datos-contexto/delete/' + id,
@@ -105,6 +117,8 @@ let datoContexto = new Vue({
 
                     this.listadoDatosContexto();
 
+                    this.loader(false);
+
                     Swal.fire(
                       'Eliminado!',
                       'El dato de contexto fue eliminado de forma exitosa',
@@ -114,6 +128,7 @@ let datoContexto = new Vue({
                 .catch(response => {
 
                      this.listadoDatosContexto();
+                     this.loader(false);
 
                      Swal.fire(
                       'Error!',
@@ -126,13 +141,22 @@ let datoContexto = new Vue({
         },
         editarDatoContexto(){
 
-            formData = new FormData(document.getElementById('edicion-dato-contexto'))
-            formData.append('contextoid', this.contextoID);
+//            formData = new FormData(document.getElementById('edicion-dato-contexto'))
+//            formData.append('contextoid', this.contextoID);
+
+            this.loader(true);
+
+            this.edicionDatoContexto.contextoid = this.contextoID;
+
+            querystring = Object.keys(this.edicionDatoContexto).map(key => {
+
+                return key + "=" + this.edicionDatoContexto[key];
+            }).join("&")
 
             axios({
                 method: 'post',
                 url: '/datos-contexto/' + this.edicionDatoContexto.dataid,
-                data: formData,
+                data: querystring,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     Authorization: getToken()
@@ -141,37 +165,43 @@ let datoContexto = new Vue({
             .then(response => {
 
                 $("#editar-dato-contexto").modal('hide');
+                this.listadoDatosContexto();
+                this.loader(false);
 
                 Swal.fire(
                     'Exito!',
                     'Dato de Contexto modificado satisfactoriamente',
                     'success'
                 );
-
-                this.listadoDatosContexto();
             })
             .catch(error => {
 
-                //$("#editar-dato-contexto").modal('hide');
+                $("#editar-dato-contexto").modal('hide');
 
-                if(error.response.status == 400){
+                this.loader(false);
 
-                    Swal.fire({
-                      title: 'Error!',
-                      text: 'El archivo no es de tipo CSV',
-                      type: 'error',
-                      confirmButtonText: 'Acepto'
-                    });
-
-                } else{
+//                if(error.response.status == 400){
+//
+//                    Swal.fire({
+//                      title: 'Error!',
+//                      text: 'El archivo no es de tipo CSV',
+//                      type: 'error',
+//                      confirmButtonText: 'Acepto'
+//                    });
+//
+//                } else{
 
                     Swal.fire(
                         'Error!',
                         'Ocurrio un error. Por favor intenta de nuevo',
                         'error'
                     );
-                }
+                //}
             });
+        },
+        loader(status){
+
+            this.loading = status;
         }
     }
 })
