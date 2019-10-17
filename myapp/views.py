@@ -8,7 +8,7 @@ from myapp import models
 
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.db import connection
+from django.db import (connection, transaction)
 from django.db.utils import IntegrityError
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.http.response import JsonResponse
@@ -356,6 +356,31 @@ def listadoContextosView(request):
 
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
+def listadoDatosContextoCompleto(request):
+
+    data = []
+
+    contextos = models.Contexto.objects.all()
+
+    if contextos:
+
+        for c in contextos:
+
+            datosContexto = models.DatosContexto.objects.filter(contextoid__exact = c.contextoid)
+
+            if datosContexto:
+
+                data.append({
+                    'contextoid': c.contextoid,
+                    'contexto': c.descripcion,
+                    'datos': list(datosContexto.values())
+                })
+
+    return JsonResponse(data, safe = False)
+
+
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def listadoDatosContexto(request, contextoid):
 
     datosContexto = models.DatosContexto.objects.filter(contextoid__exact = contextoid).values()
@@ -373,27 +398,74 @@ def listadoDatosContexto(request, contextoid):
 @permission_classes((IsAuthenticated,))
 def almacenarDatoContexto(request):
 
-    hdxtag = request.POST.get('hdxtag')
-    datavalor = " "
-    datatipe = 1
-    contextoid = request.POST.get('contextoid')
+    # hdxtag = request.POST.get('hdxtag')
+    # datavalor = " "
+    # datatipe = 1
+    # datosContexto = models.DatosContexto(hdxtag = hdxtag, datavalor = datavalor, datatipe = datatipe, contextoid = contextoid)
 
-    datosContexto = models.DatosContexto(hdxtag = hdxtag, datavalor = datavalor, datatipe = datatipe, contextoid = contextoid)
+    # with open('/home/vagrant/code/opc-webpack/myapp/static/uploads/datoscontexto/' + str(datosContexto.dataid) + '.csv', 'wb+') as destination:
+    #     for chunk in file.chunks():
+    #         destination.write(chunk)
 
     try:
-        datosContexto.full_clean()
 
         if "file" in request.FILES.keys():
             file = request.FILES['file']
 
-            if file.content_type != "text/csv" and file.content_type != "application/vnd.ms-excel":
+            if file.content_type == "text/csv" or file.content_type == "application/vnd.ms-excel":
+
+                datosContexto = []
+
+                # Obteniendo contentido del archivo
+                fileData = str(file.read(), "windows-1252")
+
+                #Obtener lineas del archivo
+                lines = fileData.splitlines()
+
+                #leer cada linea
+                for line in lines:
+
+                   # Almacenando información en un diccionario
+                   data = line.split(';')
+
+                   datosContexto.append({
+                    'hdxtag': data[0],
+                    'descripcion': data[1],
+                    'valor': data[2],
+                    'metrica': data[3],
+                    'latitud': data[4],
+                    'longitud': data[5]
+                   })
+
+                try:
+                    with transaction.atomic():
+
+                      contextoid = request.POST.get('contextoid')
+
+                      for dt in datosContexto[1:]:
+                         datosContexto = models.DatosContexto(hdxtag=dt['hdxtag'], datavalor=dt['valor'], datatipe= dt['metrica'], contextoid=contextoid, descripcion = dt['descripcion'], latitud = dt['latitud'], longitud = dt['longitud'])
+                         datosContexto.full_clean()
+                         datosContexto.save()
+
+                    data = {
+                       'code': 200,
+                        'status': 'success'
+                    }
+
+                except ValidationError as e:
+
+                   data = {
+                       'code': 400,
+                       'errors': dict(e)
+                   }
+
+            else:
 
                 data = {
-                   'status': 'error',
-                   'errors':'El tipo de archivo no es permitido',
+                    'status': 'error',
+                    'errors': 'El tipo de archivo no es permitido',
                     'code': 400
                 }
-                raise ValidationError(data)
 
         else:
 
@@ -403,19 +475,16 @@ def almacenarDatoContexto(request):
                 'code': 400
             }
 
-            raise ValidationError(data)
-
-        datosContexto.save()
-
-        with open('/home/vagrant/code/opc-webpack/myapp/static/uploads/datoscontexto/' + str(datosContexto.dataid) + '.csv', 'wb+') as destination:
-            for chunk in file.chunks():
-                destination.write(chunk)
-
-        data = serializers.serialize('python', [datosContexto])
-        return JsonResponse(data, safe = False, status = 201)
 
     except ValidationError as e:
-        return JsonResponse(dict(e), safe = True, status = 400)
+
+        data = {
+            'status': 'error',
+            'errors': dict(e),
+            'code': 400
+        }
+
+    return JsonResponse(data, safe = False, status = data['code'])
 
 @csrf_exempt
 @api_view(["DELETE"])
@@ -427,7 +496,7 @@ def eliminarDatoContexto(request, dataid):
 
         datoContexto.delete()
 
-        os.remove("/home/vagrant/code/opc-webpack/myapp/static/uploads/datoscontexto/" + dataid + ".csv")
+        #os.remove("/home/vagrant/code/opc-webpack/myapp/static/uploads/datoscontexto/" + dataid + ".csv")
 
         return JsonResponse({'status': 'success'})
 

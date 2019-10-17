@@ -47,6 +47,7 @@ urlpatterns = [
     path('contextos/<str:contextoid>', views.actualizarContexto),
     path('contextos/datos/<str:contextoid>', views.listadoDatosContextoView),
 
+    path('datos-contexto/list/', views.listadoDatosContextoCompleto),
     path('datos-contexto/list/<str:contextoid>', views.listadoDatosContexto),
     path('datos-contexto/store/', views.almacenarDatoContexto),
     path('datos-contexto/delete/<str:dataid>', views.eliminarDatoContexto),

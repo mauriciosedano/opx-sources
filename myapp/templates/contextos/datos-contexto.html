@@ -18,7 +18,7 @@
                 <table class="table">
                   <thead class=" text-primary">
                     <th> HDX </th>
-                    <th> Archivo </th>
+<!--                    <th> Archivo </th>-->
                     <th></th>
                   </thead>
                   <tbody>
@@ -26,18 +26,18 @@
                       <td>
                         [[ datoContexto.hdxtag ]]
                       </td>
-                      <td>
-                        <a :href="'/static/uploads/datoscontexto/' + datoContexto.dataid + '.csv'" target="_blank">
-                            Ver Archivo
-                        </a>
-                      </td>
+<!--                      <td>-->
+<!--                        <a :href="'/static/uploads/datoscontexto/' + datoContexto.dataid + '.csv'" target="_blank">-->
+<!--                            Ver Archivo-->
+<!--                        </a>-->
+<!--                      </td>-->
                       <td>
                         <div class="dropdown">
                           <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
                           </a>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a @click.prevent="edicionDatoContexto = datoContexto" data-toggle="modal" data-target="#editar-dato-contexto" class="dropdown-item" href="#"> Edición </a>
+                            <!--  <a @click.prevent="edicionDatoContexto = datoContexto" data-toggle="modal" data-target="#editar-dato-contexto" class="dropdown-item" href="#"> Edición </a>-->
                             <a @click.prevent="eliminarDatoContexto(datoContexto.dataid)" class="dropdown-item" href="#"> Eliminación </a>
                           </div>
                         </div>
@@ -67,12 +67,12 @@
                 <div class="modal-body">
                   <form action="" id="registro-dato-contexto">
                     <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Etiqueta HDX</label>
-                          <input name="hdxtag" type="text" v-model="almacenamientoDatoContexto.hdxtag" class="form-control"/>
-                        </div>
-                      </div>
+<!--                      <div class="col-md-12">-->
+<!--                        <div class="form-group">-->
+<!--                          <label class="bmd-label-floating">Etiqueta HDX</label>-->
+<!--                          <input name="hdxtag" type="text" v-model="almacenamientoDatoContexto.hdxtag" class="form-control"/>-->
+<!--                        </div>-->
+<!--                      </div>-->
                       <div class="col-md-12">
                         <div class="form-group">
                           <div>
@@ -86,7 +86,7 @@
                       </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!almacenamientoDatoContexto.hdxtag" class="btn" @click="almacenarDatoContexto()" type="button">Guardar</button>
+                          <button class="btn" @click="almacenarDatoContexto()" type="button">Guardar</button>
                         </div>
                       </div>
                     </div>
