@@ -358,7 +358,7 @@ def listadoContextosView(request):
 @permission_classes((IsAuthenticated,))
 def listadoDatosContextoCompleto(request):
 
-    data = []
+    contextos = []
 
     contextos = models.Contexto.objects.all()
 
@@ -370,13 +370,19 @@ def listadoDatosContextoCompleto(request):
 
             if datosContexto:
 
-                data.append({
+                contextos.append({
                     'contextoid': c.contextoid,
                     'contexto': c.descripcion,
                     'datos': list(datosContexto.values())
                 })
 
-    return JsonResponse(data, safe = False)
+    data = {
+        'code': 200,
+        'contextos': contextos,
+        'status': 'success'
+    }
+
+    return JsonResponse(data, safe = False, status = data['code'])
 
 
 @api_view(["GET"])
