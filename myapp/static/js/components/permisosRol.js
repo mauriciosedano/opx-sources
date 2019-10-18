@@ -15,10 +15,13 @@ let rol = new Vue({
         permisos: [],
         almacenamientoPermiso: {},
         acciones: [],
-        //edicionRol: {}
+        //edicionRol: {},
+        loading: false
     },
     methods: {
         listadoPermisos(){
+
+            this.loader(true);
 
             axios({
                 method: 'GET',
@@ -26,12 +29,16 @@ let rol = new Vue({
                 headers: {
                     Authorization: getToken()
                 }
-            }).then(response => {
+            })
+            .then(response => {
 
                 this.permisos = response.data;
+                this.loader(false);
             });
         },
         almacenarPermiso(){
+
+            this.loader(true);
 
             this.almacenamientoPermiso.rolid = this.rolID;
 
@@ -54,6 +61,8 @@ let rol = new Vue({
                 this.almacenamientoPermiso = {};
                 this.listadoPermisos();
 
+                this.loader(false);
+
                 Swal.fire({
                   title: 'Exito!',
                   text: 'Permiso asignado satisfactoriamente',
@@ -65,6 +74,8 @@ let rol = new Vue({
 
                 $("#agregar-permiso").modal('hide')
                 this.almacenamientoPermiso = {};
+
+                this.loader(false);
 
                 Swal.fire({
                   title: 'Error!',
@@ -89,6 +100,8 @@ let rol = new Vue({
 
               if (result.value) {
 
+                this.loader(true);
+
                 axios({
                     method: 'DELETE',
                     url: '/funciones-rol/delete/' + id,
@@ -100,6 +113,8 @@ let rol = new Vue({
 
                     this.listadoPermisos();
 
+                    this.loader(false);
+
                     Swal.fire(
                       'Eliminado!',
                       'El permiso fue eliminado de forma exitosa',
@@ -109,6 +124,8 @@ let rol = new Vue({
                 .catch(response => {
 
                      this.listadoPermisos();
+
+                     this.loader(false);
 
                      Swal.fire(
                       'Error!',
@@ -168,6 +185,10 @@ let rol = new Vue({
 
                 this.acciones = response.data;
             });
+        },
+        loader(status){
+
+            this.loading = status;
         }
     }
 })

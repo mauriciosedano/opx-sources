@@ -20,7 +20,8 @@ from myapp import views
 from myapp.view import (
     auth,
     equipo,
-    proyecto
+    proyecto,
+    tareas
 )
 
 urlpatterns = [
@@ -103,11 +104,11 @@ urlpatterns = [
     path('roles/<str:rolid>', views.actualizarRol),
     path('roles/permisos/<str:rolid>', views.permisosRolView),
 
-    path('tareas/', views.listadoTareasView),
-    path('tareas/list/', views.listadoTareas),
-    path('tareas/store/', views.almacenamientoTarea),
-    path('tareas/delete/<str:tareid>/', views.eliminarTarea),
-    path('tareas/<str:tareid>', views.actualizarTarea),
+    path('tareas/', tareas.listadoTareasView),
+    path('tareas/list/', tareas.listadoTareas),
+    path('tareas/store/', tareas.almacenamientoTarea),
+    path('tareas/delete/<str:tareid>/', tareas.eliminarTarea),
+    path('tareas/<str:tareid>', tareas.actualizarTarea),
 
     path('constructor-kobo', views.constructorKobo)
 ]

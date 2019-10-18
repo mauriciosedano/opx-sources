@@ -32,8 +32,12 @@ let tarea = new Vue({
             })
             .then(response => {
 
-                this.tareas = response.data;
                 this.loader(false);
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.tareas = response.data.tareas;
+                }
             });
         },
         almacenarTarea(){
