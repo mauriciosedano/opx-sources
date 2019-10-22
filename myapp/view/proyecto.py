@@ -153,8 +153,6 @@ def almacenamientoProyecto(request):
         almacenarContextosProyecto(proyecto, contextos)
         almacenarDelimitacionesGeograficas(proyecto, delimitacionGeograficas)
 
-        print(adg)
-
         data = serializers.serialize('python', [proyecto])[0]
 
         data = {

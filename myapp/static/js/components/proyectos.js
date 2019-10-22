@@ -21,8 +21,9 @@ proyecto = new Vue({
         loading: false,
         mapObject: {},
         delimitacionGeografica: {
-            geojson: ''
-        }
+            geojson: null
+        },
+        delimitacionGeograficaEdicion: null
     },
     methods: {
         listadoProyectos(){
@@ -209,26 +210,52 @@ proyecto = new Vue({
 
             return Object.keys(editableLayers._layers).length;
         },
-        agregarDelimitacionGeografica(){
+        restablecerMapa(){
 
-            this.almacenamientoProyecto.delimitacionesGeograficas.push(this.delimitacionGeografica);
+            this.mapObject.remove();
+            this.generarMapa(0);
+        },
+        restablecerDelimitacionGeografica(){
 
             this.delimitacionGeografica = {
                 nombre: null,
                 geojson: null
             }
 
-            this.mapObject.remove();
+            this.delimitacionGeograficaEdicion = null;
+        },
+        agregarDelimitacionGeografica(){
 
-            this.generarMapa(0);
+            this.almacenamientoProyecto.delimitacionesGeograficas.push(this.delimitacionGeografica);
+
+            this.restablecerDelimitacionGeografica();
+            this.restablecerMapa();
         },
         eliminarDelimitacionGeografica(index){
 
-            this.almacenamientoProyecto.delimitacionesGeograficas.splice(index, 1);
-        },
-        detalleDelimitacionGeografica(geojson){
+            Swal.fire({
+                title: 'Estas seguro?',
+                text: 'Estas seguro que deseas eliminar esta dimensión?. Es irreversible',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Acepto!'
+            })
+            .then(result => {
 
-            coordenadasLeaflet = JSON.parse(geojson)['geometry']['coordinates'][0];
+                if(result.value){
+
+                    this.almacenamientoProyecto.delimitacionesGeograficas.splice(index, 1);
+                }
+            });
+        },
+        detalleDelimitacionGeografica(delimitacion, index){
+
+            this.delimitacionGeografica = delimitacion;
+            this.delimitacionGeograficaEdicion = index.toString();
+
+            coordenadasLeaflet = JSON.parse(delimitacion.geojson)['geometry']['coordinates'][0];
             coordenadas = []
 
             for(let i = 0; i < coordenadasLeaflet.length; i++){
@@ -236,10 +263,15 @@ proyecto = new Vue({
                 coordenadas.push(coordenadasLeaflet[i].reverse());
             }
 
-            console.log(coordenadas);
-
             this.mapObject.remove();
             this.generarMapa(0, coordenadas);
+        },
+        actualizarDelimitacionGeografica(){
+
+            this.almacenamientoProyecto.delimitacionesGeograficas[parseInt(this.delimitacionGeograficaEdicion, 10)] = this.delimitacionGeografica;
+
+            this.restablecerMapa();
+            this.restablecerDelimitacionGeografica();
         },
         eliminarProyecto(id){
 

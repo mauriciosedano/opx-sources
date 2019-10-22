@@ -130,7 +130,12 @@
                   <!-- Listado de Dimensiones -->
                   <div class="row">
                       <div class="container">
-                        <h2> Dimensiones </h2>
+
+                        <div>
+                          <button class="pull-right btn" type="button" @click.prevent="agregarDelimitacionGeografica()" :disabled="!delimitacionGeografica.nombre || !delimitacionGeografica.geojson || delimitacionGeograficaEdicion">Agregar Dimensión</button>
+                          <button class="pull-right btn" @click.prevent="restablecerMapa();restablecerDelimitacionGeografica();">Nuevo</button>
+                          <h2> Dimensiones </h2>
+                        </div>
 
                         <div class="table-responsive">
                           <table class="table table-striped">
@@ -141,7 +146,7 @@
                           <tr v-for="(dg, index) in almacenamientoProyecto.delimitacionesGeograficas">
                             <td> [[ dg.nombre ]] </td>
                             <td>
-                              <button @click="detalleDelimitacionGeografica(dg.geojson)" class="btn">Ver</button>
+                              <button @click="detalleDelimitacionGeografica(dg, index)" class="btn">Editar</button>
                               <button class="btn" @click="eliminarDelimitacionGeografica(index)">Eliminar</button>
                             </td>
                           </tr>
@@ -154,7 +159,8 @@
                   <div class="row">
                     <div class="container">
                       <div>
-                        <button class="pull-right btn" type="button" @click.prevent="agregarDelimitacionGeografica()" :disabled="!delimitacionGeografica.nombre || !delimitacionGeografica.geojson">Agregar Dimensión</button>
+                        <button class="pull-right btn" type="button" :disabled="!delimitacionGeograficaEdicion" @click.prevent="actualizarDelimitacionGeografica()">Actualizar</button>
+                        <button class="pull-right btn" type="button" :disabled="!delimitacionGeograficaEdicion" @click.prevent="restablecerMapa()" >reset mapa</button>
                         <h2>Crear Dimensiones </h2>
                       </div>
                       <form action="">
