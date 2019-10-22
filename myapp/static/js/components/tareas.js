@@ -16,7 +16,8 @@ let tarea = new Vue({
         almacenamientoTarea: {},
         proyectos: [],
         instrumentos: [],
-        loading: false
+        loading: false,
+        dimensionesTerritoriales: []
     },
     methods: {
         listadoTareas(){
@@ -230,6 +231,23 @@ let tarea = new Vue({
         loader(status){
 
             this.loading = status;
+        },
+        obtenerDimensionesTerritoriales(proyid){
+
+            axios({
+                url: '/proyectos/dimensiones-territoriales/' + proyid,
+                method: 'GET',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.dimensionesTerritoriales = response.data.dimensionesTerritoriales;
+                }
+            })
         }
     },
     filters: {

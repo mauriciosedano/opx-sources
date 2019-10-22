@@ -8,78 +8,78 @@
 
       <!-- Proyectos -->
       <div class="row">
-            <div class="col-md-12">
-              <div class="card">
-                <div class="card-header card-header-primary">
-                  <button class="btn button-right" data-target="#agregar-proyecto" data-toggle="modal">Crear Proyecto</button>
-                  <h4 class="card-title ">Proyectos</h4>
-                  <p class="card-category"> Gestión de Proyectos </p>
-                </div>
-                <div class="card-body">
-                  <div class="table-responsive">
-                    <table class="table">
-                      <thead class=" text-primary">
-                        <th>
-                          Estado
-                        </th>
-                        <th>
-                          Nombre
-                        </th>
-                        <th>
-                          Descripción
-                        </th>
-                        <th>
-                          Creación
-                        </th>
-                        <th>
-                          Cierre
-                        </th>
-                        <th></th>
-                      </thead>
-                      <tbody>
-                        <tr v-for="proyecto in proyectos">
-                          <td>
-                            [[ proyecto.proyestado | estado-entidad ]]
-                          </td>
-                          <td>
-                            [[ proyecto.proynombre ]]
-                          </td>
-                          <td>
-                            [[ proyecto.proydescripcion ]]
-                          </td>
-                          <td>
-                            [[ proyecto.proyfechacreacion ]]
-                          </td>
-                          <td>
-                            [[ proyecto.proyfechacierre ]]
-                          </td>
-                          <td>
-                            <div class="dropdown">
-                              <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header card-header-primary">
+              <button class="btn button-right" data-backdrop="static" data-target="#agregar-proyecto" data-toggle="modal" @click.prevent="generarMapa(2000)">Crear Proyecto</button>
+              <h4 class="card-title ">Proyectos</h4>
+              <p class="card-category"> Gestión de Proyectos </p>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead class=" text-primary">
+                    <th>
+                      Estado
+                    </th>
+                    <th>
+                      Nombre
+                    </th>
+                    <th>
+                      Descripción
+                    </th>
+                    <th>
+                      Creación
+                    </th>
+                    <th>
+                      Cierre
+                    </th>
+                    <th></th>
+                  </thead>
+                  <tbody>
+                    <tr v-for="proyecto in proyectos">
+                      <td>
+                        [[ proyecto.proyestado | estado-entidad ]]
+                      </td>
+                      <td>
+                        [[ proyecto.proynombre ]]
+                      </td>
+                      <td>
+                        [[ proyecto.proydescripcion ]]
+                      </td>
+                      <td>
+                        [[ proyecto.proyfechacreacion ]]
+                      </td>
+                      <td>
+                        [[ proyecto.proyfechacierre ]]
+                      </td>
+                      <td>
+                        <div class="dropdown">
+                          <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
-                              </a>
-                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a @click.prevent="edicionProyecto = proyecto" data-toggle="modal" data-target="#editar-proyecto" class="dropdown-item" href="#"> Edición </a>
-                                <a @click="eliminarProyecto(proyecto.proyid)" class="dropdown-item" href="#"> Eliminación </a>
-                                <a class="dropdown-item" :href="'/equipos/proyecto/' + proyecto.proyid"> Equipo </a>
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                          </a>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a @click.prevent="edicionProyecto = proyecto" data-toggle="modal" data-target="#editar-proyecto" class="dropdown-item" href="#"> Edición </a>
+                            <a @click="eliminarProyecto(proyecto.proyid)" class="dropdown-item" href="#"> Eliminación </a>
+                            <a class="dropdown-item" :href="'/equipos/proyecto/' + proyecto.proyid"> Equipo </a>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
       <!-- Modales -->
       <div class="row">
 
           <!-- Creación de Proyecto -->
           <div class="modal fade" id="agregar-proyecto">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title">Crear Proyecto</h5>
@@ -88,7 +88,11 @@
                   </button>
                 </div>
                 <div class="modal-body">
-                  <form action="">
+
+                  <!--  Datos Generales  -->
+                  <div class="row">
+                    <div class="container">
+                       <form action="">
                     <div class="row">
                       <div class="col-md-12">
                         <div class="form-group">
@@ -102,7 +106,7 @@
                           <textarea v-model="almacenamientoProyecto.proydescripcion" class="form-control"></textarea>
                         </div>
                       </div>
-                      <div class="col-md-12">
+                      <div class="col-md-6">
                         <div class="form-group">
                           <label for="" class="bmd-label-floating">Decisiones</label>
                           <!--<select v-model="almacenamientoProyecto.decisiones" class="form-control" multiple name="" id="">
@@ -112,19 +116,66 @@
                           <multiselect v-model="almacenamientoProyecto.decisiones" :multiple="true" :options="decisiones" track-by="desiid" label="desidescripcion"></multiselect>
                         </div>
                       </div>
-                      <div class="col-md-12">
+                      <div class="col-md-6">
                         <div class="form-group">
                           <label for="" class="bmd-label-floating">Contextos</label>
                           <multiselect v-model="almacenamientoProyecto.contextos" :multiple="true" :options="contextos" track-by="contextoid" label="descripcion"></multiselect>
                         </div>
                       </div>
-                      <div align="center" class="col-md-12">
-                        <div class="form-group">
-                          <button :disabled="!almacenamientoProyecto.proynombre || !almacenamientoProyecto.proydescripcion || !almacenamientoProyecto.decisiones || !almacenamientoProyecto.contextos" class="btn" @click="almacenarProyecto()" type="button">Guardar</button>
-                        </div>
-                      </div>                
                     </div>
                   </form>
+                    </div>
+                  </div>
+
+                  <!-- Listado de Dimensiones -->
+                  <div class="row">
+                      <div class="container">
+                        <h2> Dimensiones </h2>
+
+                        <div class="table-responsive">
+                          <table class="table table-striped">
+                          <tr>
+                            <th>Nombre</th>
+                            <th>Acciones</th>
+                          </tr>
+                          <tr v-for="(dg, index) in almacenamientoProyecto.delimitacionesGeograficas">
+                            <td> [[ dg.nombre ]] </td>
+                            <td>
+                              <button @click="detalleDelimitacionGeografica(dg.geojson)" class="btn">Ver</button>
+                              <button class="btn" @click="eliminarDelimitacionGeografica(index)">Eliminar</button>
+                            </td>
+                          </tr>
+                        </table>
+                        </div>
+                      </div>
+                  </div>
+
+                  <!--  Almacenamiento de Dimensiones -->
+                  <div class="row">
+                    <div class="container">
+                      <div>
+                        <button class="pull-right btn" type="button" @click.prevent="agregarDelimitacionGeografica()" :disabled="!delimitacionGeografica.nombre || !delimitacionGeografica.geojson">Agregar Dimensión</button>
+                        <h2>Crear Dimensiones </h2>
+                      </div>
+                      <form action="">
+                        <div class="row">
+                          <div class="offset-md-3 col-md-6">
+                            <input v-model="delimitacionGeografica.nombre" type="text" class="form-control" placeholder="Nombre de dimension"> <br />
+                          </div>
+                          <div class="col-md-12">
+                            <div id="dimension"></div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+
+                  </div>
+
+                  <!-- Guardado De proyecto -->
+                  <div align="center">
+                    <button class="btn" @click="almacenarProyecto" :disabled="!almacenamientoProyecto.proynombre || !almacenamientoProyecto.proydescripcion || !almacenamientoProyecto.decisiones || !almacenamientoProyecto.contextos || !almacenamientoProyecto.delimitacionesGeograficas.length > 0">Guardar Proyecto</button>
+                  </div>
+
                 </div>
               </div>
             </div>

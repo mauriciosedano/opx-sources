@@ -11,12 +11,18 @@ proyecto = new Vue({
         }
     },
     data: {
-        almacenamientoProyecto: {},
+        almacenamientoProyecto: {
+            delimitacionesGeograficas: []
+        },
         decisiones: [],
         edicionProyecto: {},
         proyectos: [],
         contextos: [],
-        loading: false
+        loading: false,
+        mapObject: {},
+        delimitacionGeografica: {
+            geojson: ''
+        }
     },
     methods: {
         listadoProyectos(){
@@ -70,6 +76,11 @@ proyecto = new Vue({
 
                     valor = JSON.stringify(contextos);
 
+                } else if(key == 'delimitacionesGeograficas'){
+
+                    valor = JSON.stringify(this.almacenamientoProyecto.delimitacionesGeograficas);
+
+
                 } else{
 
                     valor = this.almacenamientoProyecto[key]
@@ -90,7 +101,9 @@ proyecto = new Vue({
             .then(response => {
 
                 $("#agregar-proyecto").modal('hide')
-                this.almacenamientoProyecto = {};
+                this.almacenamientoProyecto = {
+                    delimitacionesGeograficas: []
+                };
                 this.listadoProyectos();
 
                 this.loader(false);
@@ -115,6 +128,118 @@ proyecto = new Vue({
                   confirmButtonText: 'Acepto'
                 });
             });
+        },
+        generarMapa(timeout, coordenadas){
+
+            window.setTimeout(() => {
+
+                let mapObject = L.map('dimension').setView([3.450572, -76.538705], 13);
+
+                 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibmV1cm9tZWRpYSIsImEiOiJjazExNHZiaWQwNDl1M2Vxc3I5eWo2em5zIn0.UBBEXWDurA8wHC8-8DjdwA',
+                {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    maxZoom: 18,
+                    id: 'mapbox.streets',
+                    accessToken: 'pk.eyJ1IjoibmV1cm9tZWRpYSIsImEiOiJjazExNHZiaWQwNDl1M2Vxc3I5eWo2em5zIn0.UBBEXWDurA8wHC8-8DjdwA'
+                }).addTo(mapObject);
+
+                var editableLayers = new L.FeatureGroup();
+
+                mapObject.addLayer(editableLayers);
+
+                var options = {
+                    // position: 'topright',
+                    draw: {
+                        polygon: {
+                            allowIntersection: true, // Restricts shapes to simple polygons
+                            drawError: {
+                                color: '#e1e100', // Color the shape will turn when intersects
+                                message: '<strong>Oh snap!</strong> you can\'t draw that!' // Message that will show when intersect
+                            },
+                            shapeOptions: {
+                                color: '#0CBAEF'
+                            }
+                        },
+                        polyline: false,
+                        circle: false, // Turns off this drawing tool
+                        rectangle: false,
+                        marker: false,
+                        circlemaker: false
+                    },
+                    edit: {
+                        featureGroup: editableLayers, //REQUIRED!!
+                        //remove: false
+                    }
+                };
+
+                var drawControl = new L.Control.Draw(options);
+
+                mapObject.addControl(drawControl);
+
+                mapObject.on(L.Draw.Event.CREATED, (e) => {
+                    type = e.layerType;
+                    layer = e.layer;
+
+                    if (type === 'polygon' && this.cantidadAreasMapa(editableLayers) == 0) {
+
+                        editableLayers.addLayer(layer);
+
+                        this.delimitacionGeografica['geojson'] = JSON.stringify(layer.toGeoJSON());
+                    }
+                });
+
+                mapObject.on(L.Draw.Event.DELETED, (e) => {
+
+                     if(this.cantidadAreasMapa(editableLayers) == 0){
+
+                        this.delimitacionGeografica.geojson = null;
+                     }
+                });
+
+                if(coordenadas){
+
+                    L.polygon(coordenadas).addTo(mapObject);
+                }
+
+                this.mapObject = mapObject;
+
+            }, timeout);
+        },
+        cantidadAreasMapa(editableLayers){
+
+            return Object.keys(editableLayers._layers).length;
+        },
+        agregarDelimitacionGeografica(){
+
+            this.almacenamientoProyecto.delimitacionesGeograficas.push(this.delimitacionGeografica);
+
+            this.delimitacionGeografica = {
+                nombre: null,
+                geojson: null
+            }
+
+            this.mapObject.remove();
+
+            this.generarMapa(0);
+        },
+        eliminarDelimitacionGeografica(index){
+
+            this.almacenamientoProyecto.delimitacionesGeograficas.splice(index, 1);
+        },
+        detalleDelimitacionGeografica(geojson){
+
+            coordenadasLeaflet = JSON.parse(geojson)['geometry']['coordinates'][0];
+            coordenadas = []
+
+            for(let i = 0; i < coordenadasLeaflet.length; i++){
+
+                coordenadas.push(coordenadasLeaflet[i].reverse());
+            }
+
+            console.log(coordenadas);
+
+            this.mapObject.remove();
+            this.generarMapa(0, coordenadas);
         },
         eliminarProyecto(id){
 

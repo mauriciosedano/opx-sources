@@ -147,6 +147,18 @@ class Tarea(models.Model):
     tarerestrictime = models.CharField(max_length = 1000)
     instrid = models.UUIDField()
     proyid = models.UUIDField()
+    dimensionid = models.UUIDField()
+    geojson_subconjunto = models.CharField(max_length=1000)
 
     class Meta:
         db_table = '"v1"."tareas"'
+
+class DelimitacionGeografica(models.Model):
+
+    dimensionid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    proyid = models.UUIDField()
+    nombre = models.CharField(max_length=255)
+    geojson = models.CharField(max_length=1000)
+
+    class Meta:
+        db_table = '"v1"."dimensiones_territoriales"'

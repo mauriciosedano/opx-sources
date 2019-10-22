@@ -98,8 +98,10 @@ def almacenamientoTarea(request):
     tareRestricTime = "{}"
     instrID = request.POST.get('instrid')
     proyID = request.POST.get('proyid')
+    dimensionid = request.POST.get('dimensionid')
+    geojson_subconjunto = "{}"
 
-    tarea = models.Tarea(tarenombre = tareNombre, taretipo = tareTipo, tarerestricgeo = tareRestricGeo, tarerestriccant = tareRestricCant, tarerestrictime = tareRestricTime, instrid = instrID, proyid = proyID)
+    tarea = models.Tarea(tarenombre = tareNombre, taretipo = tareTipo, tarerestricgeo = tareRestricGeo, tarerestriccant = tareRestricCant, tarerestrictime = tareRestricTime, instrid = instrID, proyid = proyID, dimensionid = dimensionid, geojson_subconjunto = geojson_subconjunto)
 
     try:
         tarea.full_clean()

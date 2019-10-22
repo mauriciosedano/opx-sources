@@ -13,7 +13,7 @@ from django.core.paginator import(
     Paginator,
     EmptyPage
 )
-from django.db import connection
+from django.db import (connection, transaction)
 from django.db.utils import IntegrityError
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.http.response import JsonResponse
@@ -137,16 +137,23 @@ def almacenamientoProyecto(request):
     decisiones = json.loads(request.POST.get('decisiones'))
     contextos = json.loads(request.POST.get('contextos'))
     propietario = tokenDecoded['user_id']
+    delimitacionGeograficas = request.POST.get('delimitacionesGeograficas')
 
     proyecto = models.Proyecto(proynombre = proyNombre, proydescripcion = proyDescripcion, proyidexterno = proyIdExterno, proyfechacreacion = proyFechaCreacion, proyfechacierre = proyFechaCierre, proyestado = proyEstado, proypropietario = propietario)
 
     try:
         proyecto.full_clean()
 
+        if delimitacionGeograficas is None:
+            raise ValidationError({'delitacionesGeograficas': 'Requerido'})
+
         proyecto.save()
 
         almacenarDecisionProyecto(proyecto, decisiones)
         almacenarContextosProyecto(proyecto, contextos)
+        almacenarDelimitacionesGeograficas(proyecto, delimitacionGeograficas)
+
+        print(adg)
 
         data = serializers.serialize('python', [proyecto])[0]
 
@@ -205,6 +212,36 @@ def almacenarContextosProyecto(proyecto, contextos):
 
     except ValidationError as e:
         return False
+
+def almacenarDelimitacionesGeograficas(proyecto, delimitacionesGeograficas):
+
+    try:
+
+        delimitaciones = json.loads(delimitacionesGeograficas)
+
+        with transaction.atomic():
+
+            for d in delimitaciones:
+                delimitacion = models.DelimitacionGeografica(proyid = proyecto.proyid, nombre = d['nombre'], geojson = d['geojson'])
+
+                delimitacion.full_clean()
+
+                delimitacion.save()
+
+                del delimitacion
+
+        data = {
+            'result': True
+        }
+
+    except ValidationError as e:
+
+        data = {
+            'result': False,
+            'message': dict(e)
+        }
+
+    return data
 
 @csrf_exempt
 @api_view(["DELETE"])
@@ -318,7 +355,37 @@ def detalleProyecto(request, proyid):
 
     return JsonResponse(data, status = data['code'], safe = False)
 
-
 def listadoProyectosView(request):
 
     return render(request, 'proyectos/listado.html')
+
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def dimensionesTerritoriales(request, proyid):
+
+    try:
+        models.Proyecto.objects.get(pk = proyid)
+
+        dimensionesTerritoriales = models.DelimitacionGeografica.objects.filter(proyid__exact = proyid).values()
+
+        data = {
+            'code': 200,
+            'dimensionesTerritoriales': list(dimensionesTerritoriales),
+            'status': 'success'
+        }
+
+    except ValidationError as e:
+
+        data = {
+            'code': 400,
+            'status': 'error'
+        }
+
+    except ObjectDoesNotExist:
+
+        data = {
+            'code': 404,
+            'status': 'error'
+        }
+
+    return JsonResponse(data, safe = False, status = data['code'])
