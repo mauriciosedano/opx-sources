@@ -132,8 +132,12 @@
                       <div class="container">
 
                         <div>
-                          <button class="pull-right btn" type="button" @click.prevent="agregarDelimitacionGeografica()" :disabled="!delimitacionGeografica.nombre || !delimitacionGeografica.geojson || delimitacionGeograficaEdicion">Agregar Dimensión</button>
-                          <button class="pull-right btn" @click.prevent="restablecerMapa();restablecerDelimitacionGeografica();">Nuevo</button>
+                          <button class="pull-right btn" type="button" @click.prevent="agregarDelimitacionGeografica()" :disabled="!delimitacionGeografica.nombre || !delimitacionGeografica.geojson || delimitacionGeograficaEdicion">
+                            Agregar Dimensión
+                          </button>
+                          <button class="pull-right btn" @click.prevent="restablecerMapa();restablecerDelimitacionGeografica();">
+                            Nuevo
+                          </button>
                           <h2> Dimensiones </h2>
                         </div>
 
@@ -160,7 +164,7 @@
                     <div class="container">
                       <div>
                         <button class="pull-right btn" type="button" :disabled="!delimitacionGeograficaEdicion" @click.prevent="actualizarDelimitacionGeografica()">Actualizar</button>
-                        <button class="pull-right btn" type="button" :disabled="!delimitacionGeograficaEdicion" @click.prevent="restablecerMapa()" >reset mapa</button>
+                        <button class="pull-right btn" type="button" :disabled="!delimitacionGeograficaEdicion" @click.prevent="restablecerMapa()" >Restablecer Mapa</button>
                         <h2>Crear Dimensiones </h2>
                       </div>
                       <form action="">

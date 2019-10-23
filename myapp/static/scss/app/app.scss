@@ -2,6 +2,7 @@
 @import 'login.scss';
 @import "instrumentos.scss";
 @import "proyectos.scss";
+@import "tareas.scss";
 
 .loading{
     background-image: url(/static/img/app/loader.gif);
@@ -41,6 +42,20 @@ button.button-right{
         content: url(/static/img/app/icons/add.png);
         padding-right: 5px;
     }
+}
+
+.modal .btn{
+    background: $backgroundActionButtonsModal;
+    color: $textActionButtonsModal;
+    font-size: 11pt;
+    text-transform: capitalize;
+    img.svg{
+        filter: $iconModalActions;
+    }
+}
+
+.modal .btn:hover{
+    background: $backgroundActionButtonsModal !important;
 }
 
 button.btn-opc{

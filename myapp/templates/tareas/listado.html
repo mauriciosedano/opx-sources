@@ -11,7 +11,7 @@
             <div class="col-md-12">
               <div class="card">
                 <div class="card-header card-header-primary">
-                  <button class="btn button-right" data-target="#agregar-tarea" data-toggle="modal">Crear Tarea</button>
+                  <button @click="generarMapa(2000)" class="btn button-right" data-target="#agregar-tarea" data-toggle="modal">Crear Tarea</button>
                   <h4 class="card-title ">Tareas</h4>
                   <p class="card-category"> Gestión de Tareas </p>
                 </div>
@@ -78,7 +78,7 @@
 
           <!-- Creación de Tarea -->
           <div class="modal fade" id="agregar-tarea">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title">Crear Tarea</h5>
@@ -131,15 +131,18 @@
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Dimension Territorial</label>
-                          <select v-model="almacenamientoTarea.dimensionid" class="form-control">
+                          <select @change="generarDimensionTerritorial(almacenamientoTarea.dimensionid)" v-model="almacenamientoTarea.dimensionid" class="form-control">
                             <option value="">Seleccione</option>
-                            <option v-for="dimension in dimensionesTerritoriales" :value="dimension.dimensionid"> [[ dimension.nombre ]] </option>
+                            <option v-for="dimension in dimensionesTerritoriales" :value="dimension"> [[ dimension.nombre ]] </option>
                           </select>
                         </div>
                       </div>
+                      <div class="col-md-12">
+                        <div id="taskmap"></div>
+                      </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!almacenamientoTarea.tarenombre || !almacenamientoTarea.taretipo || !almacenamientoTarea.tarerestriccant || !almacenamientoTarea.instrid || !almacenamientoTarea.proyid || !almacenamientoTarea.dimensionid" class="btn" @click="almacenarTarea()" type="button">Guardar</button>
+                          <button :disabled="!almacenamientoTarea.tarenombre || !almacenamientoTarea.taretipo || !almacenamientoTarea.tarerestriccant || !almacenamientoTarea.instrid || !almacenamientoTarea.proyid || !almacenamientoTarea.dimensionid || !almacenamientoTarea.geojson_subconjunto" class="btn" @click="almacenarTarea()" type="button">Guardar</button>
                         </div>
                       </div>                
                     </div>

@@ -17,7 +17,9 @@ let tarea = new Vue({
         proyectos: [],
         instrumentos: [],
         loading: false,
-        dimensionesTerritoriales: []
+        dimensionesTerritoriales: [],
+        taskMap: {},
+        dimensionTerritorialReferencia: {}
     },
     methods: {
         listadoTareas(){
@@ -46,7 +48,17 @@ let tarea = new Vue({
             this.loader(true);
 
             var queryString = Object.keys(this.almacenamientoTarea).map(key => {
-                return key + '=' + this.almacenamientoTarea[key]
+
+                if(key == 'dimensionid'){
+
+                    valor = this.almacenamientoTarea['dimensionid'].dimensionid;
+
+                } else{
+
+                    valor = this.almacenamientoTarea[key];
+                }
+
+                return key + '=' + valor;
             }).join('&');
 
             axios({
@@ -248,6 +260,142 @@ let tarea = new Vue({
                     this.dimensionesTerritoriales = response.data.dimensionesTerritoriales;
                 }
             })
+        },
+        generarMapa(timeout, dimension){
+
+            window.setTimeout(() => {
+
+                var taskMap = L.map('taskmap',  {
+                center: [3.450572, -76.538705],
+                drawControl: false,
+                zoom: 13
+            });
+
+                L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibmV1cm9tZWRpYSIsImEiOiJjazExNHZiaWQwNDl1M2Vxc3I5eWo2em5zIn0.UBBEXWDurA8wHC8-8DjdwA',
+                {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    maxZoom: 18,
+                    id: 'mapbox.streets',
+                    accessToken: 'pk.eyJ1IjoibmV1cm9tZWRpYSIsImEiOiJjazExNHZiaWQwNDl1M2Vxc3I5eWo2em5zIn0.UBBEXWDurA8wHC8-8DjdwA'
+                }).addTo(taskMap);
+
+                if(dimension){
+
+                    this.dimensionTerritorialReferencia = L.polygon(this.obtenerCoordenadas(dimension.geojson)).addTo(taskMap);
+
+                    //L.marker([3.45000, -76.535000]).addTo(taskMap);
+
+                    var editableLayers = new L.FeatureGroup();
+
+                    taskMap.addLayer(editableLayers);
+
+                    var options = {
+                        // position: 'topright',
+                        draw: {
+                            polygon: {
+                                allowIntersection: true, // Restricts shapes to simple polygons
+                                drawError: {
+                                    color: '#e1e100', // Color the shape will turn when intersects
+                                    message: '<strong>Oh snap!</strong> you can\'t draw that!' // Message that will show when intersect
+                                },
+                                shapeOptions: {
+                                    color: '#0CBAEF'
+                                }
+                            },
+                            polyline: false,
+                            circle: false, // Turns off this drawing tool
+                            rectangle: false,
+                            marker: false,
+                            circlemaker: false
+                        },
+                        edit: {
+                            featureGroup: editableLayers, //REQUIRED!!
+                            //remove: false
+                        }
+                    };
+
+                    var drawControl = new L.Control.Draw(options);
+
+                    taskMap.addControl(drawControl);
+
+                    taskMap.on(L.Draw.Event.CREATED, (e) => {
+                        type = e.layerType;
+                        layer = e.layer;
+
+                        if (type === 'polygon' && this.cantidadAreasMapa(editableLayers) == 0 && this.validarSubconjunto(layer.toGeoJSON())) {
+
+                            editableLayers.addLayer(layer);
+                            this.almacenamientoTarea.geojson_subconjunto = JSON.stringify(layer.toGeoJSON())
+                            //this.almacenamientoInstrumento.areaInteres = layer.toGeoJSON();
+                        }
+                    });
+
+                    taskMap.on(L.Draw.Event.DELETED, (e) => {
+
+                        this.almacenamientoTarea.geojson_subconjunto = null;
+                    });
+                }
+
+                this.taskMap = taskMap;
+            }, timeout);
+        },
+        cantidadAreasMapa(editableLayers){
+
+            return Object.keys(editableLayers._layers).length;
+        },
+        obtenerCoordenadas(geojson){
+
+            coordenadas = [],
+
+            coordenadasGeojson = JSON.parse(geojson).geometry.coordinates[0];
+
+            for(let i=0; i < coordenadasGeojson.length; i++){
+
+                coordenadas.push(coordenadasGeojson[i].reverse())
+            }
+
+            return coordenadas;
+        },
+        generarDimensionTerritorial(dimension){
+
+            this.taskMap.remove();
+            this.generarMapa(0, dimension);
+        },
+        validarSubconjunto(geojson){
+
+            coordsFails = 0;
+
+            var polyPoints = this.dimensionTerritorialReferencia.getLatLngs()[0];
+
+            coordenadas = this.obtenerCoordenadas(JSON.stringify(geojson));
+            console.log(coordenadas);
+
+            for(var k = 0; k < coordenadas.length; k++){
+
+                var x = coordenadas[k][0], y = coordenadas[k][1];
+
+                var inside = false;
+                for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
+                    var xi = polyPoints[i].lat, yi = polyPoints[i].lng;
+                    var xj = polyPoints[j].lat, yj = polyPoints[j].lng;
+
+                    var intersect = ((yi > y) != (yj > y))  && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                    if (intersect) inside = !inside;
+                }
+
+                if(!inside){
+                    coordsFails++
+                };
+            }
+
+            if(coordsFails > 0){
+
+                return false;
+
+            } else{
+
+                return true;
+            }
         }
     },
     filters: {
