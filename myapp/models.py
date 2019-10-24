@@ -108,6 +108,7 @@ class Instrumento(models.Model):
     instrtipo = models.IntegerField()
     instrnombre = models.CharField(max_length = 255)
     instrdescripcion = models.CharField(max_length = 3000, null = True, blank = True)
+    geojson = models.CharField(max_length=1000, null = True)
 
     class Meta:
         db_table = '"v1"."instrumentos"'

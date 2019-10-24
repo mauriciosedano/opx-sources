@@ -99,7 +99,7 @@ def almacenamientoTarea(request):
     instrID = request.POST.get('instrid')
     proyID = request.POST.get('proyid')
     dimensionid = request.POST.get('dimensionid')
-    geojson_subconjunto = request.POST.get('geojson_subconjunto')
+    geojson_subconjunto = request.POST.get('geojsonsubconjunto')
 
     tarea = models.Tarea(tarenombre = tareNombre, taretipo = tareTipo, tarerestricgeo = tareRestricGeo, tarerestriccant = tareRestricCant, tarerestrictime = tareRestricTime, instrid = instrID, proyid = proyID, dimensionid = dimensionid, geojson_subconjunto = geojson_subconjunto)
 

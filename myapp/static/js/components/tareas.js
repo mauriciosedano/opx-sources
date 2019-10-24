@@ -13,7 +13,9 @@ let tarea = new Vue({
     data: {
         tareas: [],
         edicionTarea: {},
-        almacenamientoTarea: {},
+        almacenamientoTarea: {
+            geojsonsubconjunto: null
+        },
         proyectos: [],
         instrumentos: [],
         loading: false,
@@ -258,6 +260,7 @@ let tarea = new Vue({
                 if(response.data.code == 200 && response.data.status == 'success'){
 
                     this.dimensionesTerritoriales = response.data.dimensionesTerritoriales;
+                    this.generarMapa(0);
                 }
             })
         },
@@ -325,14 +328,15 @@ let tarea = new Vue({
                         if (type === 'polygon' && this.cantidadAreasMapa(editableLayers) == 0 && this.validarSubconjunto(layer.toGeoJSON())) {
 
                             editableLayers.addLayer(layer);
-                            this.almacenamientoTarea.geojson_subconjunto = JSON.stringify(layer.toGeoJSON())
-                            //this.almacenamientoInstrumento.areaInteres = layer.toGeoJSON();
+                            this.almacenamientoTarea.geojsonsubconjunto = JSON.stringify(layer.toGeoJSON())
                         }
                     });
 
+                    console.log("adelete")
                     taskMap.on(L.Draw.Event.DELETED, (e) => {
 
-                        this.almacenamientoTarea.geojson_subconjunto = null;
+                        console.log("deleted")
+                        this.almacenamientoTarea.geojsonsubconjunto = null;
                     });
                 }
 
@@ -358,6 +362,7 @@ let tarea = new Vue({
         },
         generarDimensionTerritorial(dimension){
 
+            // this.almacenamientoTarea.dimensionid = dimension.dimensionid;
             this.taskMap.remove();
             this.generarMapa(0, dimension);
         },
@@ -368,7 +373,6 @@ let tarea = new Vue({
             var polyPoints = this.dimensionTerritorialReferencia.getLatLngs()[0];
 
             coordenadas = this.obtenerCoordenadas(JSON.stringify(geojson));
-            console.log(coordenadas);
 
             for(var k = 0; k < coordenadas.length; k++){
 

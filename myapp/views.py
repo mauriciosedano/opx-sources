@@ -827,6 +827,7 @@ def almacenamientoInstrumento(request):
     instrTipo = request.POST.get('instrtipo')
     instrNombre = request.POST.get('instrnombre')
     instrDescripcion = request.POST.get('instrdescripcion')
+    geojson = request.POST.get('geojson')
 
     if(instrTipo is None):
         return JsonResponse({'status': 'error'}, status = 400)
@@ -844,7 +845,7 @@ def almacenamientoInstrumento(request):
 
         instrIdExterno = "12345"
 
-    instrumento = models.Instrumento(instridexterno = instrIdExterno, instrtipo = instrTipo, instrnombre = instrNombre, instrdescripcion = instrDescripcion)
+    instrumento = models.Instrumento(instridexterno = instrIdExterno, instrtipo = instrTipo, instrnombre = instrNombre, instrdescripcion = instrDescripcion, geojson = areaInteres)
 
     try:
         instrumento.full_clean()
@@ -1274,7 +1275,7 @@ def constructorKobo(request):
 def almacenarProyectoTM(nombre, areaInteres):
 
     headers = {
-        'Authorization': 'Token T1RNM09UQTJOUS5FSDBwNXcuQmdDeWx0aHVueEpreEE5N1VXcUNXamdTNjJj',
+        'Authorization': 'Token T1RNM09UQTJOUS5FSk5laWcuTXBGZnNpV05lVUp3MnB1bm9reGJONUZ2SEZF',
         'Accept-Language': 'en',
         'Content-Type': 'application/json; charset=UTF-8'
     }
@@ -1300,7 +1301,7 @@ def almacenarProyectoTM(nombre, areaInteres):
 
 def informacionProyectoTM(id):
     headers = {
-        'Authorization': 'Token T1RNM09UQTJOUS5FRzF0Z1EuYnd4V2hIRjYwOHlENnY3ZVdZcWpnSmRpY3FJ'
+        'Authorization': 'Token T1RNM09UQTJOUS5FSk5laWcuTXBGZnNpV05lVUp3MnB1bm9reGJONUZ2SEZF'
     }
 
     client = http.client.HTTPConnection('oim-opc.pre', 30802, timeout = 10)
