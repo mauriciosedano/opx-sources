@@ -110,6 +110,7 @@ urlpatterns = [
     path('tareas/store/', tareas.almacenamientoTarea),
     path('tareas/delete/<str:tareid>/', tareas.eliminarTarea),
     path('tareas/<str:tareid>', tareas.actualizarTarea),
+    path('tareas/datos-geoespaciales/', tareas.listadoTareasMapa),
 
     path('constructor-kobo', views.constructorKobo)
 ]

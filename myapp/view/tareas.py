@@ -13,6 +13,7 @@ from django.core.paginator import(
     EmptyPage
 )
 from django.db import (connection, transaction)
+from django.forms.models import model_to_dict
 from django.db.utils import IntegrityError
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.http.response import JsonResponse
@@ -51,7 +52,6 @@ def listadoTareas(request):
             query = "select v1.tareas.tareid, v1.tareas.tarenombre, v1.tareas.taretipo, v1.tareas.tarerestriccant, v1.instrumentos.instrid, v1.instrumentos.instrnombre, v1.proyectos.proyid, v1.proyectos.proynombre from v1.tareas inner join v1.proyectos on v1.tareas.proyid = v1.proyectos.proyid inner join v1.instrumentos on v1.tareas.instrid = v1.instrumentos.instrid where v1.tareas.tarenombre ~* '" + search + "'"
 
 
-        print(query)
         with connection.cursor() as cursor:
             cursor.execute(query)
 
@@ -85,6 +85,52 @@ def listadoTareas(request):
         }
 
     return JsonResponse(data, safe = False, status = data['code'])
+
+
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def listadoTareasMapa(request):
+
+    areasMedicion = []
+
+    #Consultando dimensiones territoriales de proyectos
+    dimensionesTerritoriales = models.DelimitacionGeografica.objects.all()
+
+    for dimension in dimensionesTerritoriales:
+
+        tareas = models.Tarea.objects.filter(dimensionid__exact = dimension.dimensionid).values();
+
+        data = {
+            'areaMedicion': model_to_dict(dimension),
+            'tareas': list(tareas)
+        }
+
+        areasMedicion.append(data)
+
+    instrumentos = models.Instrumento.objects.filter(instrtipo__exact = 2)
+
+    for instrumento in instrumentos:
+
+        tareas = models.Tarea.objects.filter(instrid__exact = instrumento.instrid).values()
+
+        areaMedicion = model_to_dict(instrumento)
+        areaMedicion['nombre'] = areaMedicion['instrnombre']
+        del areaMedicion['instrnombre']
+
+        data = {
+            'areaMedicion': areaMedicion,
+            'tareas': list(tareas)
+        }
+
+        areasMedicion.append(data)
+
+    data = {
+        'code': 200,
+        'areasMedicion': areasMedicion,
+        'status': 'success'
+    }
+
+    return JsonResponse(data, status=data['code'], safe=False)
 
 @csrf_exempt
 @api_view(["POST"])

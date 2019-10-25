@@ -148,7 +148,7 @@ class Tarea(models.Model):
     tarerestrictime = models.CharField(max_length = 1000)
     instrid = models.UUIDField()
     proyid = models.UUIDField()
-    dimensionid = models.UUIDField()
+    dimensionid = models.UUIDField(null=True, blank=True)
     geojson_subconjunto = models.CharField(max_length=1000)
 
     class Meta:

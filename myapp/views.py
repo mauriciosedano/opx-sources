@@ -10,6 +10,7 @@ from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import (connection, transaction)
 from django.db.utils import IntegrityError
+from django.forms.models import model_to_dict
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.http.response import JsonResponse
 from django.shortcuts import render
@@ -813,7 +814,15 @@ def actualizarFuncionRol(request, funcrolid):
 @permission_classes((IsAuthenticated,))
 def listadoInstrumentos(request):
 
-    instrumentos =  models.Instrumento.objects.all().values()
+    instrtipo = request.GET.get('instrtipo')
+
+    if(instrtipo is None):
+
+        instrumentos =  models.Instrumento.objects.all().values()
+
+    else:
+
+        instrumentos = models.Instrumento.objects.filter(instrtipo__exact = instrtipo).values()
 
     response = JsonResponse(list(instrumentos), safe = False)
 
@@ -827,15 +836,14 @@ def almacenamientoInstrumento(request):
     instrTipo = request.POST.get('instrtipo')
     instrNombre = request.POST.get('instrnombre')
     instrDescripcion = request.POST.get('instrdescripcion')
-    geojson = request.POST.get('geojson')
+    areaInteres = request.POST.get('areaInteres')
 
     if(instrTipo is None):
         return JsonResponse({'status': 'error'}, status = 400)
 
     if instrTipo == "2":
 
-        areaInteres = json.loads(request.POST.get('areaInteres'))
-        instrIdExterno = almacenarProyectoTM(instrNombre, areaInteres)
+        instrIdExterno = almacenarProyectoTM(instrNombre, json.loads(areaInteres))
 
         if not instrIdExterno:
             instrIdExterno = "12345"
@@ -924,7 +932,8 @@ def informacionInstrumento(request, id):
                 data = {
                     'status': 'success',
                     'code': 200,
-                    'info': informacion
+                    'info': informacion,
+                    'instrumento': model_to_dict(instrumento)
                 }
 
             else:
@@ -945,7 +954,8 @@ def informacionInstrumento(request, id):
                 data = {
                     'status': 'success',
                     'code': 200,
-                    'info': informacion
+                    'info': informacion,
+                    'instrumento': instrumento
                 }
 
             else:

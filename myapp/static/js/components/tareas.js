@@ -7,7 +7,6 @@ let tarea = new Vue({
 
             this.listadoTareas();
             this.listadoProyectos();
-            this.listadoInstrumentos();
         }
     },
     data: {
@@ -51,9 +50,13 @@ let tarea = new Vue({
 
             var queryString = Object.keys(this.almacenamientoTarea).map(key => {
 
-                if(key == 'dimensionid'){
+                if(key == 'dimensionid' && this.almacenamientoTarea.taretipo == "1"){
 
                     valor = this.almacenamientoTarea['dimensionid'].dimensionid;
+
+                } else if(key == 'instrid'){
+
+                    valor = this.almacenamientoTarea['instrid'] = this.almacenamientoTarea['instrid'].instrid;
 
                 } else{
 
@@ -75,7 +78,10 @@ let tarea = new Vue({
             .then(response => {
 
                 $("#agregar-tarea").modal('hide')
-                this.almacenamientoTarea = {};
+                this.almacenamientoTarea = {
+                    geojsonsubconjunto: null
+                };
+                this.restablecerMapa();
                 this.listadoTareas();
 
                 this.loader(false);
@@ -90,7 +96,10 @@ let tarea = new Vue({
             .catch(response => {
 
                 $("#agregar-tarea").modal('hide')
-                this.almacenamientoTarea = {};
+                this.almacenamientoTarea = {
+                    geojsonsubconjunto: null
+                };
+                this.restablecerMapa();
 
                 this.loader(false);
 
@@ -228,11 +237,14 @@ let tarea = new Vue({
                 }
             });
         },
-        listadoInstrumentos(){
+        listadoInstrumentos(instrtipo){
 
             axios({
                 method: 'GET',
                 url: '/instrumentos/list/',
+                params: {
+                    instrtipo: instrtipo
+                },
                 headers: {
                     Authorization: getToken()
                 }
@@ -260,7 +272,11 @@ let tarea = new Vue({
                 if(response.data.code == 200 && response.data.status == 'success'){
 
                     this.dimensionesTerritoriales = response.data.dimensionesTerritoriales;
-                    this.generarMapa(0);
+
+                    if(this.almacenamientoTarea.taretipo == "1"){
+
+                        this.restablecerMapa();
+                    }
                 }
             })
         },
@@ -269,10 +285,10 @@ let tarea = new Vue({
             window.setTimeout(() => {
 
                 var taskMap = L.map('taskmap',  {
-                center: [3.450572, -76.538705],
-                drawControl: false,
-                zoom: 13
-            });
+                    center: [3.450572, -76.538705],
+                    drawControl: false,
+                    zoom: 13
+                });
 
                 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibmV1cm9tZWRpYSIsImEiOiJjazExNHZiaWQwNDl1M2Vxc3I5eWo2em5zIn0.UBBEXWDurA8wHC8-8DjdwA',
                 {
@@ -328,14 +344,12 @@ let tarea = new Vue({
                         if (type === 'polygon' && this.cantidadAreasMapa(editableLayers) == 0 && this.validarSubconjunto(layer.toGeoJSON())) {
 
                             editableLayers.addLayer(layer);
-                            this.almacenamientoTarea.geojsonsubconjunto = JSON.stringify(layer.toGeoJSON())
+                            this.almacenamientoTarea['geojsonsubconjunto'] = JSON.stringify(layer.toGeoJSON());
                         }
                     });
 
-                    console.log("adelete")
                     taskMap.on(L.Draw.Event.DELETED, (e) => {
 
-                        console.log("deleted")
                         this.almacenamientoTarea.geojsonsubconjunto = null;
                     });
                 }
@@ -343,13 +357,19 @@ let tarea = new Vue({
                 this.taskMap = taskMap;
             }, timeout);
         },
+        restablecerMapa(){
+
+            this.taskMap.remove();
+            this.generarMapa(0);
+            this.almacenamientoTarea.geojsonsubconjunto = null;
+        },
         cantidadAreasMapa(editableLayers){
 
             return Object.keys(editableLayers._layers).length;
         },
         obtenerCoordenadas(geojson){
 
-            coordenadas = [],
+            coordenadas = [];
 
             coordenadasGeojson = JSON.parse(geojson).geometry.coordinates[0];
 
@@ -362,9 +382,12 @@ let tarea = new Vue({
         },
         generarDimensionTerritorial(dimension){
 
-            // this.almacenamientoTarea.dimensionid = dimension.dimensionid;
-            this.taskMap.remove();
-            this.generarMapa(0, dimension);
+            if(this.almacenamientoTarea.taretipo == "1"){
+
+                this.taskMap.remove();
+                this.almacenamientoTarea.geojsonsubconjunto = null;
+                this.generarMapa(0, dimension);
+            }
         },
         validarSubconjunto(geojson){
 
@@ -399,6 +422,15 @@ let tarea = new Vue({
             } else{
 
                 return true;
+            }
+        },
+        generarDimensionTerritorialInstrumento(instrumento){
+
+            if(this.almacenamientoTarea.taretipo == "2"){
+
+                this.taskMap.remove();
+                this.almacenamientoTarea.geojsonsubconjunto = null;
+                this.generarMapa(0, instrumento);
             }
         }
     },

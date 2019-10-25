@@ -98,7 +98,7 @@
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Tipo</label>
-                          <select v-model="almacenamientoTarea.taretipo" class="form-control">
+                          <select v-model="almacenamientoTarea.taretipo" @change="listadoInstrumentos(almacenamientoTarea.taretipo); restablecerMapa()" class="form-control">
                             <option value="1">Encuesta</option>
                             <option value="2">Cartografia</option>
                           </select>
@@ -112,15 +112,6 @@
                       </div>
                       <div class="col-md-12">
                         <div class="form-group">
-                          <label class="bmd-label-floating">Instrumento</label>
-                          <select v-model="almacenamientoTarea.instrid" class="form-control">
-                            <option value="">Seleccione</option>
-                            <option v-for="instrumento in instrumentos" :value="instrumento.instrid"> [[ instrumento.instrnombre ]] </option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-md-12">
-                        <div class="form-group">
                           <label class="bmd-label-floating">Proyecto</label>
                           <select v-model="almacenamientoTarea.proyid" @change="obtenerDimensionesTerritoriales(almacenamientoTarea.proyid)" class="form-control">
                             <option value="">Seleccione</option>
@@ -128,7 +119,7 @@
                           </select>
                         </div>
                       </div>
-                      <div class="col-md-12">
+                      <div v-if="almacenamientoTarea.taretipo == '1'" class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Dimension Territorial</label>
                           <select @change="generarDimensionTerritorial(almacenamientoTarea.dimensionid)" v-model="almacenamientoTarea.dimensionid" class="form-control">
@@ -138,11 +129,20 @@
                         </div>
                       </div>
                       <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Instrumento</label>
+                          <select v-model="almacenamientoTarea.instrid" @change="generarDimensionTerritorialInstrumento(almacenamientoTarea.instrid)" class="form-control">
+                            <option value="">Seleccione</option>
+                            <option v-for="instrumento in instrumentos" :value="instrumento"> [[ instrumento.instrnombre ]] </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-12">
                         <div id="taskmap"></div>
                       </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!almacenamientoTarea.tarenombre || !almacenamientoTarea.taretipo || !almacenamientoTarea.tarerestriccant || !almacenamientoTarea.instrid || !almacenamientoTarea.proyid || !almacenamientoTarea.dimensionid || !almacenamientoTarea.geojsonsubconjunto" class="btn" @click="almacenarTarea()" type="button">Guardar</button>
+                          <button :disabled="!almacenamientoTarea.tarenombre || !almacenamientoTarea.taretipo || !almacenamientoTarea.tarerestriccant || !almacenamientoTarea.instrid || !almacenamientoTarea.proyid || !almacenamientoTarea.geojsonsubconjunto" class="btn" @click="almacenarTarea()" type="button">Guardar</button>
                         </div>
                       </div>                
                     </div>
