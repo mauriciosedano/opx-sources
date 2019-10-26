@@ -14,7 +14,7 @@ from django.core.paginator import(
     EmptyPage
 )
 from django.db import (connection, transaction)
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError, DataError
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.http.response import JsonResponse
 from django.shortcuts import render
@@ -323,19 +323,29 @@ def detalleProyecto(request, proyid):
 
     try:
 
-        proyecto = models.Proyecto.objects.get(pk = proyid)
+        query = "select p.proynombre, p.proydescripcion, p.proyfechacreacion, p.proyfechacierre, p.proyestado, u.userfullname as proypropietario  from v1.proyectos as p inner join v1.usuarios as u on u.userid = p.proypropietario where p.proyid = '" + proyid + "'"
+        with connection.cursor() as cursor:
 
-        # Obtención de Tareas
-        tareas = models.Tarea.objects.filter(proyid__exact = proyid)
+            cursor.execute(query)
 
-        data = {
-            'code': 200,
-            'detail':{
-              'proyecto': serializers.serialize('python', [proyecto])[0],
-              'tareas': serializers.serialize('python', tareas)
-            },
-            'status': 'success'
-        }
+            proyecto = dictfetchall(cursor)
+
+            if(len(proyecto) > 0):
+
+                # Obtención de Tareas
+                tareas = models.Tarea.objects.filter(proyid__exact = proyid)
+
+                data = {
+                    'code': 200,
+                    'detail':{
+                      'proyecto': proyecto[0],
+                      'tareas': serializers.serialize('python', tareas)
+                    },
+                    'status': 'success'
+                }
+
+            else:
+                raise ObjectDoesNotExist
 
     except ObjectDoesNotExist:
 
@@ -344,7 +354,7 @@ def detalleProyecto(request, proyid):
             'status': "error",
         }
 
-    except ValidationError:
+    except DataError:
 
         data = {
             'code': 400,

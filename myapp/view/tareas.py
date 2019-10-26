@@ -47,9 +47,9 @@ def listadoTareas(request):
         search = request.GET.get('search')
 
         if search is None:
-            query = "select v1.tareas.tareid, v1.tareas.tarenombre, v1.tareas.taretipo, v1.tareas.tarerestriccant, v1.instrumentos.instrid, v1.instrumentos.instrnombre, v1.proyectos.proyid, v1.proyectos.proynombre from v1.tareas inner join v1.proyectos on v1.tareas.proyid = v1.proyectos.proyid inner join v1.instrumentos on v1.tareas.instrid = v1.instrumentos.instrid"
+            query = "select v1.tareas.tareid, v1.tareas.tarenombre, v1.tareas.taretipo, v1.tareas.tarerestriccant, v1.tareas.tarefechacreacion, v1.tareas.tarefechaejecucion, v1.tareas.taredescripcion, v1.instrumentos.instrid, v1.instrumentos.instrnombre, v1.proyectos.proyid, v1.proyectos.proynombre from v1.tareas inner join v1.proyectos on v1.tareas.proyid = v1.proyectos.proyid inner join v1.instrumentos on v1.tareas.instrid = v1.instrumentos.instrid"
         else:
-            query = "select v1.tareas.tareid, v1.tareas.tarenombre, v1.tareas.taretipo, v1.tareas.tarerestriccant, v1.instrumentos.instrid, v1.instrumentos.instrnombre, v1.proyectos.proyid, v1.proyectos.proynombre from v1.tareas inner join v1.proyectos on v1.tareas.proyid = v1.proyectos.proyid inner join v1.instrumentos on v1.tareas.instrid = v1.instrumentos.instrid where v1.tareas.tarenombre ~* '" + search + "'"
+            query = "select v1.tareas.tareid, v1.tareas.tarenombre, v1.tareas.taretipo, v1.tareas.tarerestriccant, v1.tareas.tarefechacreacion, v1.tareas.tarefechaejecucion, v1.tareas.taredescripcion, v1.instrumentos.instrid, v1.instrumentos.instrnombre, v1.proyectos.proyid, v1.proyectos.proynombre from v1.tareas inner join v1.proyectos on v1.tareas.proyid = v1.proyectos.proyid inner join v1.instrumentos on v1.tareas.instrid = v1.instrumentos.instrid where v1.tareas.tarenombre ~* '" + search + "'"
 
 
         with connection.cursor() as cursor:
@@ -132,6 +132,35 @@ def listadoTareasMapa(request):
 
     return JsonResponse(data, status=data['code'], safe=False)
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def detalleTarea(request, tareid):
+
+    try:
+        tarea = models.Tarea.objects.get(pk = tareid)
+
+        data = {
+            'code': 200,
+            'status': 'success',
+            'tarea': model_to_dict(tarea)
+        }
+
+    except ObjectDoesNotExist:
+
+        data = {
+            'code': 404,
+            'status': 'error'
+        }
+
+    except ValidationError:
+
+        data = {
+            'code': 400,
+            'status': 'error'
+        }
+
+    return JsonResponse(data, status = data['code'], safe = False)
+
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -146,8 +175,10 @@ def almacenamientoTarea(request):
     proyID = request.POST.get('proyid')
     dimensionid = request.POST.get('dimensionid')
     geojson_subconjunto = request.POST.get('geojsonsubconjunto')
+    tarefechaejecucion = request.POST.get('tarefechaejecucion')
+    taredescripcion = request.POST.get('taredescripcion')
 
-    tarea = models.Tarea(tarenombre = tareNombre, taretipo = tareTipo, tarerestricgeo = tareRestricGeo, tarerestriccant = tareRestricCant, tarerestrictime = tareRestricTime, instrid = instrID, proyid = proyID, dimensionid = dimensionid, geojson_subconjunto = geojson_subconjunto)
+    tarea = models.Tarea(tarenombre = tareNombre, taretipo = tareTipo, tarerestricgeo = tareRestricGeo, tarerestriccant = tareRestricCant, tarerestrictime = tareRestricTime, instrid = instrID, proyid = proyID, dimensionid = dimensionid, geojson_subconjunto = geojson_subconjunto, tarefechaejecucion = tarefechaejecucion, taredescripcion = taredescripcion)
 
     try:
         tarea.full_clean()
@@ -191,6 +222,9 @@ def actualizarTarea(request, tareid):
         tarea.tarerestrictime = "{}"
         tarea.instrid = request.POST.get('instrid')
         tarea.proyid = request.POST.get('proyid')
+        tarea.tarefechaejecucion = request.POST.get('tarefechaejecucion')
+        tarea.taredescripcion = request.POST.get('taredescripcion')
+        #tarea.geojson_subconjunto = request.POST.get('geojsonsubconjunto')
 
         tarea.full_clean()
 
