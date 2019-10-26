@@ -323,7 +323,7 @@ def detalleProyecto(request, proyid):
 
     try:
 
-        query = "select p.proynombre, p.proydescripcion, p.proyfechacreacion, p.proyfechacierre, p.proyestado, u.userfullname as proypropietario  from v1.proyectos as p inner join v1.usuarios as u on u.userid = p.proypropietario where p.proyid = '" + proyid + "'"
+        query = "select p.proynombre, p.proydescripcion, p.proyfechacreacion, p.proyfechacierre, p.proyestado, u.userfullname as proyectista  from v1.proyectos as p inner join v1.usuarios as u on u.userid = p.proypropietario where p.proyid = '" + proyid + "'"
         with connection.cursor() as cursor:
 
             cursor.execute(query)
