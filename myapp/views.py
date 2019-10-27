@@ -1197,6 +1197,45 @@ def implementarFormularioKoboToolbox(request, id):
 
     return JsonResponse(data, status = data['code'])
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def listadoFormulariosKoboToolbox(request):
+
+    try:
+
+        headers = {
+            'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36'
+        }
+
+        client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout=10)
+        client.request('GET', '/assets/?format=json', '', headers)
+        response = client.getresponse()
+
+        if(response.status == 200):
+
+            formulariosKoboToolbox = json.loads(response.read())['results']
+
+            data = {
+                'code': 200,
+                'formularios': formulariosKoboToolbox,
+                'status': 'success'
+            }
+
+        else:
+            data = {
+                'code': 500,
+                'status': 'error'
+            }
+
+    except:
+
+        data = {
+            'code': 500,
+            'status': 'error'
+        }
+
+    return JsonResponse(data, status = data['code'], safe = False)
 
 def verificarImplementaciónFormulario(request, id):
 
