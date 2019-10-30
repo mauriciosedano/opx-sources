@@ -65,7 +65,7 @@
             </div>
 
       <!-- Modales -->
-      <div class="row">
+        <div class="row">
 
           <!-- Creación de Instrumento -->
           <div class="modal fade" id="agregar-instrumento">
@@ -85,7 +85,7 @@
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Tipo</label>
-                            <select v-model="almacenamientoInstrumento.instrtipo" class="form-control">
+                            <select v-model="almacenamientoInstrumento.instrtipo" @change="cantidadFormulariosKobotoolboxPreregistro()" class="form-control">
                                 <option value="">Seleccione</option>
                                 <option value="1">Encuesta</option>
                                 <option value="2">Cartografia</option>
@@ -106,11 +106,15 @@
                       </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!almacenamientoInstrumento.instrtipo || !almacenamientoInstrumento.instrnombre" class="btn" @click="prepararInstrumento()" type="button">Guardar</button>
+                          <button :disabled="!almacenamientoInstrumento.instrtipo || !almacenamientoInstrumento.instrnombre" class="btn" @click="prepararInstrumento()" type="button">Siguiente</button>
                         </div>
                       </div>
                     </div>
                   </form>
+
+                  <div v-if="fase2encuesta">
+                     <iframe src="http://kf.oim-opc.pre/#/forms"></iframe>
+                  </div>
 
                   <!-- Mapa para instrumento Tipo Cartografía -->
                   <div id="tmmap" v-if="fase2Cartografia"></div>
@@ -174,7 +178,7 @@
         </div>
     </div>
 
-<!--         <iframe src="http://kf.oim-opc.pre/accounts/login/?next=/#/" frameborder="0" height="500"></iframe>-->
-        <!-- <iframe src="http://kf.oim-opc.pre/#/forms"></iframe> -->
+    <!-- <iframe src="http://kf.oim-opc.pre/accounts/login/?next=/#/" frameborder="0" height="500"></iframe>-->
+
 
 {% endblock %}

@@ -33,46 +33,53 @@ from myapp.view.utilidades import dictfetchall
 # ============================= Proyectos ========================
 
 @api_view(["GET"])
-@permission_classes((IsAuthenticated,))
+@permission_classes((AllowAny,))
 def listadoProyectos(request):
 
-    #Decodificando el access token
-    tokenBackend = TokenBackend(settings.SIMPLE_JWT['ALGORITHM'], settings.SIMPLE_JWT['SIGNING_KEY'], settings.SIMPLE_JWT['VERIFYING_KEY'])
-    tokenDecoded = tokenBackend.decode(request.META['HTTP_AUTHORIZATION'].split()[1], verify = True)
+    search = request.GET.get('search')
+    page = request.GET.get('page')
 
     try:
-        #consultando el usuario
-        user = models.Usuario.objects.get(pk = tokenDecoded['user_id'])
 
-        search = request.GET.get('search')
-        page = request.GET.get('page')
+        if 'HTTP_AUTHORIZATION' in request.META:
 
-        # ============================ Consultando proyectos ====================================
+            # Decodificando el access token
+            tokenBackend = TokenBackend(settings.SIMPLE_JWT['ALGORITHM'], settings.SIMPLE_JWT['SIGNING_KEY'],
+                                        settings.SIMPLE_JWT['VERIFYING_KEY'])
+            tokenDecoded = tokenBackend.decode(request.META['HTTP_AUTHORIZATION'].split()[1], verify=True)
+            #consultando el usuario
+            user = models.Usuario.objects.get(pk = tokenDecoded['user_id'])
 
-        #Consulta de proyectos para super administrador
-        if str(user.rolid) == '8945979e-8ca5-481e-92a2-219dd42ae9fc':
+            # ============================ Consultando proyectos ====================================
+
+            #Consulta de proyectos para super administrador
+            if str(user.rolid) == '8945979e-8ca5-481e-92a2-219dd42ae9fc':
+                proyectos = models.Proyecto.objects.all()
+
+            # Consulta de proyectos para proyectista
+            elif str(user.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a':
+                proyectos = models.Proyecto.objects.filter(proypropietario__exact = user.userid)
+
+            # Consulta de proyectos para voluntarios
+            elif str(user.rolid) == '0be58d4e-6735-481a-8740-739a73c3be86':
+
+                proyectosAsignados = models.Equipo.objects.filter(userid__exact = user.userid)
+                proyectosAsignadosID = []
+
+                for p in proyectosAsignados:
+                    proyectosAsignadosID.append(p.proyid)
+
+                proyectos = models.Proyecto.objects.filter(pk__in = proyectosAsignadosID)
+
+            #Tipo de usuario distinto
+            else:
+                proyectos = models.Proyecto.objects.filter(proynombre = 'qwerty')
+
+        # Usuario Invitado
+        else:
             proyectos = models.Proyecto.objects.all()
 
-        # Consulta de proyectos para proyectista
-        elif str(user.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a':
-            proyectos = models.Proyecto.objects.filter(proypropietario__exact = user.userid)
-
-        # Consulta de proyectos para voluntarios
-        elif str(user.rolid) == '0be58d4e-6735-481a-8740-739a73c3be86':
-
-            proyectosAsignados = models.Equipo.objects.filter(userid__exact = user.userid)
-            proyectosAsignadosID = []
-
-            for p in proyectosAsignados:
-                proyectosAsignadosID.append(p.proyid)
-
-            proyectos = models.Proyecto.objects.filter(pk__in = proyectosAsignadosID)
-
-
-        else:
-            proyectos = models.Proyecto.objects.filter(proynombre = 'qwerty')
-
-        # Busqueda de proyectos
+        # ================= Busqueda de proyectos
         if search:
             proyectos = proyectos.filter(proynombre__icontains = search)
 
@@ -318,7 +325,7 @@ def actualizarProyecto(request, proyid):
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((AllowAny,))
 def detalleProyecto(request, proyid):
 
     try:

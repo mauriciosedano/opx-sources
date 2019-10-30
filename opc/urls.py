@@ -90,6 +90,7 @@ urlpatterns = [
     path('instrumentos/informacion/<str:id>', views.informacionInstrumentoView),
     path('instrumentos/encuesta/crear', views.creacionEncuestaView),
     path('instrumentos/formularios-kobotoolbox/list/', views.listadoFormulariosKoboToolbox),
+    path('instrumentos/enlace-formulario/<str:instrid>', views.enlaceFormularioKoboToolbox),
 
     path('proyectos/', proyecto.listadoProyectosView),
     path('proyectos/list/', proyecto.listadoProyectos),
@@ -112,7 +113,5 @@ urlpatterns = [
     path('tareas/delete/<str:tareid>/', tareas.eliminarTarea),
     path('tareas/<str:tareid>', tareas.actualizarTarea),
     path('tareas/datos-geoespaciales/', tareas.listadoTareasMapa),
-    path('tareas/detail/<str:tareid>', tareas.detalleTarea),
-
-    path('constructor-kobo', views.constructorKobo)
+    path('tareas/detail/<str:tareid>', tareas.detalleTarea)
 ]

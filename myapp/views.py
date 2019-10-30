@@ -356,7 +356,7 @@ def listadoContextosView(request):
 # ======================== Datos de Contexto =======================
 
 @api_view(["GET"])
-@permission_classes((IsAuthenticated,))
+@permission_classes((AllowAny,))
 def listadoDatosContextoCompleto(request):
 
     contextosList = []
@@ -841,16 +841,16 @@ def almacenamientoInstrumento(request):
     if(instrTipo is None):
         return JsonResponse({'status': 'error'}, status = 400)
 
-    if instrTipo == "2":
+    if instrTipo == "1":
+        instrIdExterno = request.POST.get('instridexterno')
 
+    elif instrTipo == "2":
         instrIdExterno = almacenarProyectoTM(instrNombre, json.loads(areaInteres))
 
         if not instrIdExterno:
             instrIdExterno = "12345"
 
-
     else:
-
         instrIdExterno = "12345"
 
     instrumento = models.Instrumento(instridexterno = instrIdExterno, instrtipo = instrTipo, instrnombre = instrNombre, instrdescripcion = instrDescripcion, geojson = areaInteres)
@@ -1147,6 +1147,74 @@ def informacionFormularioKoboToolbox(id):
 
     return data
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def enlaceFormularioKoboToolbox(request, instrid):
+
+    headers = {'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d'}
+
+    try:
+        instrumento = models.Instrumento.objects.get(pk = instrid)
+
+        if instrumento.instrtipo == 1:
+
+            httpClient = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout = 10)
+            httpClient.request("GET", '/assets/' + instrumento.instridexterno + '/?format=json', '', headers)
+            response = httpClient.getresponse()
+
+            if response.status == 200:
+
+                informacion = json.loads(response.read())
+
+                if(informacion['deployment__active']):
+
+                    enlace = informacion['deployment__links']['offline_url']
+
+                    data = {
+                        'code': 200,
+                        'enlace': enlace,
+                        'status': 'success'
+                    }
+
+                else:
+
+                    data = {
+                        'code': 400,
+                        'message': 'El formulario no está implementado',
+                        'status': 'error'
+                    }
+
+            else:
+
+                data = {
+                    'code': 500,
+                    'status': 'error'
+                }
+
+        else:
+
+            data = {
+                'code': 400,
+                'message': 'El instrumento no es de tipo encuesta',
+                'status': 'error'
+            }
+
+    except ObjectDoesNotExist:
+
+        data = {
+            'code': 404,
+            'status': 'error'
+        }
+
+    except ValidationError:
+
+        data = {
+            'code': 400,
+            'status': 'error'
+        }
+
+    return JsonResponse(data, status=data['code'], safe=False)
+
 @csrf_exempt
 def implementarFormularioKoboToolbox(request, id):
 
@@ -1306,18 +1374,6 @@ def verificarImplementaciónFormulario(request, id):
         }
 
     return JsonResponse(data, status = data['code'])
-
-def constructorKobo(request):
-
-    client = http.client.HTTPConnection('kf.oim-opc.pre', 80, timeout=10)
-
-    client.request('GET', '/accounts/login/?next=/')
-
-    response = client.getresponse()
-
-    if(response.status == 200):
-
-        return HttpResponse(response.read())
 
 # ==================== Tasking Manager ==================
 

@@ -13,9 +13,11 @@ let instrumento = new Vue({
         almacenamientoInstrumento: {},
         edicionInstrumento: {},
         fase1: true,
+        fase2encuesta: false,
         fase2Cartografia: false,
         allowRegister: false,
-        loading: false
+        loading: false,
+        cantidadFormulariosKobo: 0
     },
     methods: {
         listadoInstrumentos(){
@@ -37,21 +39,54 @@ let instrumento = new Vue({
         },
         prepararInstrumento(){
 
+            this.fase1 = false;
+
             if(this.almacenamientoInstrumento.instrtipo == "1"){
+
+                this.fase2encuesta = true;
+                this.fase2Cartografia = false;
+                this.allowRegister = true;
 
             } else if(this.almacenamientoInstrumento.instrtipo == "2"){
 
-                this.fase1 = false;
+                this.fase2encuesta = false;
                 this.fase2Cartografia = true;
+                this.allowRegister = false;
 
                 window.setTimeout(() => {
                     this.cargarMapaRegistro();
                 }, 1000);
             }
         },
-        almacenarInstrumento(){
+        async almacenarInstrumento(){
 
             this.loader(true);
+
+            if(this.almacenamientoInstrumento.instrtipo == "1"){
+
+                let diferenciaCantidadFormularios = 0;
+                let formularios = [];
+
+                await this.obtenerFormulariosKobotoolbox().then(response => {
+                   formularios = response;
+                   diferenciaCantidadFormularios = response.length - this.cantidadFormulariosKobo;
+                });
+
+                if(diferenciaCantidadFormularios > 0){
+
+                    this.almacenamientoInstrumento['instridexterno'] = formularios[0].uid;
+
+                } else{
+
+                    this.loader(false);
+
+                    return Swal.fire({
+                        title: 'Error',
+                        text: 'No hay un formulario de kobotoolbox registrado',
+                        type: 'error'
+                    });
+                }
+            }
 
             var queryString = Object.keys(this.almacenamientoInstrumento).map(key => {
 
@@ -82,6 +117,7 @@ let instrumento = new Vue({
                 this.listadoInstrumentos();
 
                 this.fase1 = true;
+                this.fase2encuesta = false;
                 this.fase2Cartografia = false;
                 this.allowRegister = false;
 
@@ -100,6 +136,7 @@ let instrumento = new Vue({
                 this.almacenamientoInstrumento = {};
 
                 this.fase1 = true;
+                this.fase2encuesta = false;
                 this.fase2Cartografia = false;
                 this.allowRegister = false;
 
@@ -333,12 +370,15 @@ let instrumento = new Vue({
                 zoom: 13
             });
 
-            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibmV1cm9tZWRpYSIsImEiOiJjazExNHZiaWQwNDl1M2Vxc3I5eWo2em5zIn0.UBBEXWDurA8wHC8-8DjdwA',
-            {
-                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-                maxZoom: 18,
-                id: 'mapbox.streets',
-                accessToken: 'pk.eyJ1IjoibmV1cm9tZWRpYSIsImEiOiJjazExNHZiaWQwNDl1M2Vxc3I5eWo2em5zIn0.UBBEXWDurA8wHC8-8DjdwA'
+            L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+              attribution: 'idesccali.gov.co © IDESC',
+            }).addTo(mymap);
+
+            L.tileLayer.wms('http://ws-idesc.cali.gov.co:8081/geoserver/wms?service=WMS', {
+              layers: 'idesc:mc_barrios',
+              format: 'image/png',
+              transparent: !0,
+              version: '1.1.0'
             }).addTo(mymap);
 
             var editableLayers = new L.FeatureGroup();
@@ -402,6 +442,45 @@ let instrumento = new Vue({
         cantidadAreasMapa(editableLayers){
 
             return Object.keys(editableLayers._layers).length;
+        },
+        obtenerFormulariosKobotoolbox(){
+
+            return new Promise((resolve, reject) => {
+
+                axios({
+                    url: '/instrumentos/formularios-kobotoolbox/list/',
+                    method: 'GET',
+                    headers: {
+                        Authorization: getToken()
+                    }
+                })
+                .then(response => {
+
+                    if(response.data.code == 200 && response.data.status == 'success'){
+
+                        resolve(response.data.formularios);
+                    }
+                })
+                .catch(error =>{
+
+                    reject("")
+                });
+            });
+        },
+        cantidadFormulariosKobotoolboxPreregistro(){
+
+            if(this.almacenamientoInstrumento.instrtipo == "1"){
+
+                this.obtenerFormulariosKobotoolbox()
+                .then(response => {
+
+                    this.cantidadFormulariosKobo = response.length;
+                })
+                .catch(error => {
+
+                    this.cantidadFormulariosKobo = 0;
+                });
+            }
         },
         loader(status){
 
