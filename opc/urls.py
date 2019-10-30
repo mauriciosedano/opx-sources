@@ -113,5 +113,7 @@ urlpatterns = [
     path('tareas/delete/<str:tareid>/', tareas.eliminarTarea),
     path('tareas/<str:tareid>', tareas.actualizarTarea),
     path('tareas/datos-geoespaciales/', tareas.listadoTareasMapa),
-    path('tareas/detail/<str:tareid>', tareas.detalleTarea)
+    path('tareas/detail/<str:tareid>', tareas.detalleTarea),
+
+    path('geopanda-geojson/', views.geopandaGeojson)
 ]

@@ -32,6 +32,10 @@ from myapp.view.utilidades import dictfetchall
 #     HTTP_200_OK
 # )
 
+import shapely.geometry
+import geopandas
+import re
+
 # ================================ Login ================================
 
 def loginView(request):
@@ -355,6 +359,38 @@ def listadoContextosView(request):
 
 # ======================== Datos de Contexto =======================
 
+def geopandaGeojson(geometry):
+
+    # shape = 'POINT (-76.5459307779999 3.4440059623)'.capitalize().split()
+    # shape = 'POLYGON ([(0, 0), (0, 1), (1, 0)])'
+    #geometry = 'POLYGON ((1059603.6619 869938.2576, 1059613.8392 869969.4889999999, 1059643.2931 869960.2558, 1059637.8753 869943.791, 1059633.082 869929.2239, 1059603.6619 869938.2576))'
+    shape = geometry.capitalize().split()
+
+    if shape[0] == 'Point':
+        command = eval("shapely.geometry." + shape[0] + shape[1] + "," + shape[2])
+        geojson = geopandas.GeoSeries(command).to_json()
+
+    elif shape[0] == 'Polygon':
+
+        coordenadas = []
+        search = geometry.split('((', 1)[1].split('))')[0]
+        puntos = search.split(', ')
+
+        for p in puntos:
+            coords = p.split()
+            data = (float(coords[0]), float(coords[1]))
+            coordenadas.append(data)
+
+        print(coordenadas)
+        polygon = shapely.geometry.Polygon(coordenadas)
+        geojson = geopandas.GeoSeries(polygon).to_json()
+
+    else:
+        raise ValidationError({'csv': 'Formato de archivo no valido'})
+
+    return geojson
+
+
 @api_view(["GET"])
 @permission_classes((AllowAny,))
 def listadoDatosContextoCompleto(request):
@@ -430,18 +466,20 @@ def almacenarDatoContexto(request):
                 lines = fileData.splitlines()
 
                 #leer cada linea
-                for line in lines:
+                for line in lines[1:]:
 
                    # Almacenando información en un diccionario
                    data = line.split(';')
+
+                   print(data[4])
+                   geojson = geopandaGeojson(data[4])
 
                    datosContexto.append({
                     'hdxtag': data[0],
                     'descripcion': data[1],
                     'valor': data[2],
                     'metrica': data[3],
-                    'latitud': data[4],
-                    'longitud': data[5]
+                    'geojson': geojson,
                    })
 
                 try:
@@ -449,8 +487,8 @@ def almacenarDatoContexto(request):
 
                       contextoid = request.POST.get('contextoid')
 
-                      for dt in datosContexto[1:]:
-                         datosContexto = models.DatosContexto(hdxtag=dt['hdxtag'], datavalor=dt['valor'], datatipe= dt['metrica'], contextoid=contextoid, descripcion = dt['descripcion'], latitud = dt['latitud'], longitud = dt['longitud'])
+                      for dt in datosContexto:
+                         datosContexto = models.DatosContexto(hdxtag=dt['hdxtag'], datavalor=dt['valor'], datatipe= dt['metrica'], contextoid=contextoid, descripcion = dt['descripcion'], geojson = dt['geojson'])
                          datosContexto.full_clean()
                          datosContexto.save()
 
