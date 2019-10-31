@@ -35,11 +35,11 @@ class Contexto(models.Model):
 class DatosContexto(models.Model):
 
     dataid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
-    hdxtag = models.CharField(max_length = 20)
-    datavalor = models.CharField(max_length = 20)
-    datatipe = models.CharField(max_length=50)
+    hdxtag = models.CharField(max_length = 100)
+    datavalor = models.CharField(max_length = 100)
+    datatipe = models.CharField(max_length=100)
     contextoid = models.UUIDField()
-    descripcion = models.CharField(max_length=1000)
+    descripcion = models.CharField(max_length=500)
     geojson = models.CharField(max_length=3000)
 
     class Meta:
