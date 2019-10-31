@@ -15,11 +15,15 @@ class Usuario(AbstractBaseUser):
     rolid = models.UUIDField()
     userleveltype = models.IntegerField()
     userestado = models.IntegerField()
+    fecha_nacimiento = models.DateField()
+    generoid = models.UUIDField()
+    barrio = models.CharField(max_length=500)
+    nivel_educativo_id = models.UUIDField()
+    telefono = models.CharField(max_length=20)
 
     objects = MyUserManager()
 
     USERNAME_FIELD = "useremail"
-
 
     class Meta:
         db_table = '"v1"."usuarios"'
@@ -166,3 +170,19 @@ class DelimitacionGeografica(models.Model):
 
     class Meta:
         db_table = '"v1"."dimensiones_territoriales"'
+
+class Genero(models.Model):
+
+    generoid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    nombre = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = '"v1"."generos"'
+
+class NivelEducativo(models.Model):
+
+    nivelid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    nombre = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = '"v1"."niveles_educativos"'

@@ -21,7 +21,8 @@ from myapp.view import (
     auth,
     equipo,
     proyecto,
-    tareas
+    tareas,
+    utilidades
 )
 
 urlpatterns = [
@@ -115,5 +116,6 @@ urlpatterns = [
     path('tareas/datos-geoespaciales/', tareas.listadoTareasMapa),
     path('tareas/detail/<str:tareid>', tareas.detalleTarea),
 
-    path('geopanda-geojson/', views.geopandaGeojson)
+    path('generos/list/', utilidades.listadoGeneros),
+    path('niveles-educativos/list/', utilidades.listadoNivelesEducativos)
 ]

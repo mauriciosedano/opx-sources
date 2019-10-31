@@ -3,6 +3,8 @@ import json
 import os
 import http.client
 from passlib.context import CryptContext
+import shapely.geometry
+import geopandas
 
 from myapp import models
 
@@ -31,10 +33,6 @@ from myapp.view.utilidades import dictfetchall
 #     HTTP_404_NOT_FOUND,
 #     HTTP_200_OK
 # )
-
-import shapely.geometry
-import geopandas
-import re
 
 # ================================ Login ================================
 
@@ -148,8 +146,13 @@ def almacenarUsuario(request):
     rolid = request.POST.get('rolid')
     userleveltype = 1
     userestado = 1
+    fechaNacimiento = request.POST.get('fechanacimiento')
+    genero = request.POST.get('genero')
+    barrio = request.POST.get('barrio')
+    nivelEducativo = request.POST.get('niveleducativo')
+    telefono = request.POST.get('telefono')
 
-    usuario = models.Usuario(useremail = useremail, usertoken = usertoken, userfullname = userfullname, password = userpassword, rolid = rolid, userleveltype = userleveltype, userestado = userestado)
+    usuario = models.Usuario(useremail = useremail, usertoken = usertoken, userfullname = userfullname, password = userpassword, rolid = rolid, userleveltype = userleveltype, userestado = userestado, fecha_nacimiento = fechaNacimiento, generoid = genero, barrio = barrio, nivel_educativo_id = nivelEducativo, telefono = telefono)
 
     try:
         usuario.full_clean()
