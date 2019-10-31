@@ -40,7 +40,7 @@ class DatosContexto(models.Model):
     datatipe = models.CharField(max_length=50)
     contextoid = models.UUIDField()
     descripcion = models.CharField(max_length=1000)
-    geojson = models.CharField(max_length=1000)
+    geojson = models.CharField(max_length=3000)
 
     class Meta:
         db_table = '"v1"."datos_contexto"'
