@@ -7,6 +7,9 @@ let usuario = new Vue({
 
             this.listadoUsuarios();
             this.listadoRoles();
+            this.listadoGeneros();
+            this.listadoBarrios();
+            this.listadoNivelesEducativos();
         }
     },
     data: {
@@ -14,7 +17,10 @@ let usuario = new Vue({
         edicionUsuario: {},
         almacenamientoUsuario: {},
         roles: [],
-        loading: false
+        loading: false,
+        generos: [],
+        barrios: [],
+        nivelesEducativos: []
     },
     methods: {
         listadoUsuarios(){
@@ -189,6 +195,39 @@ let usuario = new Vue({
                 if(response.data.code == 200 && response.data.status == 'success'){
 
                     this.roles = response.data.roles;
+                }
+            });
+        },
+        listadoGeneros(){
+
+            axios.get('/generos/list/')
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.generos = response.data.generos;
+                }
+            });
+        },
+        listadoBarrios(){
+
+            axios.get('/barrios/list/')
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.barrios = response.data.barrios;
+                }
+            });
+        },
+        listadoNivelesEducativos(){
+
+            axios.get('/niveles-educativos/list/')
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.nivelesEducativos = response.data.nivelesEducativos;
                 }
             });
         },
