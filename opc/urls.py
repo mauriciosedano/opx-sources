@@ -117,5 +117,7 @@ urlpatterns = [
     path('tareas/detail/<str:tareid>', tareas.detalleTarea),
 
     path('generos/list/', utilidades.listadoGeneros),
-    path('niveles-educativos/list/', utilidades.listadoNivelesEducativos)
+    path('niveles-educativos/list/', utilidades.listadoNivelesEducativos),
+
+    path('barrios/list/', utilidades.listadoBarrios)
 ]

@@ -152,7 +152,7 @@ def almacenarUsuario(request):
     nivelEducativo = request.POST.get('niveleducativo')
     telefono = request.POST.get('telefono')
 
-    usuario = models.Usuario(useremail = useremail, usertoken = usertoken, userfullname = userfullname, password = userpassword, rolid = rolid, userleveltype = userleveltype, userestado = userestado, fecha_nacimiento = fechaNacimiento, generoid = genero, barrio = barrio, nivel_educativo_id = nivelEducativo, telefono = telefono)
+    usuario = models.Usuario(useremail = useremail, usertoken = usertoken, userfullname = userfullname, password = userpassword, rolid = rolid, userleveltype = userleveltype, userestado = userestado, fecha_nacimiento = fechaNacimiento, generoid = genero, barrioid = barrio, nivel_educativo_id = nivelEducativo, telefono = telefono)
 
     try:
         usuario.full_clean()

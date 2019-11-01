@@ -43,3 +43,17 @@ def listadoNivelesEducativos(request):
     }
 
     return JsonResponse(data, status=data['code'], safe=False)
+
+@api_view(['GET'])
+@permission_classes((AllowAny,))
+def listadoBarrios(request):
+
+    barrios = models.Barrio.objects.all().values()
+
+    data = {
+        'code': 200,
+        'barrios': list(barrios),
+        'status': 'success'
+    }
+
+    return JsonResponse(data, status=data['code'], safe=False)
