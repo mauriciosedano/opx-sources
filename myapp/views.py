@@ -134,6 +134,36 @@ def listadoUsuarios(request):
 
         return JsonResponse(columns, safe=False)
 
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def detalleUsuario(request, userid):
+
+    try:
+        usuario = models.Usuario.objects.get(pk=userid)
+
+        data = {
+            'code': 200,
+            'usuario': model_to_dict(usuario),
+            'status': 'success'
+        }
+
+    except ObjectDoesNotExist:
+
+        data = {
+            'code': 404,
+            'status': 'error'
+        }
+
+    except ValidationError:
+
+        data = {
+            'code': 400,
+            'status': 'error'
+        }
+
+    return JsonResponse(data, status=data['code'])
+
+
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((AllowAny,))
@@ -173,8 +203,6 @@ def almacenarUsuario(request):
             'status': 'success'
         }
 
-        #return JsonResponse(data, safe = False, status = 201)
-
     except ValidationError as e:
 
         data = {
@@ -182,8 +210,6 @@ def almacenarUsuario(request):
             'errors': dict(e),
             'status': 'error'
         }
-
-        #return JsonResponse(dict(e), safe = True, status = 400)
 
     except IntegrityError as e:
 
@@ -225,6 +251,11 @@ def actualizarUsuario(request, userid):
         usuario.password = request.POST.get('userpassword')
         usuario.rolid = request.POST.get('rolid')
         usuario.userfullname = request.POST.get('userfullname')
+        usuario.fecha_nacimiento = request.POST.get('fechanacimiento')
+        usuario.generoid = request.POST.get('genero')
+        usuario.barrioid = request.POST.get('barrio')
+        usuario.nivel_educativo_id = request.POST.get('niveleducativo')
+        usuario.telefono = request.POST.get('telefono')
 
         usuario.full_clean()
 
@@ -238,13 +269,36 @@ def actualizarUsuario(request, userid):
 
         usuario.save()
 
-        return JsonResponse(serializers.serialize('python', [usuario]), safe = False)
+        data = {
+            'code': 200,
+            'usuario': serializers.serialize('python', [usuario])[0],
+            'status': 'success'
+        }
 
     except ObjectDoesNotExist:
-        return JsonResponse({'status': 'error'}, status = 404)
+
+        data = {
+            'code': 404,
+            'status': 'error'
+         }
 
     except ValidationError as e:
-        return JsonResponse({'status': 'error', 'errors': dict(e) }, status = 400)
+
+        data = {
+            'code': 400,
+            #'errors': dict(e),
+            'status': 'error'
+       }
+
+    except IntegrityError as e:
+
+        data = {
+            'code': 500,
+            'errors': str(e),
+            'status': 'error'
+        }
+
+    return JsonResponse(data, status=data['code'], safe=False)
 
 def listadoUsuariosView(request):
 
@@ -364,32 +418,37 @@ def listadoContextosView(request):
 
 def geopandaGeojson(geometry):
 
-    # shape = 'POINT (-76.5459307779999 3.4440059623)'.capitalize().split()
-    # shape = 'POLYGON ([(0, 0), (0, 1), (1, 0)])'
-    #geometry = 'POLYGON ((1059603.6619 869938.2576, 1059613.8392 869969.4889999999, 1059643.2931 869960.2558, 1059637.8753 869943.791, 1059633.082 869929.2239, 1059603.6619 869938.2576))'
-    shape = geometry.capitalize().split()
+    try:
 
-    if shape[0] == 'Point':
-        command = eval("shapely.geometry." + shape[0] + shape[1] + "," + shape[2])
-        geojson = geopandas.GeoSeries(command).to_json()
+        # shape = 'POINT (-76.5459307779999 3.4440059623)'.capitalize().split()
+        # shape = 'POLYGON ([(0, 0), (0, 1), (1, 0)])'
+        #geometry = 'POLYGON ((1059603.6619 869938.2576, 1059613.8392 869969.4889999999, 1059643.2931 869960.2558, 1059637.8753 869943.791, 1059633.082 869929.2239, 1059603.6619 869938.2576))'
+        shape = geometry.capitalize().split()
 
-    elif shape[0] == 'Polygon':
+        if shape[0] == 'Point':
+            command = eval("shapely.geometry." + shape[0] + shape[1] + "," + shape[2])
+            geojson = geopandas.GeoSeries(command).to_json()
 
-        coordenadas = []
-        search = geometry.split('((', 1)[1].split('))')[0]
-        puntos = search.split(', ')
+        elif shape[0] == 'Polygon':
 
-        for p in puntos:
-            coords = p.split()
-            data = (float(coords[0]), float(coords[1]))
-            coordenadas.append(data)
+            coordenadas = []
+            search = geometry.split('((', 1)[1].split('))')[0]
+            puntos = search.split(', ')
 
-        print(coordenadas)
-        polygon = shapely.geometry.Polygon(coordenadas)
-        geojson = geopandas.GeoSeries(polygon).to_json()
+            for p in puntos:
+                coords = p.split()
+                data = (float(coords[0]), float(coords[1]))
+                coordenadas.append(data)
 
-    else:
-        raise ValidationError({'csv': 'Formato de archivo no valido'})
+            print(coordenadas)
+            polygon = shapely.geometry.Polygon(coordenadas)
+            geojson = geopandas.GeoSeries(polygon).to_json()
+
+        else:
+            raise ValidationError({'csv': 'Formato de archivo no valido'})
+
+    except ValueError as e:
+        raise ValidationError({'csv': e})
 
     return geojson
 
@@ -463,7 +522,7 @@ def almacenarDatoContexto(request):
                 datosContexto = []
 
                 # Obteniendo contentido del archivo
-                fileData = str(file.read(), "windows-1252")
+                fileData = str(file.read(), "utf-8")
 
                 #Obtener lineas del archivo
                 lines = fileData.splitlines()
@@ -474,15 +533,23 @@ def almacenarDatoContexto(request):
                    # Almacenando información en un diccionario
                    data = line.split(';')
 
-                   print(data[4])
-                   geojson = geopandaGeojson(data[4])
+                   #Asignación de fecha/hora en caso tal esten definidos en el archivo plano
+                   try:
+                    fecha = data[5]
+                    hora = data[6]
+
+                   except IndexError:
+                       fecha = None
+                       hora = None
 
                    datosContexto.append({
                     'hdxtag': data[0],
                     'descripcion': data[1],
                     'valor': data[2],
                     'metrica': data[3],
-                    'geojson': geojson,
+                    'geojson': geopandaGeojson(data[4]),
+                    'fecha': fecha,
+                    'hora': hora
                    })
 
                 try:
@@ -491,7 +558,7 @@ def almacenarDatoContexto(request):
                       contextoid = request.POST.get('contextoid')
 
                       for dt in datosContexto:
-                         datosContexto = models.DatosContexto(hdxtag=dt['hdxtag'], datavalor=dt['valor'], datatipe= dt['metrica'], contextoid=contextoid, descripcion = dt['descripcion'], geojson = dt['geojson'])
+                         datosContexto = models.DatosContexto(hdxtag=dt['hdxtag'], datavalor=dt['valor'], datatipe= dt['metrica'], contextoid=contextoid, descripcion = dt['descripcion'], geojson = dt['geojson'], fecha=dt['fecha'], hora=dt['hora'])
                          datosContexto.full_clean()
                          datosContexto.save()
 

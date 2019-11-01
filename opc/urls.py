@@ -39,6 +39,7 @@ urlpatterns = [
     path('usuarios/', views.listadoUsuariosView),
     path('usuarios/list/', views.listadoUsuarios),
     path('usuarios/store/', views.almacenarUsuario),
+    path('usuarios/detail/<str:userid>', views.detalleUsuario),
     path('usuarios/delete/<str:userid>', views.eliminarUsuario),
     path('usuarios/<str:userid>', views.actualizarUsuario),
 

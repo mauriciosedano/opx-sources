@@ -45,6 +45,8 @@ class DatosContexto(models.Model):
     contextoid = models.UUIDField()
     descripcion = models.CharField(max_length=500)
     geojson = models.CharField(max_length=3000)
+    fecha = models.DateField(null=True, blank=True)
+    hora = models.TimeField(null=True, blank=True)
 
     class Meta:
         db_table = '"v1"."datos_contexto"'
