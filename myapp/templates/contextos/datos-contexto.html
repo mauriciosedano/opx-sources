@@ -23,8 +23,6 @@
                     <th> Descripción</th>
                     <th>Valor</th>
                     <th>Métrica</th>
-                    <th>Latitud</th>
-                    <th>Longitud</th>
                     <th></th>
                   </thead>
                   <tbody>
@@ -40,12 +38,6 @@
                       </td>
                       <td>
                         [[ datoContexto.datatipe ]]
-                      </td>
-                      <td>
-                        [[ datoContexto.latitud ]]
-                      </td>
-                      <td>
-                        [[ datoContexto.longitud ]]
                       </td>
                       <td>
                         <div class="dropdown">
@@ -112,7 +104,7 @@
             </div>
           </div>
 
-        <!-- Edición de Dato de Contexto -->
+           <!-- Edición de Dato de Contexto -->
           <div class="modal fade" id="editar-dato-contexto">
             <div class="modal-dialog">
               <div class="modal-content">
@@ -149,21 +141,9 @@
                           <input type="text" v-model="edicionDatoContexto.datatipe" class="form-control"/>
                         </div>
                       </div>
-                      <div class="col-md-12">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Latitud</label>
-                          <input type="text" v-model="edicionDatoContexto.latitud" class="form-control"/>
-                        </div>
-                      </div>
-                      <div class="col-md-12">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Longitud</label>
-                          <input type="text" v-model="edicionDatoContexto.longitud" class="form-control"/>
-                        </div>
-                      </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!edicionDatoContexto.hdxtag || !edicionDatoContexto.descripcion || !edicionDatoContexto.datavalor || !edicionDatoContexto.datatipe || !edicionDatoContexto.latitud || !edicionDatoContexto.longitud" class="btn" @click="editarDatoContexto()" type="button">Editar</button>
+                          <button :disabled="!edicionDatoContexto.hdxtag || !edicionDatoContexto.descripcion || !edicionDatoContexto.datavalor || !edicionDatoContexto.datatipe" class="btn" @click="editarDatoContexto()" type="button">Editar</button>
                         </div>
                       </div>
                     </div>

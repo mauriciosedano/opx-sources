@@ -11,7 +11,7 @@
             <div class="col-md-12">
               <div class="card">
                 <div class="card-header card-header-primary">
-                  <button class="btn button-right" data-target="#agregar-usuario" data-toggle="modal">Crear Usuario</button>
+                  <button class="btn button-right" data-backdrop="static" data-target="#agregar-usuario" data-toggle="modal">Crear Usuario</button>
                   <h4 class="card-title ">Usuarios</h4>
                   <p class="card-category"> Gestión de Usuarios </p>
                 </div>
@@ -53,7 +53,7 @@
 
                               </a>
                               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a @click.prevent="edicionUsuario = usuario"  data-toggle="modal" data-target="#editar-usuario" class="dropdown-item" href="#"> Edición </a>
+                                <a @click.prevent="edicionUsuario = usuario" data-backdrop="static"  data-toggle="modal" data-target="#editar-usuario" class="dropdown-item" href="#"> Edición </a>
                                 <a @click="eliminarUsuario(usuario.userid)" class="dropdown-item" href="#"> Eliminación </a>
                               </div>
                             </div>
@@ -107,7 +107,7 @@
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Género</label>
-                          <select v-model="almacenamientoUsuario.genero" class="form-control">
+                          <select v-model="almacenamientoUsuario.generoid" class="form-control">
                             <option value="">Seleccione</option>
                             <option v-for="genero in generos" :value="genero.generoid"> [[ genero.nombre ]] </option>
                           </select>
@@ -116,7 +116,7 @@
                        <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Barrio</label>
-                          <select v-model="almacenamientoUsuario.barrio" class="form-control">
+                          <select v-model="almacenamientoUsuario.barrioid" class="form-control">
                             <option value="">Seleccione</option>
                             <option v-for="barrio in barrios" :value="barrio.barrioid"> [[ barrio.nombre ]] </option>
                           </select>
@@ -125,7 +125,7 @@
                        <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Nivel Educativo</label>
-                          <select v-model="almacenamientoUsuario.niveleducativo" class="form-control">
+                          <select v-model="almacenamientoUsuario.nivel_educativo_id" class="form-control">
                             <option value="">Seleccione</option>
                             <option v-for="ne in nivelesEducativos" :value="ne.nivelid"> [[ ne.nombre ]] </option>
                           </select>
@@ -140,18 +140,18 @@
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Contraseña</label>
-                          <input v-model="almacenamientoUsuario.userpassword" type="password" class="form-control">
+                          <input v-model="almacenamientoUsuario.password" type="password" class="form-control">
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Fecha de Nacimiento</label>
-                          <input v-model="almacenamientoUsuario.fechanacimiento" type="date" class="form-control">
+                          <input v-model="almacenamientoUsuario.fecha_nacimiento" type="date" class="form-control">
                         </div>
                       </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!almacenamientoUsuario.userfullname || !almacenamientoUsuario.useremail || !almacenamientoUsuario.userpassword || !almacenamientoUsuario.rolid || !almacenamientoUsuario.fechanacimiento || !almacenamientoUsuario.genero || !almacenamientoUsuario.barrio || !almacenamientoUsuario.niveleducativo || !almacenamientoUsuario.telefono" class="btn" @click="almacenarUsuario()" type="button">Guardar</button>
+                          <button :disabled="!almacenamientoUsuario.userfullname || !almacenamientoUsuario.useremail || !almacenamientoUsuario.password || !almacenamientoUsuario.rolid || !almacenamientoUsuario.fecha_nacimiento || !almacenamientoUsuario.generoid || !almacenamientoUsuario.barrioid || !almacenamientoUsuario.nivel_educativo_id || !almacenamientoUsuario.telefono" class="btn" @click="almacenarUsuario()" type="button">Guardar</button>
                         </div>
                       </div>                
                     </div>
@@ -163,7 +163,7 @@
 
           <!-- Edición de Usuario -->
           <div class="modal fade" id="editar-usuario">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title">Editar Usuario</h5>
@@ -198,7 +198,7 @@
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Género</label>
-                          <select v-model="edicionUsuario.genero" class="form-control">
+                          <select v-model="edicionUsuario.generoid" class="form-control">
                             <option value="">Seleccione</option>
                             <option v-for="genero in generos" :value="genero.generoid"> [[ genero.nombre ]] </option>
                           </select>
@@ -207,7 +207,7 @@
                        <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Barrio</label>
-                          <select v-model="edicionUsuario.barrio" class="form-control">
+                          <select v-model="edicionUsuario.barrioid" class="form-control">
                             <option value="">Seleccione</option>
                             <option v-for="barrio in barrios" :value="barrio.barrioid"> [[ barrio.nombre ]] </option>
                           </select>
@@ -216,7 +216,7 @@
                        <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Nivel Educativo</label>
-                          <select v-model="edicionUsuario.niveleducativo" class="form-control">
+                          <select v-model="edicionUsuario.nivel_educativo_id" class="form-control">
                             <option value="">Seleccione</option>
                             <option v-for="ne in nivelesEducativos" :value="ne.nivelid"> [[ ne.nombre ]] </option>
                           </select>
@@ -228,21 +228,21 @@
                           <input v-model="edicionUsuario.telefono" type="number" class="form-control">
                         </div>
                       </div>
-                      <div class="col-md-12">
+                      <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Contraseña</label>
-                          <input v-model="edicionUsuario.userpassword" type="password" class="form-control">
+                          <input v-model="edicionUsuario.password" type="password" class="form-control">
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Fecha de Nacimiento</label>
-                          <input v-model="edicionUsuario.fechanacimiento" type="date" class="form-control">
+                          <input v-model="edicionUsuario.fecha_nacimiento" type="date" class="form-control">
                         </div>
                       </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!edicionUsuario.userfullname || !edicionUsuario.useremail || !edicionUsuario.rolid" class="btn" @click="editarUsuario()" type="button">Editar</button>
+                          <button :disabled="!edicionUsuario.userfullname || !edicionUsuario.useremail || !edicionUsuario.rolid || !edicionUsuario.fecha_nacimiento || !edicionUsuario.generoid || !edicionUsuario.barrioid || !edicionUsuario.nivel_educativo_id || !edicionUsuario.telefono" class="btn" @click="editarUsuario()" type="button">Editar</button>
                         </div>
                       </div>
                     </div>

@@ -93,9 +93,9 @@ def login(request):
                 data = {
                     'token': str(refresh.access_token),
                     'user': {
-                        'id': user.userid,
-                        'name': user.userfullname,
-                        'email': user.useremail,
+                        'userid': user.userid,
+                        'userfullname': user.userfullname,
+                        'useremail': user.useremail,
                         'rol': rol.rolname
                     },
                     'code': 200
@@ -129,7 +129,7 @@ def listadoUsuarios(request):
     # json_res = serializers.serialize('python', users)
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT userid, userfullname, useremail, userestado, v1.usuarios.rolid, fecha_nacimiento as fechanacimiento, barrioid as barrio, generoid as genero, nivel_educativo_id as niveleducativo, telefono, v1.roles.rolname FROM v1.usuarios INNER JOIN v1.roles ON v1.roles.rolid = v1.usuarios.rolid")
+        cursor.execute("SELECT userid, userfullname, useremail, userestado, v1.usuarios.rolid, fecha_nacimiento, barrioid, generoid, nivel_educativo_id, telefono, v1.roles.rolname FROM v1.usuarios INNER JOIN v1.roles ON v1.roles.rolid = v1.usuarios.rolid")
         columns = dictfetchall(cursor)
 
         return JsonResponse(columns, safe=False)
@@ -172,17 +172,17 @@ def almacenarUsuario(request):
     useremail = request.POST.get('useremail')
     usertoken = request.POST.get('usertoken')
     userfullname = request.POST.get('userfullname')
-    userpassword = request.POST.get('userpassword')
+    password = request.POST.get('password')
     rolid = request.POST.get('rolid')
     userleveltype = 1
     userestado = 1
-    fechaNacimiento = request.POST.get('fechanacimiento')
-    genero = request.POST.get('genero')
-    barrio = request.POST.get('barrio')
-    nivelEducativo = request.POST.get('niveleducativo')
+    fechaNacimiento = request.POST.get('fecha_nacimiento')
+    genero = request.POST.get('generoid')
+    barrio = request.POST.get('barrioid')
+    nivelEducativo = request.POST.get('nivel_educativo_id')
     telefono = request.POST.get('telefono')
 
-    usuario = models.Usuario(useremail = useremail, usertoken = usertoken, userfullname = userfullname, password = userpassword, rolid = rolid, userleveltype = userleveltype, userestado = userestado, fecha_nacimiento = fechaNacimiento, generoid = genero, barrioid = barrio, nivel_educativo_id = nivelEducativo, telefono = telefono)
+    usuario = models.Usuario(useremail = useremail, usertoken = usertoken, userfullname = userfullname, password = password, rolid = rolid, userleveltype = userleveltype, userestado = userestado, fecha_nacimiento = fechaNacimiento, generoid = genero, barrioid = barrio, nivel_educativo_id = nivelEducativo, telefono = telefono)
 
     try:
         usuario.full_clean()
@@ -248,24 +248,25 @@ def actualizarUsuario(request, userid):
         usuario = models.Usuario.objects.get(pk = userid)
 
         usuario.useremail = request.POST.get('useremail')
-        usuario.password = request.POST.get('userpassword')
         usuario.rolid = request.POST.get('rolid')
         usuario.userfullname = request.POST.get('userfullname')
-        usuario.fecha_nacimiento = request.POST.get('fechanacimiento')
-        usuario.generoid = request.POST.get('genero')
-        usuario.barrioid = request.POST.get('barrio')
-        usuario.nivel_educativo_id = request.POST.get('niveleducativo')
+        usuario.fecha_nacimiento = request.POST.get('fecha_nacimiento')
+        usuario.generoid = request.POST.get('generoid')
+        usuario.barrioid = request.POST.get('barrioid')
+        usuario.nivel_educativo_id = request.POST.get('nivel_educativo_id')
         usuario.telefono = request.POST.get('telefono')
 
-        usuario.full_clean()
+        if request.POST.get('password') is not None and len(request.POST.get('password')) > 0:
 
-        # Contexto Passlib
-        pwd_context = CryptContext(
-            schemes=["pbkdf2_sha256"],
-            default="pbkdf2_sha256",
-            pbkdf2_sha256__default_rounds=30000
-        )
-        usuario.password = pwd_context.encrypt(usuario.password)
+            # Contexto Passlib
+            pwd_context = CryptContext(
+                schemes=["pbkdf2_sha256"],
+                default="pbkdf2_sha256",
+                pbkdf2_sha256__default_rounds=30000
+            )
+            usuario.password = pwd_context.encrypt(request.POST.get('password'))
+
+        usuario.full_clean()
 
         usuario.save()
 
@@ -629,11 +630,9 @@ def actualizarDatoContexto(request, dataid):
         datoContexto = models.DatosContexto.objects.get(pk=dataid)
 
         datoContexto.hdxtag = request.POST.get('hdxtag')
+        datoContexto.descripcion = request.POST.get('descripcion')
         datoContexto.datavalor = request.POST.get('datavalor')
         datoContexto.datatipe = request.POST.get('datatipe')
-        datoContexto.descripcion = request.POST.get('descripcion')
-        datoContexto.latitud = request.POST.get('latitud')
-        datoContexto.longitud = request.POST.get('longitud')
 
         datoContexto.full_clean()
 
