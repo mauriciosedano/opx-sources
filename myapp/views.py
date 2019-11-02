@@ -287,7 +287,7 @@ def actualizarUsuario(request, userid):
 
         data = {
             'code': 400,
-            #'errors': dict(e),
+            'errors': dict(e),
             'status': 'error'
        }
 
