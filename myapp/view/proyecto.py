@@ -340,13 +340,13 @@ def detalleProyecto(request, proyid):
             if(len(proyecto) > 0):
 
                 # Obtención de Tareas
-                tareas = models.Tarea.objects.filter(proyid__exact = proyid)
+                tareas = models.Tarea.objects.filter(proyid__exact = proyid).values()
 
                 data = {
                     'code': 200,
                     'detail':{
                       'proyecto': proyecto[0],
-                      'tareas': serializers.serialize('python', tareas)
+                      'tareas': list(tareas)
                     },
                     'status': 'success'
                 }
