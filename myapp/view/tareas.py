@@ -40,6 +40,8 @@ def listadoTareas(request):
         # Obtener página validación de la misma
         page = request.GET.get('page')
 
+        all = request.GET.get('all')
+
         if(page is None):
             page = 1
 
@@ -58,23 +60,33 @@ def listadoTareas(request):
             # formatear respuesta de base de datos
             tareas = dictfetchall(cursor)
 
-            # Obtener Página
-            paginator = Paginator(tareas, 10)
+            if all is not None and all == "1":
 
-            # Obtener lista de tareas
-            tareas = paginator.page(page).object_list
+                data = {
+                    'code': 200,
+                    'tareas': tareas,
+                    'status': 'success'
+                }
 
-            data = {
-                'code': 200,
-                'paginator': {
-                    'currentPage': page,
-                    'perPage': paginator.per_page,
-                    'lastPage': paginator.num_pages,
-                    'total': paginator.count
-                },
-                'tareas': tareas,
-                'status': 'success'
-            }
+            else:
+
+                # Obtener Página
+                paginator = Paginator(tareas, 10)
+
+                # Obtener lista de tareas
+                tareas = paginator.page(page).object_list
+
+                data = {
+                    'code': 200,
+                    'paginator': {
+                        'currentPage': page,
+                        'perPage': paginator.per_page,
+                        'lastPage': paginator.num_pages,
+                        'total': paginator.count
+                    },
+                    'tareas': tareas,
+                    'status': 'success'
+                }
 
     except EmptyPage:
 

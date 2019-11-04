@@ -33,6 +33,9 @@ proyecto = new Vue({
             axios({
                 method: 'GET',
                 url: '/proyectos/list/',
+                params: {
+                    all: 1
+                },
                 headers: {
                     Authorization: getToken()
                 }

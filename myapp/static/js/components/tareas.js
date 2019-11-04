@@ -30,6 +30,9 @@ let tarea = new Vue({
             axios({
                 method: 'GET',
                 url: '/tareas/list/',
+                params: {
+                    all: 1
+                },
                 headers: {
                     Authorization: getToken()
                 }
@@ -225,6 +228,9 @@ let tarea = new Vue({
             axios({
                 method: 'GET',
                 url: '/proyectos/list/',
+                params: {
+                    all: 1
+                },
                 headers: {
                     Authorization: getToken()
                 }

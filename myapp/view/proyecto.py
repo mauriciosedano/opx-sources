@@ -38,6 +38,7 @@ def listadoProyectos(request):
 
     search = request.GET.get('search')
     page = request.GET.get('page')
+    all = request.GET.get('all')
 
     try:
 
@@ -94,27 +95,37 @@ def listadoProyectos(request):
             p['proyectista'] = models.Usuario.objects.get(pk = p['proypropietario']).userfullname
             listadoProyectos.append(p)
 
-        # Paginación
-        paginator = Paginator(listadoProyectos, 5)
+        if all is not None and all == "1":
 
-        # Validación de página
-        if page is None:
-            page = 1
+            data = {
+                'code': 200,
+                'proyectos': listadoProyectos,
+                'status': 'success'
+            }
 
-        #Petición de página
-        proyectos = paginator.page(page).object_list
+        else:
 
-        data = {
-            'code': 200,
-            'paginator': {
-                'currentPage': int(page),
-                'perPage': paginator.per_page,
-                'lastPage': paginator.num_pages,
-                'total': paginator.count
-            },
-            'proyectos': proyectos,
-            'status': 'success',
-        }
+            # Paginación
+            paginator = Paginator(listadoProyectos, 10)
+
+            # Validación de página
+            if page is None:
+                page = 1
+
+            #Petición de página
+            proyectos = paginator.page(page).object_list
+
+            data = {
+                'code': 200,
+                'paginator': {
+                    'currentPage': int(page),
+                    'perPage': paginator.per_page,
+                    'lastPage': paginator.num_pages,
+                    'total': paginator.count
+                },
+                'proyectos': proyectos,
+                'status': 'success',
+            }
 
     except EmptyPage:
 

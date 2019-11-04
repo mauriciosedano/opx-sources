@@ -156,7 +156,7 @@ class Tarea(models.Model):
     proyid = models.UUIDField()
     dimensionid = models.UUIDField(null=True, blank=True)
     geojson_subconjunto = models.CharField(max_length=1000)
-    tarefechacreacion = models.DateTimeField(default=datetime.today())
+    tarefechacreacion = models.DateTimeField(null = True, blank = True, default=datetime.today())
     tarefechaejecucion = models.DateField()
     taredescripcion = models.CharField(max_length=1000)
 
