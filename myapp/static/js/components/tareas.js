@@ -20,7 +20,8 @@ let tarea = new Vue({
         loading: false,
         dimensionesTerritoriales: [],
         taskMap: {},
-        dimensionTerritorialReferencia: {}
+        dimensionTerritorialReferencia: {},
+        filterKey: ''
     },
     methods: {
         listadoTareas(){

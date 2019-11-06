@@ -31,13 +31,10 @@
                     <th>
                       Creación
                     </th>
-                    <th>
-                      Cierre
-                    </th>
                     <th></th>
                   </thead>
                   <tbody>
-                    <tr v-for="proyecto in proyectos">
+                    <tr v-for="proyecto in filteredProjects">
                       <td>
                         [[ proyecto.proyestado | estado-entidad ]]
                       </td>
@@ -49,9 +46,6 @@
                       </td>
                       <td>
                         [[ proyecto.proyfechacreacion ]]
-                      </td>
-                      <td>
-                        [[ proyecto.proyfechacierre ]]
                       </td>
                       <td>
                         <div class="dropdown">

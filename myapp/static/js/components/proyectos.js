@@ -23,7 +23,8 @@ proyecto = new Vue({
         delimitacionGeografica: {
             geojson: null
         },
-        delimitacionGeograficaEdicion: null
+        delimitacionGeograficaEdicion: null,
+        filterKey: ''
     },
     methods: {
         listadoProyectos(){
@@ -435,6 +436,20 @@ proyecto = new Vue({
         loader(status){
 
             this.loading = status;
+        }
+    },
+    computed: {
+        filteredProjects: function () {
+          var filterKey = this.filterKey && this.filterKey.toLowerCase()
+          var proyectos = this.proyectos
+          if (filterKey) {
+            proyectos = proyectos.filter(function (row) {
+              return Object.keys(row).some(function (key) {
+                return String(row[key]).toLowerCase().indexOf(filterKey) > -1
+              })
+            })
+          }
+          return proyectos
         }
     }
 })
