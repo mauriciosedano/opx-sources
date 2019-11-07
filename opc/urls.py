@@ -22,7 +22,8 @@ from myapp.view import (
     equipo,
     proyecto,
     tareas,
-    utilidades
+    utilidades,
+    osm
 )
 
 urlpatterns = [
@@ -93,6 +94,7 @@ urlpatterns = [
     path('instrumentos/encuesta/crear', views.creacionEncuestaView),
     path('instrumentos/formularios-kobotoolbox/list/', views.listadoFormulariosKoboToolbox),
     path('instrumentos/enlace-formulario/<str:instrid>', views.enlaceFormularioKoboToolbox),
+    path('instrumentos/mapear/<str:instrid>', osm.AgregarElemento),
 
     path('proyectos/', proyecto.listadoProyectosView),
     path('proyectos/list/', proyecto.listadoProyectos),
