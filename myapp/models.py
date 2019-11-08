@@ -196,3 +196,24 @@ class Barrio(models.Model):
 
     class Meta:
         db_table = '"v1"."barrios"'
+
+class Cartografia(models.Model):
+
+    cartografiaid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    instrid = models.UUIDField()
+    osmid = models.CharField(max_length=255)
+    elemosmid = models.UUIDField()
+
+    class Meta:
+        db_table = '"v1"."cartografias"'
+
+class ElementoOsm(models.Model):
+
+    elemosmid = models.UUIDField(editable=False, primary_key=True)
+    nombre = models.CharField(max_length=255)
+    llaveosm = models.CharField(max_length=255)
+    valorosm = models.CharField(max_length=255)
+    closed_way = models.IntegerField()
+
+    class Meta:
+        db_table = '"v1"."elementos_osm"'

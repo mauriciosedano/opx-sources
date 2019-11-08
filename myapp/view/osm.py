@@ -1,11 +1,22 @@
 import base64
+from django.core import serializers
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.db.utils import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.http.response import JsonResponse
+from myapp import models
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated
+)
+from xml.etree.ElementTree import Element, SubElement, tostring
+
 import http.client
 import json
+# import json.decoder.jso
 import xml.etree.ElementTree as ET
-from xml.etree.ElementTree import Element, SubElement, tostring
 
 osmRestApiUrl = 'master.apis.dev.openstreetmap.org'
 
@@ -34,7 +45,7 @@ def agregarChangeset():
         tag.set('k', 'comment')
         tag.set('v', 'test')
 
-        client = http.client.HTTPSConnection('master.apis.dev.openstreetmap.org')
+        client = http.client.HTTPSConnection(osmRestApiUrl)
         client.request('PUT', '/api/0.6/changeset/create', tostring(root), osmHeaders())
 
         response = client.getresponse()
@@ -43,86 +54,187 @@ def agregarChangeset():
             return str(response.read(), 'utf-8')
 
         else:
-            raise TypeError
+            raise TypeError("Error Al intentar Crear Changeset OSM " + str(response.read(), 'utf-8'))
 
     except:
-        raise TypeError
+        raise TypeError("Error Al intentar Crear Changeset OSM " + str(response.read(), 'utf-8'))
 
+def cerrarChangeset(changeset):
 
+    client = http.client.HTTPSConnection(osmRestApiUrl)
+    client.request('PUT', '/api/0.6/changeset/' + changeset + '/close', None, osmHeaders())
+
+    response = client.getresponse()
+
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def AgregarElemento(request, instrid):
 
     try:
-        data = json.loads(request.body)
-        print(type(data))
+        instrumento = models.Instrumento.objects.get(pk = instrid)
 
-        nodes = []
-        changeset = agregarChangeset()
-        nodeCount = 0
+        if instrumento.instrtipo == 2:
 
-        # Armando XML
-        root = Element('osmChange')
-        root.set('version', '0.6')
+            data = json.loads(request.body)
+            osmelement = models.ElementoOsm.objects.get(pk = data['osmelement'])
 
-        create = SubElement(root, 'create')
-        coordinatesLength = len(data['coordinates'])
+            if osmelement.closed_way == 1:
+                coordinates = data['coordinates'][0:len(data['coordinates'])-1]
+            else:
+                coordinates = data['coordinates']
 
-        # Creando Nodos en XML
-        for node in data['coordinates'][0:coordinatesLength-1]:
-            nodeCount -= 1
-            longitud = str(node['lon'])
-            latitud = str(node['lat'])
+            nodes = []
+            changeset = agregarChangeset()
+            nodeCount = 0
 
-            node = SubElement(create, 'node')
-            node.set('id', str(nodeCount))
-            node.set('lon', longitud)
-            node.set('lat', latitud)
-            node.set('version', "0")
-            node.set('changeset', changeset)
+            # Armando XML
+            root = Element('osmChange')
+            root.set('version', '0.6')
 
-            nodes.append(node)
+            create = SubElement(root, 'create')
 
-        #Reset nodecount
-        nodeCount = 0
+            # Creando Nodos
 
-        #Creando Way
-        way = SubElement(create, 'way')
-        way.set('id', '-1')
-        way.set('changeset', changeset)
+            for node in coordinates:
+                nodeCount -= 1
+                longitud = str(node['lon'])
+                latitud = str(node['lat'])
 
-        #Especificando Nodos
-        for node in nodes:
-            nodeCount -= 1
-            nd = SubElement(way, 'nd')
-            nd.set('ref', node.get('id'))
+                node = SubElement(create, 'node')
+                node.set('id', str(nodeCount))
+                node.set('lon', longitud)
+                node.set('lat', latitud)
+                node.set('version', "0")
+                node.set('changeset', changeset)
 
-        nd = SubElement(way, 'nd')
-        nd.set('ref', nodes[0].get('id'))
+                nodes.append(node)
 
-        xmlRequest = str(tostring(root), 'utf-8')
+            #Creando Way
+            way = SubElement(create, 'way')
+            way.set('id', '-1')
+            way.set('changeset', changeset)
 
-        #Almacendo Elemento en OSM
-        client = http.client.HTTPSConnection(osmRestApiUrl)
-        client.request('POST', '/api/0.6/changeset/' + changeset + '/upload', xmlRequest, osmHeaders())
-        response = client.getresponse()
+            #Especificando Nodos del way
+            for node in nodes:
+                nd = SubElement(way, 'nd')
+                nd.set('ref', node.get('id'))
 
-        if response.status == 200:
-            xmlResponse = str(response.read(), 'utf-8')
-            xmlObject = ET.fromstring(xmlResponse)
-            wayElement = xmlObject.findall('way')[0]
+            if osmelement.closed_way == 1:
+                nd = SubElement(way, 'nd')
+                nd.set('ref', nodes[0].get('id'))
 
-            response = {
-                'code': 200,
-                'osmid': wayElement.get('new_id'),
-                'status': 'success'
-            }
+            #Etiqueta de Elemento tipo Way
+            tag = SubElement(way, 'tag')
+            tag.set('k', osmelement.llaveosm)
+            tag.set('v', osmelement.valorosm)
+
+            # Obteniendo cadena XML a enviar a OSM
+            xmlRequest = str(tostring(root), 'utf-8')
+
+            #return HttpResponse(xmlRequest)
+
+            #Almacendo Elemento en OSM
+            client = http.client.HTTPSConnection(osmRestApiUrl)
+            client.request('POST', '/api/0.6/changeset/' + changeset + '/upload', xmlRequest, osmHeaders())
+            response = client.getresponse()
+
+            if response.status == 200:
+
+                # Cerrar Changeset OSM
+                cerrarChangeset(changeset)
+
+                xmlResponse = str(response.read(), 'utf-8')
+                xmlObject = ET.fromstring(xmlResponse)
+                wayElement = xmlObject.findall('way')[0]
+
+                #Almacenando Cartografia
+                cartografia = almacenarCartografia(instrid, wayElement.get('new_id'), osmelement.elemosmid)
+
+                response = {
+                    'code': 200,
+                    #'cartografia': cartografia,
+                    'status': 'success'
+                }
+
+            else:
+                xmlResponse = str(response.read(), 'utf-8')
+                raise TypeError("Error al momento de crear el elemento en OSM" + xmlResponse)
 
         else:
-            raise TypeError
+            raise TypeError("El tipo de instrumento es inválido")
 
-    except:
+    except ObjectDoesNotExist:
         response = {
-            'code': 500,
+            'code': 404,
             'status': 'error'
         }
 
+    except ValidationError:
+        response = {
+            'code': 400,
+            'status': 'error'
+        }
+
+    except json.JSONDecodeError:
+        response = {
+            'code': 400,
+            'message': 'JSON inválido',
+            'status': 'error'
+        }
+
+    except IntegrityError as e:
+        response = {
+            'code': 400,
+            'message': str(e),
+            'status': 'error'
+        }
+
+    except TypeError as e:
+        response = {
+            'code': 400,
+            'message': str(e),
+            'status': 'error'
+        }
+
+    # except:
+    #     response = {
+    #         'code': 500,
+    #         'status': 'error'
+    #     }
+
     return JsonResponse(response, status=response['code'])
+
+def almacenarCartografia(instrid, wayid, elemosmid):
+
+    cartografia = models.Cartografia(instrid=instrid, osmid=wayid, elemosmid=elemosmid)
+    cartografia.save()
+
+    return serializers.serialize('python', [cartografia])[0]
+
+def cartografiasInstrumento(request, instrid):
+
+    try:
+        instrumento = models.Instrumento.objects.get(pk = instrid)
+
+        cartografias = models.Cartografia.filter(instrid__exact=instrid)
+
+        if len(cartografias) > 0:
+
+            print(cartografias)
+            return HttpResponse("")
+
+        else:
+            raise ObjectDoesNotExist("No hay cartografias para este instrumento")
+
+    except ObjectDoesNotExist as e:
+        response = {
+            'code': 404,
+            'message': str(e),
+            'status': 'error'
+        }
+
+    except ValidationError:
+        response = {
+            'code': 400,
+            'status': 'error'
+        }
