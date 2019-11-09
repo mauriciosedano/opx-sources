@@ -163,15 +163,17 @@ def AgregarElemento(request, instrid):
         else:
             raise TypeError("El tipo de instrumento es inválido")
 
-    except ObjectDoesNotExist:
+    except ObjectDoesNotExist as e:
         response = {
             'code': 404,
+            'message': str(e),
             'status': 'error'
         }
 
-    except ValidationError:
+    except ValidationError as e:
         response = {
             'code': 400,
+            'message': str(e),
             'status': 'error'
         }
 
@@ -210,6 +212,20 @@ def almacenarCartografia(instrid, wayid, elemosmid):
     cartografia.save()
 
     return serializers.serialize('python', [cartografia])[0]
+
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def elementosOsm(request):
+
+    elementosOsm = models.ElementoOsm.objects.all().values()
+
+    response = {
+        'code': 200,
+        'elementosOSM': list(elementosOsm),
+        'status': 'success'
+    }
+
+    return JsonResponse(response, status=response['code'], safe=False)
 
 def cartografiasInstrumento(request, instrid):
 

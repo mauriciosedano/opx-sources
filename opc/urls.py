@@ -122,6 +122,7 @@ urlpatterns = [
 
     path('generos/list/', utilidades.listadoGeneros),
     path('niveles-educativos/list/', utilidades.listadoNivelesEducativos),
+    path('elementos-osm/list/', osm.elementosOsm),
 
     path('barrios/list/', utilidades.listadoBarrios)
 ]
