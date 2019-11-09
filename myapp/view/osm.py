@@ -54,7 +54,7 @@ def agregarChangeset():
             return str(response.read(), 'utf-8')
 
         else:
-            raise TypeError("Error Al intentar Crear Changeset OSM " + str(response.read(), 'utf-8'))
+            raise TypeError("Error Al intentar Crear Changeset OSM: " + str(response.read(), 'utf-8'))
 
     except:
         raise TypeError("Error Al intentar Crear Changeset OSM " + str(response.read(), 'utf-8'))
@@ -158,7 +158,7 @@ def AgregarElemento(request, instrid):
 
             else:
                 xmlResponse = str(response.read(), 'utf-8')
-                raise TypeError("Error al momento de crear el elemento en OSM" + xmlResponse)
+                raise TypeError("Error al momento de crear el elemento en OSM: " + xmlResponse)
 
         else:
             raise TypeError("El tipo de instrumento es inválido")
