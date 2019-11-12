@@ -1,16 +1,19 @@
 import base64
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.db import connection
 from django.db.utils import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.http.response import JsonResponse
 from myapp import models
+from myapp.view.utilidades import dictfetchall
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated
 )
+from shapely.geometry import Polygon, LineString
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 import http.client
@@ -232,15 +235,62 @@ def cartografiasInstrumento(request, instrid):
     try:
         instrumento = models.Instrumento.objects.get(pk = instrid)
 
-        cartografias = models.Cartografia.filter(instrid__exact=instrid)
+        if instrumento.instrtipo == 2:
 
-        if len(cartografias) > 0:
+            query = "SELECT c.*, eo.nombre as tipo_elemento_osm, eo.closed_way FROM v1.cartografias as c INNER JOIN v1.elementos_osm as eo ON c.elemosmid = eo.elemosmid";
 
-            print(cartografias)
-            return HttpResponse("")
+            with connection.cursor() as cursor:
+                cursor.execute(query)
+                cartografias = dictfetchall(cursor)
+
+            if len(cartografias) > 0:
+
+                #Detalle de Way OSM
+                for ct in cartografias:
+                    wayHttpClient = http.client.HTTPSConnection(osmRestApiUrl)
+                    wayHttpClient.request('GET', '/api/0.6/way/' + ct['osmid'], None, osmHeaders())
+
+                    wayHttpResponse = wayHttpClient.getresponse()
+
+                    if wayHttpResponse.status == 200:
+                        xmlResponse = str(wayHttpResponse.read(), 'utf-8')
+                        xmlObject = ET.fromstring(xmlResponse)
+                        nodes = xmlObject.findall('way')[0].findall('nd')
+
+                        nodesGeometry = []
+
+                        #Detalle de cada uno de los nodos del way
+                        for node in nodes:
+                            print(node.get('ref'))
+                            print(type(node.get('ref')))
+                            nodeHttpClient = http.client.HTTPSConnection(osmRestApiUrl)
+                            nodeHttpClient.request('GET', '/api/0.6/node/' + node.get('ref'), None, osmHeaders())
+
+                            nodeHttpResponse = nodeHttpClient.getresponse()
+
+                            if nodeHttpResponse.status == 200:
+                                xmlResponse = str(nodeHttpResponse.read(), 'utf-8')
+                                xmlObject = ET.fromstring(xmlResponse)
+                                nodeElement = xmlObject.findall('node')[0]
+
+                                nodesGeometry.append((float(nodeElement.get('lon')), float(nodeElement.get('lat'))))
+
+
+                            else:
+                                raise TypeError("No se pudo obtener información de nodo OSM")
+
+                        print(nodesGeometry)
+
+                    else:
+                        raise TypeError("No se pudo obtener información de way OSM " + str(wayHttpResponse.read(), 'utf-8'))
+
+                response = cartografias
+
+            else:
+                raise ObjectDoesNotExist("No hay cartografias para este instrumento")
 
         else:
-            raise ObjectDoesNotExist("No hay cartografias para este instrumento")
+            raise TypeError("Instrumento Inválido")
 
     except ObjectDoesNotExist as e:
         response = {
@@ -254,3 +304,18 @@ def cartografiasInstrumento(request, instrid):
             'code': 400,
             'status': 'error'
         }
+
+    except TypeError as e:
+        response = {
+            'code': 400,
+            'message': str(e),
+            'status': 'error'
+        }
+
+    except:
+        response = {
+            'code': 500,
+            'status': 'error'
+        }
+
+    return JsonResponse(response, safe=False, status=response['code'])
