@@ -95,10 +95,10 @@ def AgregarElemento(request, instrid):
 
             # Creando Nodos
 
-            for node in coordinates:
+            for c in coordinates:
                 nodeCount -= 1
-                longitud = str(node['lon'])
-                latitud = str(node['lat'])
+                longitud = str(c['lng'])
+                latitud = str(c['lat'])
 
                 node = SubElement(create, 'node')
                 node.set('id', str(nodeCount))
@@ -198,11 +198,11 @@ def AgregarElemento(request, instrid):
             'status': 'error'
         }
 
-    # except:
-    #     response = {
-    #         'code': 500,
-    #         'status': 'error'
-    #     }
+    except:
+        response = {
+            'code': 500,
+            'status': 'error'
+        }
 
     return JsonResponse(response, status=response['code'])
 
