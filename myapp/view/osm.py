@@ -238,7 +238,7 @@ def cartografiasInstrumento(request, instrid):
 
         if instrumento.instrtipo == 2:
 
-            query = "SELECT c.*, eo.nombre as tipo_elemento_osm, eo.closed_way FROM v1.cartografias as c INNER JOIN v1.elementos_osm as eo ON c.elemosmid = eo.elemosmid";
+            query = "SELECT c.*, eo.nombre as tipo_elemento_osm, eo.closed_way FROM v1.cartografias as c INNER JOIN v1.elementos_osm as eo ON c.elemosmid = eo.elemosmid WHERE c.instrid = '" + instrid + "'";
 
             with connection.cursor() as cursor:
                 cursor.execute(query)
