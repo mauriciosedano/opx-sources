@@ -231,6 +231,8 @@ def elementosOsm(request):
 
     return JsonResponse(response, status=response['code'], safe=False)
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def cartografiasInstrumento(request, instrid):
 
     try:
