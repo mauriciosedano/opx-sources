@@ -13,9 +13,10 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated
 )
-from shapely.geometry import Polygon, LineString
+from shapely.geometry import Polygon, LineString, shape
 from xml.etree.ElementTree import Element, SubElement, tostring
 
+import geopandas
 import http.client
 import json
 # import json.decoder.jso
@@ -82,7 +83,7 @@ def AgregarElemento(request, instrid):
             osmelement = models.ElementoOsm.objects.get(pk = data['osmelement'])
 
             if osmelement.closed_way == 1:
-                coordinates = data['coordinates'][0:len(data['coordinates'])-1]
+                coordinates = data['coordinates']
             else:
                 coordinates = data['coordinates']
 
@@ -245,6 +246,8 @@ def cartografiasInstrumento(request, instrid):
 
             if len(cartografias) > 0:
 
+                geometries = []
+
                 #Detalle de Way OSM
                 for ct in cartografias:
                     wayHttpClient = http.client.HTTPSConnection(osmRestApiUrl)
@@ -257,12 +260,12 @@ def cartografiasInstrumento(request, instrid):
                         xmlObject = ET.fromstring(xmlResponse)
                         nodes = xmlObject.findall('way')[0].findall('nd')
 
+                        # print(xmlResponse)
+
                         nodesGeometry = []
 
                         #Detalle de cada uno de los nodos del way
                         for node in nodes:
-                            print(node.get('ref'))
-                            print(type(node.get('ref')))
                             nodeHttpClient = http.client.HTTPSConnection(osmRestApiUrl)
                             nodeHttpClient.request('GET', '/api/0.6/node/' + node.get('ref'), None, osmHeaders())
 
@@ -273,18 +276,40 @@ def cartografiasInstrumento(request, instrid):
                                 xmlObject = ET.fromstring(xmlResponse)
                                 nodeElement = xmlObject.findall('node')[0]
 
+                                # print(xmlResponse)
+
                                 nodesGeometry.append((float(nodeElement.get('lon')), float(nodeElement.get('lat'))))
 
 
                             else:
                                 raise TypeError("No se pudo obtener información de nodo OSM")
 
-                        print(nodesGeometry)
+                        if ct['closed_way'] == 1:
+                            geometry = Polygon(nodesGeometry)
+                        else:
+                            geometry = LineString(nodesGeometry)
+
+                        geometries.append(geometry)
 
                     else:
                         raise TypeError("No se pudo obtener información de way OSM " + str(wayHttpResponse.read(), 'utf-8'))
 
-                response = cartografias
+                geojson = geopandas.GeoSeries(geometries).__geo_interface__
+
+                # Agregando propiedades a cada uno de los Features del GEOJSON
+                for index, item in enumerate(geojson['features']):
+                    properties = {
+                        'id': str(cartografias[index]['cartografiaid']),
+                        'tipo': cartografias[index]['tipo_elemento_osm']
+                    }
+
+                    item['properties'] = properties
+
+                response = {
+                    'code': 200,
+                    'geojson': json.dumps(geojson),
+                    'status': 'success'
+                }
 
             else:
                 raise ObjectDoesNotExist("No hay cartografias para este instrumento")
