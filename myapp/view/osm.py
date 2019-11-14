@@ -346,3 +346,27 @@ def cartografiasInstrumento(request, instrid):
         }
 
     return JsonResponse(response, safe=False, status=response['code'])
+
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
+def eliminarCartografia(request, cartografiaid):
+
+    try:
+        cartografia = models.Cartografia.objects.get(pk = cartografiaid)
+        cartografia.delete()
+
+    except ObjectDoesNotExist:
+
+        response = {
+            'code': 404,
+            'status': 'error'
+        }
+
+    except ValidationError:
+
+        response = {
+            'code': 400,
+            'status': 'error'
+        }
+
+    return JsonResponse(response, status=response['code'], safe=False)
