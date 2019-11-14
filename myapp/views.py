@@ -1023,6 +1023,61 @@ def actualizarInstrumento(request, instrid):
 
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
+def almacenarEncuestas(instrumento, informacion):
+
+    try:
+        with transaction.atomic():
+            for info in informacion:
+                
+                try:
+                    models.Encuesta.objects.get(koboid__exact=info['_uuid'])
+                    
+                except ObjectDoesNotExist:
+                
+                    encuesta = models.Encuesta(instrid=instrumento.instrid, koboid = info['_uuid'], contenido=json.dumps(info))
+                    encuesta.full_clean()
+                    encuesta.save()
+            
+    except ValidationError as e:
+        
+        response = {
+            'code': 400,
+            'message': str(e),
+            'status': 'error'
+        }
+
+def revisarEncuesta(request, encuestaid):
+
+    try:
+        encuesta = models.Encuesta.objects.get(pk=encuestaid)
+
+        encuesta.observacion = request.GET.get('observacion')
+        encuesta.estado = request.GET.get('estado')
+
+        encuesta.full_clean()
+        encuesta.save()
+
+        response = {
+            'code': 200,
+            #'encuesta': model_to_dict(encuesta),
+            'status': 'success'
+        }
+
+    except ObjectDoesNotExist:
+        response = {
+            'code': 404,
+            'status': 'error'
+        }
+
+    except ValidationError as e:
+        response = {
+            'code': 400,
+            'errors': dict(e),
+            'status': 'error'
+        }
+
+    return JsonResponse(response, status=response['code'], safe=False)
+
 def informacionInstrumento(request, id):
 
     try:
@@ -1034,12 +1089,26 @@ def informacionInstrumento(request, id):
 
             if(isinstance(informacion, dict)):
 
-                informacion['tipoInstrumento'] = instrumento.instrtipo
+                almacenarEncuestas(instrumento, informacion['info'])
+                encuestasDB = models.Encuesta.objects.filter(instrid__exact=instrumento.instrid)
+                encuestas = []
 
+                for e in encuestasDB:
+                    contenido = json.loads(e.contenido)
+                    contenido['encuestaid'] = e.encuestaid
+                    contenido['estado'] = e.estado
+                    contenido['observacion'] = e.observacion
+
+                    encuestas.append(contenido)
+                
                 data = {
                     'status': 'success',
                     'code': 200,
-                    'info': informacion,
+                    'info': {
+                        'campos': informacion['campos'],
+                        'info': encuestas,
+                        'tipoInstrumento': instrumento.instrtipo
+                    },
                     'instrumento': model_to_dict(instrumento)
                 }
 
@@ -1062,7 +1131,7 @@ def informacionInstrumento(request, id):
                     'status': 'success',
                     'code': 200,
                     'info': informacion,
-                    'instrumento': instrumento
+                    'instrumento': model_to_dict(instrumento)
                 }
 
             else:

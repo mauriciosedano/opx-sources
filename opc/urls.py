@@ -97,6 +97,7 @@ urlpatterns = [
     path('instrumentos/mapear/<str:instrid>', osm.AgregarElemento),
     path('instrumentos/detalle-cartografia/<str:instrid>', osm.cartografiasInstrumento),
     path('instrumentos/eliminar-cartografia/<str:cartografiaid>', osm.eliminarCartografia),
+    path('instrumentos/revisar-encuesta/<str:encuestaid>', views.revisarEncuesta),
 
     path('proyectos/', proyecto.listadoProyectosView),
     path('proyectos/list/', proyecto.listadoProyectos),

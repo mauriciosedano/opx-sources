@@ -218,3 +218,15 @@ class ElementoOsm(models.Model):
 
     class Meta:
         db_table = '"v1"."elementos_osm"'
+
+class Encuesta(models.Model):
+    
+    encuestaid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    instrid = models.UUIDField()
+    koboid = models.UUIDField()
+    contenido = models.CharField(max_length=5000)
+    estado = models.IntegerField(default=0)
+    observacion = models.CharField(blank=True, max_length=3000, null=True)
+    
+    class Meta:
+        db_table = '"v1"."encuestas"'
