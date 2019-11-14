@@ -229,26 +229,52 @@ def actualizarTarea(request, tareid):
 
         tarea.tarenombre = request.POST.get('tarenombre')
         tarea.taretipo = request.POST.get('taretipo')
-        tarea.tarerestricgeo = "{}"
+        # tarea.tarerestricgeo = "{}"
         tarea.tarerestriccant = request.POST.get('tarerestriccant')
-        tarea.tarerestrictime = "{}"
+        # tarea.tarerestrictime = "{}"
         tarea.instrid = request.POST.get('instrid')
         tarea.proyid = request.POST.get('proyid')
         tarea.tarefechaejecucion = request.POST.get('tarefechaejecucion')
         tarea.taredescripcion = request.POST.get('taredescripcion')
+        tarea.tareestado = request.POST.get('tareestado')
         #tarea.geojson_subconjunto = request.POST.get('geojsonsubconjunto')
 
         tarea.full_clean()
 
         tarea.save()
 
-        return JsonResponse(serializers.serialize('python', [tarea]), safe=False)
+        response = {
+            'code': 200,
+            'tarea': serializers.serialize('python', [tarea])[0]
+        }
 
     except ObjectDoesNotExist:
-        return JsonResponse({'status': 'error'}, status=404)
+        response = {
+            'code': 404,
+            'status': 'error'
+        }
 
     except ValidationError as e:
-        return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
+
+        try:
+            errors = dict(e)
+        except ValueError:
+            errors = list(e)[0]
+
+        response = {
+            'code': 400,
+            'errors': errors,
+            'status': 'error'
+        }
+
+    except IntegrityError as e:
+        response = {
+            'code': 500,
+            'message': str(e),
+            'status': 'error'
+        }
+
+    return JsonResponse(response, safe=False, status=response['code'])
 
 def listadoTareasView(request):
 

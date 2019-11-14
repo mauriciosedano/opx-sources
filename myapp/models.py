@@ -159,6 +159,7 @@ class Tarea(models.Model):
     tarefechacreacion = models.DateTimeField(null = True, blank = True, default=datetime.today())
     tarefechaejecucion = models.DateField()
     taredescripcion = models.CharField(max_length=1000)
+    tareestado = models.IntegerField(default=0)
 
     class Meta:
         db_table = '"v1"."tareas"'

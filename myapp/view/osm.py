@@ -355,6 +355,11 @@ def eliminarCartografia(request, cartografiaid):
         cartografia = models.Cartografia.objects.get(pk = cartografiaid)
         cartografia.delete()
 
+        response = {
+            'code': 200,
+            'status': 'success'
+        }
+
     except ObjectDoesNotExist:
 
         response = {
