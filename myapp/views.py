@@ -1300,22 +1300,15 @@ def informacionFormularioKoboToolbox(id):
         # ============== Obteniendo campos del formulario====================
 
         client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout=10)
-        client.request('GET', '/assets/?format=json', '', headers)
+        client.request('GET', '/assets/' + id + '/?format=json', '', headers)
         response = client.getresponse()
 
         if (response.status == 200):
 
-            formulariosKoboToolbox = json.loads(response.read())['results']
-
-            for i in formulariosKoboToolbox:
-
-                if (i['uid'] == id):
-
-                    campos = i['summary']['labels']
-                    break
+            camposFormulario = json.loads(response.read())['content']['survey']
 
             data = {
-                'campos': campos,
+                'campos': camposFormulario,
                 'info': info
             }
 
