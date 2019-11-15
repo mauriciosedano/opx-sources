@@ -93,7 +93,7 @@ urlpatterns = [
     path('instrumentos/informacion/<str:id>', views.informacionInstrumentoView),
     path('instrumentos/encuesta/crear', views.creacionEncuestaView),
     path('instrumentos/formularios-kobotoolbox/list/', views.listadoFormulariosKoboToolbox),
-    path('instrumentos/enlace-formulario/<str:instrid>', views.enlaceFormularioKoboToolbox),
+    path('instrumentos/enlace-formulario/<str:tareid>', views.enlaceFormularioKoboToolbox),
     path('instrumentos/mapear/<str:instrid>', osm.AgregarElemento),
     path('instrumentos/detalle-cartografia/<str:instrid>', osm.cartografiasInstrumento),
     path('instrumentos/eliminar-cartografia/<str:cartografiaid>', osm.eliminarCartografia),

@@ -1289,23 +1289,17 @@ def informacionFormularioKoboToolbox(id):
 
     response = client.getresponse()
 
-    if(response.status != 200):
-
-        data = False
-
-    else:
+    if(response.status == 200):
 
         info = json.loads(response.read())
 
         # ============== Obteniendo campos del formulario====================
 
-        client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout=10)
-        client.request('GET', '/assets/' + id + '/?format=json', '', headers)
-        response = client.getresponse()
+        detalleFormulario = detalleFormularioKoboToolbox(id)
 
-        if (response.status == 200):
+        if (detalleFormulario):
 
-            camposFormulario = json.loads(response.read())['content']['survey']
+            camposFormulario = detalleFormulario['content']['survey']
 
             data = {
                 'campos': camposFormulario,
@@ -1313,41 +1307,73 @@ def informacionFormularioKoboToolbox(id):
             }
 
         else:
-
             data = False
+
+    else:
+        data = False
 
     client.close()
 
     return data
 
+def detalleFormularioKoboToolbox(id):
+
+    headers = {'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d'}
+
+    client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout=10)
+    client.request('GET', '/assets/' + id + '/?format=json', '', headers)
+    response = client.getresponse()
+
+    if (response.status == 200):
+
+        data = json.loads(response.read())
+
+    else:
+        data = False
+
+    return data
+
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
-def enlaceFormularioKoboToolbox(request, instrid):
+def enlaceFormularioKoboToolbox(request, tareid):
 
     headers = {'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d'}
 
     try:
-        instrumento = models.Instrumento.objects.get(pk = instrid)
+        tarea = models.Tarea.objects.get(pk = tareid)
+
+        instrumento = models.Instrumento.objects.get(pk = tarea.instrid)
 
         if instrumento.instrtipo == 1:
 
-            httpClient = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout = 10)
-            httpClient.request("GET", '/assets/' + instrumento.instridexterno + '/?format=json', '', headers)
-            response = httpClient.getresponse()
+            detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
 
-            if response.status == 200:
+            if detalleFormulario:
 
-                informacion = json.loads(response.read())
+                if(detalleFormulario['deployment__active']):
 
-                if(informacion['deployment__active']):
+                    if detalleFormulario['deployment__submission_count'] < tarea.tarerestriccant:
 
-                    enlace = informacion['deployment__links']['offline_url']
+                        enlace = detalleFormulario['deployment__links']['offline_url']
 
-                    data = {
-                        'code': 200,
-                        'enlace': enlace,
-                        'status': 'success'
-                    }
+                        data = {
+                            'code': 200,
+                            'enlace': enlace,
+                            'status': 'success'
+                        }
+
+                    else:
+
+                        # La tarea ya esta completada y se marca como terminada si esta en progreso
+                        if tarea.tareestado == 0:
+                            tarea.tareestado = 1
+                            tarea.save()
+
+                        data = {
+                            'code': 403,
+                            'message': 'Tarea completada',
+                            'status': 'error'
+                        }
 
                 else:
 

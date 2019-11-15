@@ -31,7 +31,8 @@ let informacionEncuesta = new Vue({
             "__version__",
             "formhub/uuid",
             "encuestaid",
-            "estado"
+            "estado",
+            "observacion"
         ],
         camposInformacion: []
     },
