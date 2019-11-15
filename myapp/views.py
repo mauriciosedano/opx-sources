@@ -1046,13 +1046,15 @@ def almacenarEncuestas(instrumento, informacion):
             'status': 'error'
         }
 
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def revisarEncuesta(request, encuestaid):
 
     try:
         encuesta = models.Encuesta.objects.get(pk=encuestaid)
 
-        encuesta.observacion = request.GET.get('observacion')
-        encuesta.estado = request.GET.get('estado')
+        encuesta.observacion = request.POST.get('observacion')
+        encuesta.estado = request.POST.get('estado')
 
         encuesta.full_clean()
         encuesta.save()
@@ -1078,6 +1080,8 @@ def revisarEncuesta(request, encuestaid):
 
     return JsonResponse(response, status=response['code'], safe=False)
 
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def informacionInstrumento(request, id):
 
     try:
