@@ -27,6 +27,7 @@ from rest_framework.permissions import (
     IsAuthenticated
 )
 
+from myapp.views import detalleFormularioKoboToolbox
 from myapp.view.utilidades import dictfetchall
 
 # =========================== Tareas ==============================
@@ -40,10 +41,10 @@ def listadoTareas(request):
         # Obtener página validación de la misma
         page = request.GET.get('page')
 
-        all = request.GET.get('all')
-
-        if(page is None):
+        if (page is None):
             page = 1
+
+        all = request.GET.get('all')
 
         # Obtener Búsqueda y validación de la misma
         search = request.GET.get('search')
@@ -59,6 +60,16 @@ def listadoTareas(request):
 
             # formatear respuesta de base de datos
             tareas = dictfetchall(cursor)
+
+            # Progreso de las Tareas
+            for t in tareas:
+                # Tipo encuesta
+                if t['taretipo'] == 1:
+                    instrumento = models.Instrumento.objects.get(pk=t['instrid'])
+                    detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
+                    progreso = (detalleFormulario['deployment__submission_count'] * 100) / t['tarerestriccant']
+
+                    t['progreso'] = progreso
 
             if all is not None and all == "1":
 
@@ -151,10 +162,20 @@ def detalleTarea(request, tareid):
     try:
         tarea = models.Tarea.objects.get(pk = tareid)
 
+        tareaDict = model_to_dict(tarea)
+        
+        # Tipo encuesta
+        if tareaDict['taretipo'] == 1:
+            instrumento = models.Instrumento.objects.get(pk=tareaDict['instrid'])
+            detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
+            progreso = (detalleFormulario['deployment__submission_count'] * 100) / tareaDict['tarerestriccant']
+
+            tareaDict['progreso'] = progreso
+
         data = {
             'code': 200,
             'status': 'success',
-            'tarea': model_to_dict(tarea)
+            'tarea': tareaDict
         }
 
     except ObjectDoesNotExist:
