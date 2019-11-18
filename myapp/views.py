@@ -1321,7 +1321,7 @@ def detalleFormularioKoboToolbox(id):
     headers = {'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d'}
 
     client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout=10)
-    client.request('GET', '/assets/' + id + '/?format=json', '', headers)
+    client.request('GET', '/assets/' + str(id) + '/?format=json', '', headers)
     response = client.getresponse()
 
     if (response.status == 200):

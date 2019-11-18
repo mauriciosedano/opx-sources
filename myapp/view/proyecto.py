@@ -4,8 +4,6 @@ import os
 import http.client
 from passlib.context import CryptContext
 
-from myapp import models
-
 from django.conf import settings
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -28,7 +26,9 @@ from rest_framework.permissions import (
     IsAuthenticated
 )
 
+from myapp import models
 from myapp.view.utilidades import dictfetchall
+from myapp.views import detalleFormularioKoboToolbox
 
 # ============================= Proyectos ========================
 
@@ -352,6 +352,14 @@ def detalleProyecto(request, proyid):
 
                 # Obtención de Tareas
                 tareas = models.Tarea.objects.filter(proyid__exact = proyid).values()
+
+                for t in tareas:
+                    if(t['taretipo'] == 1):
+                        instrumento = models.Instrumento.objects.get(pk = t['instrid'])
+                        detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
+
+                        if detalleFormulario:
+                            t['progreso'] = (detalleFormulario['deployment__submission_count'] * 100) / t['tarerestriccant']
 
                 data = {
                     'code': 200,
