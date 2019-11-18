@@ -56,6 +56,7 @@
                             <a @click.prevent="edicionProyecto = proyecto" data-toggle="modal" data-target="#editar-proyecto" class="dropdown-item" href="#"> Edición </a>
                             <a @click="eliminarProyecto(proyecto.proyid)" class="dropdown-item" href="#"> Eliminación </a>
                             <a class="dropdown-item" :href="'/equipos/proyecto/' + proyecto.proyid"> Equipo </a>
+                            <a class="dropdown-item" :href="'/proyectos/' + proyecto.proyid + '/tareas/'"> Tareas </a>
                           </div>
                         </div>
                       </td>

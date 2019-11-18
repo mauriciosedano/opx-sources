@@ -3,10 +3,18 @@ let tarea = new Vue({
     el: '#gestion-tareas',
     created(){
 
+        this.listadoProyectos();
+
         if(window.location.pathname == '/tareas/'){
 
             this.listadoTareas();
-            this.listadoProyectos();
+            this.general = true;
+
+        } else if(window.location.pathname.substr(48,6) == "tareas"){
+
+            this.proyectoID = window.location.pathname.substr(11, 36)
+            this.listadoTareasProyecto(this.proyectoID)
+            this.general = false;
         }
     },
     data: {
@@ -21,7 +29,9 @@ let tarea = new Vue({
         dimensionesTerritoriales: [],
         taskMap: {},
         dimensionTerritorialReferencia: {},
-        filterKey: ''
+        filterKey: '',
+        general: true,
+        proyectoID: null
     },
     methods: {
         listadoTareas(){
@@ -45,6 +55,27 @@ let tarea = new Vue({
                 if(response.data.code == 200 && response.data.status == 'success'){
 
                     this.tareas = response.data.tareas;
+                }
+            });
+        },
+        listadoTareasProyecto(proyectoid){
+
+            this.loader(true);
+
+            axios({
+                method: 'GET',
+                url: '/proyectos/detail/' + proyectoid,
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                this.loader(false);
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.tareas = response.data.detail.tareas;
                 }
             });
         },
@@ -86,7 +117,16 @@ let tarea = new Vue({
                     geojsonsubconjunto: null
                 };
                 this.restablecerMapa();
-                this.listadoTareas();
+
+                if(this.general){
+
+                    this.listadoTareas();
+
+                } else{
+
+                    this.listadoTareasProyecto(this.proyectoID);
+                }
+
 
                 this.loader(false);
 
@@ -143,7 +183,15 @@ let tarea = new Vue({
 
                     this.loader(false);
 
-                    this.listadoTareas();
+                    if(this.general){
+
+                        this.listadoTareas();
+
+                    } else{
+
+                        this.listadoTareasProyecto();
+                    }
+
 
                     Swal.fire(
                       'Eliminado!',
@@ -153,7 +201,14 @@ let tarea = new Vue({
                 })
                 .catch(response => {
 
-                     this.listadoTareas();
+                     if(this.general){
+
+                        this.listadoTareas();
+
+                     } else{
+
+                        this.listadoTareasProyecto();
+                     }
 
                      this.loader(false);
 
@@ -203,7 +258,15 @@ let tarea = new Vue({
             .then(response => {
 
                 $("#editar-tarea").modal('hide');
-                this.listadoTareas();
+
+                if(this.general){
+
+                    this.listadoTareas();
+
+                } else{
+
+                    this.listadoTareasProyecto();
+                }
                 this.loader(false);
 
                 Swal.fire(

@@ -340,7 +340,6 @@ def actualizarProyecto(request, proyid):
 def detalleProyecto(request, proyid):
 
     try:
-
         query = "select p.proynombre, p.proydescripcion, p.proyfechacreacion, p.proyfechacierre, p.proyestado, u.userfullname as proyectista  from v1.proyectos as p inner join v1.usuarios as u on u.userid = p.proypropietario where p.proyid = '" + proyid + "'"
         with connection.cursor() as cursor:
 
@@ -351,7 +350,10 @@ def detalleProyecto(request, proyid):
             if(len(proyecto) > 0):
 
                 # Obtención de Tareas
-                tareas = models.Tarea.objects.filter(proyid__exact = proyid).values()
+                #tareas = models.Tarea.objects.filter(proyid__exact = proyid).values()
+                queryTasks = "select t.*, i.instrnombre, p.proynombre from v1.tareas as t inner join v1.proyectos as p on t.proyid = p.proyid inner join v1.instrumentos as i on t.instrid = i.instrid where t.proyid = '" + proyid + "'"
+                cursor.execute(queryTasks)
+                tareas = dictfetchall(cursor)
 
                 for t in tareas:
                     if(t['taretipo'] == 1):
@@ -389,10 +391,6 @@ def detalleProyecto(request, proyid):
 
     return JsonResponse(data, status = data['code'], safe = False)
 
-def listadoProyectosView(request):
-
-    return render(request, 'proyectos/listado.html')
-
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def dimensionesTerritoriales(request, proyid):
@@ -423,3 +421,20 @@ def dimensionesTerritoriales(request, proyid):
         }
 
     return JsonResponse(data, safe = False, status = data['code'])
+
+def listadoProyectosView(request):
+
+    return render(request, 'proyectos/listado.html')
+
+def tareasProyectoView(request, proyid):
+
+    try:
+        proyecto = models.Proyecto.objects.get(pk=proyid)
+        data =  render(request, 'tareas/listado.html', {'proyecto':proyecto})
+    except ObjectDoesNotExist:
+        data = HttpResponse("", status=404)
+    except ValidationError:
+        data = HttpResponse("", status=400)
+
+    return data
+

@@ -90,7 +90,6 @@ urlpatterns = [
     path('instrumentos/<str:id>/informacion/', views.informacionInstrumento),
     path('instrumentos/<str:id>/implementar/', views.implementarFormularioKoboToolbox),
     path('instrumentos/<str:id>/verificar-implementacion/', views.verificarImplementaciónFormulario),
-    path('instrumentos/informacion/<str:id>', views.informacionInstrumentoView),
     path('instrumentos/encuesta/crear', views.creacionEncuestaView),
     path('instrumentos/formularios-kobotoolbox/list/', views.listadoFormulariosKoboToolbox),
     path('instrumentos/enlace-formulario/<str:tareid>', views.enlaceFormularioKoboToolbox),
@@ -106,6 +105,7 @@ urlpatterns = [
     path('proyectos/<str:proyid>', proyecto.actualizarProyecto),
     path('proyectos/detail/<str:proyid>', proyecto.detalleProyecto),
     path('proyectos/dimensiones-territoriales/<str:proyid>', proyecto.dimensionesTerritoriales),
+    path('proyectos/<str:proyid>/tareas/', proyecto.tareasProyectoView),
 
     path('roles/', views.listadoRolesView),
     path('roles/list/', views.listadoRoles),
@@ -121,6 +121,7 @@ urlpatterns = [
     path('tareas/<str:tareid>', tareas.actualizarTarea),
     path('tareas/datos-geoespaciales/', tareas.listadoTareasMapa),
     path('tareas/detail/<str:tareid>', tareas.detalleTarea),
+    path('tareas/<str:id>/validar/', views.informacionInstrumentoView),
 
     path('generos/list/', utilidades.listadoGeneros),
     path('niveles-educativos/list/', utilidades.listadoNivelesEducativos),
