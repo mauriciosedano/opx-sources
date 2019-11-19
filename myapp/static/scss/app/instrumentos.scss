@@ -8,3 +8,18 @@
     height: 400px;
     width: 100%;
 }
+
+.estado-encuesta.sin-validar{
+
+    color: orange;
+}
+
+.estado-encuesta.invalido{
+
+    color: red;
+}
+
+.estado-encuesta.valido{
+
+    color: green;
+}

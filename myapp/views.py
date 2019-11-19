@@ -26,6 +26,7 @@ from rest_framework.permissions import (
 )
 
 from myapp.view.utilidades import dictfetchall
+from myapp.view.osm import detalleCartografia
 
 # from rest_framework.response import Response
 # from rest_framework.status import (
@@ -1126,6 +1127,12 @@ def informacionInstrumento(request, id):
         elif instrumento.instrtipo == 2:
 
             informacion = informacionProyectoTM(instrumento.instridexterno)
+            informacionMapeo = detalleCartografia(str(instrumento.instrid))
+
+            if(informacionMapeo['code'] == 200):
+                geojson = informacionMapeo['geojson']
+            else:
+                geojson = []
 
             if (isinstance(informacion, dict)):
 
@@ -1135,6 +1142,7 @@ def informacionInstrumento(request, id):
                     'status': 'success',
                     'code': 200,
                     'info': informacion,
+                    'geojson': geojson,
                     'instrumento': model_to_dict(instrumento)
                 }
 
@@ -1170,7 +1178,7 @@ def informacionInstrumentoView(request, id):
     try:
         instrumento = models.Instrumento.objects.get(pk = id)
 
-        return render(request, "instrumentos/informacion-encuesta.html", {'instrumento': instrumento})
+        return render(request, "instrumentos/informacion.html", {'instrumento': instrumento})
 
     except ObjectDoesNotExist:
         return HttpResponse("", status = 404)

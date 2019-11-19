@@ -231,9 +231,7 @@ def elementosOsm(request):
 
     return JsonResponse(response, status=response['code'], safe=False)
 
-@api_view(["GET"])
-@permission_classes((IsAuthenticated,))
-def cartografiasInstrumento(request, instrid):
+def detalleCartografia(instrid):
 
     try:
         instrumento = models.Instrumento.objects.get(pk = instrid)
@@ -344,6 +342,15 @@ def cartografiasInstrumento(request, instrid):
             'code': 500,
             'status': 'error'
         }
+
+    return response
+
+
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def cartografiasInstrumento(request, instrid):
+
+    response = detalleCartografia(instrid)
 
     return JsonResponse(response, safe=False, status=response['code'])
 

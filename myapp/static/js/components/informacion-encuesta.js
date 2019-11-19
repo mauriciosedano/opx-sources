@@ -34,7 +34,11 @@ let informacionEncuesta = new Vue({
             "estado",
             "observacion"
         ],
-        camposInformacion: []
+        camposInformacion: [],
+        mapeoCampos: {},
+        encuestaID: 0,
+        detalleEncuesta: [],
+        observacionEncuesta: ''
     },
     methods: {
         informacionInstrumento(id){
@@ -66,10 +70,53 @@ let informacionEncuesta = new Vue({
         informacionEncuesta(info){
 
             this.informacion = info.info;
+            camposBackend = info.campos;
+
+            // Obtencion de campos del recurso
+            camposTotales = [];
+
+            for(let i = 0; i < camposBackend.length; i++){
+
+                if(camposBackend[i].hasOwnProperty('label')){
+
+                    camposTotales.push({
+                        label: camposBackend[i].label[0],
+                        value: camposBackend[i].$autoname
+                    });
+                }
+            }
 
             // Captura de campos de interés
-            let camposTotales = Object.keys(this.informacion[0])
+            for(let i = 0; i < camposTotales.length; i++){
 
+                let matchs = 0
+
+                for(let j = 0; j < this.camposIgnorados.length; j++){
+
+                    if(camposTotales[i].value == this.camposIgnorados[j]){
+
+                        matchs++;
+                    }
+
+                    if(j == this.camposIgnorados.length - 1 && matchs == 0){
+
+                        this.camposInformacion.push(camposTotales[i])
+                        this.mapeoCampos[camposTotales[i].value] = camposTotales[i].label;
+                    }
+                }
+
+            }
+
+            // Acotación de los 3 primeros campos de la encuesta
+            this.camposInformacion = this.camposInformacion.slice(0, 3);
+        },
+        obtenerDetalleEncuesta(info){
+
+            this.detalleEncuesta = [];
+
+            camposTotales = Object.keys(info);
+
+            // Captura de campos de interés
             for(let i = 0; i < camposTotales.length; i++){
 
                 let matchs = 0
@@ -83,11 +130,75 @@ let informacionEncuesta = new Vue({
 
                     if(j == this.camposIgnorados.length - 1 && matchs == 0){
 
-                        this.camposInformacion.push(camposTotales[i])
+                        //this.detalleEncuesta[camposTotales[i]] = info[camposTotales[i]];
+                        this.detalleEncuesta.push({
+                            label: this.mapeoCampos[camposTotales[i]],
+                            value: info[camposTotales[i]]
+                        });
                     }
                 }
 
             }
+
+            // Modal
+            $("#detalle-encuesta").modal({
+                show: true,
+                backdrop: 'static'
+            });
+        },
+        validarEncuesta(encuestaID, estado, observacion){
+
+            this.encuestaID = encuestaID;
+
+            if(estado == 1 && !observacion){
+
+                $("#validacion-encuesta").modal({
+                    show: true,
+                    backdrop: 'static'
+                });
+
+            } else if(estado == 1 && observacion){
+
+                data = {
+                    estado: estado,
+                    observacion: observacion
+                }
+
+                this.enviarValidacionEncuesta(data);
+
+            } else if(estado == 2){
+
+                data = {
+                    estado: estado
+                }
+
+                this.enviarValidacionEncuesta(data);
+
+            }
+        },
+        enviarValidacionEncuesta(data){
+
+            querystring = Object.keys(data).map(key => {
+
+                return key + "=" + data[key];
+            })
+            .join('&');
+
+            axios({
+                url: '/instrumentos/revisar-encuesta/' + this.encuestaID,
+                method: 'POST',
+                data: querystring,
+                headers: {
+                    Authorization: getToken(),
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+            .then(response => {
+
+                this.informacionInstrumento();
+                this.observacionEncuesta = '';
+                $("#validacion-encuesta").modal('hide');
+            });
         },
         informacionCartografia(info){
 

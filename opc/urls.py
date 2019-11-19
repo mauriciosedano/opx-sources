@@ -121,7 +121,7 @@ urlpatterns = [
     path('tareas/<str:tareid>', tareas.actualizarTarea),
     path('tareas/datos-geoespaciales/', tareas.listadoTareasMapa),
     path('tareas/detail/<str:tareid>', tareas.detalleTarea),
-    path('tareas/<str:id>/validar/', views.informacionInstrumentoView),
+    path('instrumentos/informacion/<str:id>', views.informacionInstrumentoView),
 
     path('generos/list/', utilidades.listadoGeneros),
     path('niveles-educativos/list/', utilidades.listadoNivelesEducativos),
