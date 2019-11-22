@@ -1132,7 +1132,7 @@ def informacionInstrumento(request, id):
             if(informacionMapeo['code'] == 200):
                 geojson = informacionMapeo['geojson']
             else:
-                geojson = []
+                geojson = "{}"
 
             if (isinstance(informacion, dict)):
 

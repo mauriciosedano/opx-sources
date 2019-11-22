@@ -68,12 +68,12 @@ urlpatterns = [
     path('decisiones-proyecto/delete/<str:desproid>/', views.eliminarDecisionProyecto),
     path('decisiones-proyecto/<str:desproid>', views.actualizarDecisionProyecto),
 
-    path('equipos/<str:proyid>', equipo.equipoProyecto),
+    path('equipos/list/<str:proyid>', equipo.equipoProyecto),
     path('equipos/<str:proyid>/usuarios-disponibles/', equipo.usuariosDisponiblesProyecto),
     path('equipos/store/', equipo.almacenamientoEquipo),
     path('equipos/delete/<str:equid>', equipo.eliminarEquipo),
     path('equipos/proyecto/<str:proyid>', equipo.equipoProyectoView),
-    #path('equipos/<str:equid>', equipo.actualizarEquipo),
+    path('equipos/<str:equid>', equipo.actualizarEquipo),
 
     path('acciones/list/', views.listadoAcciones),
 

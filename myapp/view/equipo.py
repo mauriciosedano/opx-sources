@@ -84,7 +84,7 @@ def almacenamientoEquipo(request):
 
         data = {
             'code': 201,
-            'intregrante': serializers.serialize('python', [equipo])[0],
+            'integrante': serializers.serialize('python', [equipo])[0],
             'status': 'success'
         }
 
@@ -140,27 +140,56 @@ def eliminarEquipo(request, equid):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
-@csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
 def actualizarEquipo(request, equid):
     try:
         equipo = models.Equipo.objects.get(pk=equid)
+        proyectoID = request.POST.get('proyid')
 
-        equipo.userid = request.POST.get('userid')
-        equipo.proyid = request.POST.get('proyid')
+        # Verificación de pertenencia de usuario a un proyecto
+        verificacionIntegrante = models.Equipo.objects.filter(proyid__exact = proyectoID).filter(userid__exact = equipo.userid)
 
-        equipo.full_clean()
+        if(len(verificacionIntegrante) == 0):
 
-        equipo.save()
+            equipo.proyid = proyectoID
+            equipo.full_clean()
+            equipo.save()
 
-        return JsonResponse(serializers.serialize('python', [equipo]), safe=False)
+            response = {
+                'code': 200,
+                #'integrante': serializers.serialize('python', [equipo])[0],
+                'status': 'success'
+            }
+
+        else:
+            response = {
+                'code': 403,
+                'message': 'El usuario ya pertenece al proyecto especificado',
+                'status': 'error'
+            }
 
     except ObjectDoesNotExist:
-        return JsonResponse({'status': 'error'}, status=404)
+        response = {
+            'code': 404,
+            'status': 'error'
+        }
 
     except ValidationError as e:
-        return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
+        response = {
+           'code': 400,
+           'errors': dict(e),
+           'status': 'error',
+        }
+
+    except IntegrityError as e:
+        response = {
+            'code': 500,
+            'errors': str(e),
+            'status': 'error'
+        }
+
+    return JsonResponse(response, status=response['code'])
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
@@ -170,7 +199,13 @@ def usuariosDisponiblesProyecto(request, proyid):
 
         proyecto = models.Proyecto.objects.get(pk = proyid)
 
+        # Busqueda de Usuarios
+        search = request.GET.get('search')
+
         query = "select u.userid, u.userfullname from v1.usuarios u where u.rolid = '0be58d4e-6735-481a-8740-739a73c3be86' and u.userid not in (select e.userid from v1.equipos e where e.proyid = '" + proyid + "')"
+
+        if search is not None:
+            query += "and u.userfullname ~* '" + search + "'"
 
         with connection.cursor() as cursor:
             cursor.execute(query)

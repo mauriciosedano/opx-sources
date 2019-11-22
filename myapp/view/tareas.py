@@ -49,10 +49,10 @@ def listadoTareas(request):
         # Obtener Búsqueda y validación de la misma
         search = request.GET.get('search')
 
-        if search is None:
-            query = "select v1.tareas.tareid, v1.tareas.tarenombre, v1.tareas.taretipo, v1.tareas.tarerestriccant, v1.tareas.tarefechacreacion, v1.tareas.tarefechaejecucion, v1.tareas.taredescripcion, v1.instrumentos.instrid, v1.instrumentos.instrnombre, v1.proyectos.proyid, v1.proyectos.proynombre from v1.tareas inner join v1.proyectos on v1.tareas.proyid = v1.proyectos.proyid inner join v1.instrumentos on v1.tareas.instrid = v1.instrumentos.instrid"
-        else:
-            query = "select v1.tareas.tareid, v1.tareas.tarenombre, v1.tareas.taretipo, v1.tareas.tarerestriccant, v1.tareas.tarefechacreacion, v1.tareas.tarefechaejecucion, v1.tareas.taredescripcion, v1.instrumentos.instrid, v1.instrumentos.instrnombre, v1.proyectos.proyid, v1.proyectos.proynombre from v1.tareas inner join v1.proyectos on v1.tareas.proyid = v1.proyectos.proyid inner join v1.instrumentos on v1.tareas.instrid = v1.instrumentos.instrid where v1.tareas.tarenombre ~* '" + search + "'"
+        query = "select v1.tareas.*, v1.instrumentos.instrnombre, v1.proyectos.proynombre from v1.tareas inner join v1.proyectos on v1.tareas.proyid = v1.proyectos.proyid inner join v1.instrumentos on v1.tareas.instrid = v1.instrumentos.instrid"
+
+        if search is not  None:
+            query += " where v1.tareas.tarenombre ~* '" + search + "'"
 
 
         with connection.cursor() as cursor:
@@ -65,11 +65,12 @@ def listadoTareas(request):
             for t in tareas:
                 # Tipo encuesta
                 if t['taretipo'] == 1:
-                    instrumento = models.Instrumento.objects.get(pk=t['instrid'])
-                    detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
-                    progreso = (detalleFormulario['deployment__submission_count'] * 100) / t['tarerestriccant']
-
-                    t['progreso'] = progreso
+                    pass
+                    # instrumento = models.Instrumento.objects.get(pk=t['instrid'])
+                    # detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
+                    # progreso = (detalleFormulario['deployment__submission_count'] * 100) / t['tarerestriccant']
+                    #
+                    # t['progreso'] = progreso
 
             if all is not None and all == "1":
 
@@ -259,6 +260,7 @@ def actualizarTarea(request, tareid):
         tarea.taredescripcion = request.POST.get('taredescripcion')
         tarea.tareestado = request.POST.get('tareestado')
         #tarea.geojson_subconjunto = request.POST.get('geojsonsubconjunto')
+        tarea.observaciones = request.POST.get('observaciones')
 
         tarea.full_clean()
 

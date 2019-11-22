@@ -61,6 +61,7 @@
                               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <a @click.prevent="edicionTarea = tarea; listadoInstrumentos(edicionTarea.taretipo)" data-toggle="modal" data-target="#editar-tarea" class="dropdown-item" href="#"> Edición </a>
                                 <a @click.prevent="eliminarTarea(tarea.tareid)" class="dropdown-item" href="#"> Eliminación </a>
+                                <a class="dropdown-item" :href="'/instrumentos/informacion/' + tarea.instrid"> Validar </a>
                               </div>
                             </div>
                           </td>

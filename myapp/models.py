@@ -160,6 +160,7 @@ class Tarea(models.Model):
     tarefechaejecucion = models.DateField()
     taredescripcion = models.CharField(max_length=1000)
     tareestado = models.IntegerField(default=0)
+    observaciones = models.TextField(blank = True, null = True)
 
     class Meta:
         db_table = '"v1"."tareas"'
