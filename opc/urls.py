@@ -23,7 +23,8 @@ from myapp.view import (
     proyecto,
     tareas,
     utilidades,
-    osm
+    osm,
+    contextualizacion
 )
 
 urlpatterns = [
@@ -127,5 +128,10 @@ urlpatterns = [
     path('niveles-educativos/list/', utilidades.listadoNivelesEducativos),
     path('elementos-osm/list/', osm.elementosOsm),
 
-    path('barrios/list/', utilidades.listadoBarrios)
+    path('barrios/list/', utilidades.listadoBarrios),
+
+    path('contextualizacion/categorizacion/', contextualizacion.categorizacion),
+    path('contextualizacion/todo/', contextualizacion.todo),
+    path('contextualizacion/mes/', contextualizacion.mensual),
+    path('contextualizacion/semana/', contextualizacion.semanal),
 ]

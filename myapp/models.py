@@ -231,3 +231,28 @@ class Encuesta(models.Model):
     
     class Meta:
         db_table = '"v1"."encuestas"'
+
+class Conflictividad(models.Model):
+
+    confid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    nombre = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = '"v1"."conflictividades"'
+
+class Contextualizacion(models.Model):
+
+    contxtid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    fecha_hecho = models.DateField()
+    hora_hecho = models.TimeField()
+    dia = models.IntegerField()
+    confid = models.UUIDField()
+    generoid = models.UUIDField()
+    edad = models.IntegerField()
+    nivelid = models.UUIDField()
+    nombre_barrio = models.CharField(max_length=300)
+    cantidad = models.IntegerField()
+    barrioid = models.IntegerField()
+
+    class Meta:
+        db_table = '"v1"."contextualizaciones"'
