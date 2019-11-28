@@ -74,21 +74,21 @@ def categorizacion(request):
 
             with connection.cursor() as cursor:
                 cursor.execute(queryIndicadorCiudad)
-                indicadorCiudad = dictfetchall(cursor)[0]['count']
+                indicadorCiudad = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 cursor.execute(queryIndicadorUbicacion)
-                indicadorUbicacion = dictfetchall(cursor)[0]['count']
+                indicadorUbicacion = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 cursor.execute(queryIndicadorSeleccion)
-                indicadorSeleccion = dictfetchall(cursor)[0]['count']
+                indicadorSeleccion = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 cursor.execute(queryIndicadorPerfil)
-                indicadorPerfil = dictfetchall(cursor)[0]['count']
+                indicadorPerfil = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
-                if(indicadorCiudad is not None):
+                if(indicadorCiudad != 0):
                     indicadorPromedio = indicadorCiudad / bisiesto(int(year))
                 else:
-                    indicadorPromedio = None
+                    indicadorPromedio = 0
 
             data.append({
                 'conflictividad': model_to_dict(conf),
@@ -177,7 +177,7 @@ def todo(request):
 
                 # Indicador Ciudad
                 cursor.execute(queryIndicadorCiudad)
-                indicadorCiudad = dictfetchall(cursor)[0]['count']
+                indicadorCiudad = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesCiudad.append({
                     "x": count,
@@ -186,7 +186,7 @@ def todo(request):
 
                 # Indicador Ubicación
                 cursor.execute(queryIndicadorUbicacion)
-                indicadorUbicacion = dictfetchall(cursor)[0]['count']
+                indicadorUbicacion = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesUbicacion.append({
                     "x": count,
@@ -195,7 +195,7 @@ def todo(request):
 
                 # Indicador Selección
                 cursor.execute(queryIndicadorSeleccion)
-                indicadorSeleccion = dictfetchall(cursor)[0]['count']
+                indicadorSeleccion = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesSeleccion.append({
                     "x": count,
@@ -204,7 +204,7 @@ def todo(request):
 
                 # Indicador Perfil
                 cursor.execute(queryIndicadorPerfil)
-                indicadorPerfil = dictfetchall(cursor)[0]['count']
+                indicadorPerfil = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesPerfil.append({
                     "x": count,
@@ -365,7 +365,7 @@ def mensual(request):
 
                 #Indicador Ciudad
                 cursor.execute(queryIndicadorCiudad)
-                indicadorCiudad = dictfetchall(cursor)[0]['count']
+                indicadorCiudad = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesCiudad.append({
                     'x': mes['label'],
@@ -374,7 +374,7 @@ def mensual(request):
 
                 #Indicador Ubicación
                 cursor.execute(queryIndicadorUbicacion)
-                indicadorUbicacion = dictfetchall(cursor)[0]['count']
+                indicadorUbicacion = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesUbicacion.append({
                     'x': mes['label'],
@@ -383,7 +383,7 @@ def mensual(request):
 
                 #Indicador Selección
                 cursor.execute(queryIndicadorSeleccion)
-                indicadorSeleccion = dictfetchall(cursor)[0]['count']
+                indicadorSeleccion = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesSeleccion.append({
                     'x': mes['label'],
@@ -392,7 +392,7 @@ def mensual(request):
 
                 #Indicador Perfil
                 cursor.execute(queryIndicadorPerfil)
-                indicadorPerfil = dictfetchall(cursor)[0]['count']
+                indicadorPerfil = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesPerfil.append({
                     'x': mes['label'],
@@ -523,7 +523,7 @@ def semanal(request):
 
                 #Indicador Ciudad
                 cursor.execute(queryIndicadorCiudad)
-                indicadorCiudad = dictfetchall(cursor)[0]['count']
+                indicadorCiudad = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesCiudad.append({
                     'x': sem['label'],
@@ -532,7 +532,7 @@ def semanal(request):
 
                 #Indicador Ubicación
                 cursor.execute(queryIndicadorUbicacion)
-                indicadorUbicacion = dictfetchall(cursor)[0]['count']
+                indicadorUbicacion = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesUbicacion.append({
                     'x': sem['label'],
@@ -541,7 +541,7 @@ def semanal(request):
 
                 #Indicador Selección
                 cursor.execute(queryIndicadorSeleccion)
-                indicadorSeleccion = dictfetchall(cursor)[0]['count']
+                indicadorSeleccion = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesSeleccion.append({
                     'x': sem['label'],
@@ -550,7 +550,7 @@ def semanal(request):
 
                 #Indicador Perfil
                 cursor.execute(queryIndicadorPerfil)
-                indicadorPerfil = dictfetchall(cursor)[0]['count']
+                indicadorPerfil = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesPerfil.append({
                     'x': sem['label'],
@@ -673,7 +673,7 @@ def dia(request):
 
                 # Indicador Ciudad
                 cursor.execute(queryIndicadorCiudad)
-                indicadorCiudad = dictfetchall(cursor)[0]['count']
+                indicadorCiudad = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesCiudad.append({
                     'x': str(hora) + 'h',
@@ -682,7 +682,7 @@ def dia(request):
 
                 # Indicador Ubicación
                 cursor.execute(queryIndicadorUbicacion)
-                indicadorUbicacion = dictfetchall(cursor)[0]['count']
+                indicadorUbicacion = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesUbicacion.append({
                     'x': str(hora) + 'h',
@@ -691,7 +691,7 @@ def dia(request):
 
                 # Indicador Selección
                 cursor.execute(queryIndicadorSeleccion)
-                indicadorSeleccion = dictfetchall(cursor)[0]['count']
+                indicadorSeleccion = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesSeleccion.append({
                     'x': str(hora) + 'h',
@@ -700,7 +700,7 @@ def dia(request):
 
                 # Indicador Perfil
                 cursor.execute(queryIndicadorPerfil)
-                indicadorPerfil = dictfetchall(cursor)[0]['count']
+                indicadorPerfil = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
                 conflictividadesPerfil.append({
                     'x': str(hora) + 'h',
@@ -742,7 +742,6 @@ def dia(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
-
 def calculoEdad(born):
 
     today = date.today()
@@ -762,3 +761,12 @@ def bisiesto(ano, anio=True, mes=False):
             data = 28
 
     return data
+
+def verificacionExistenciaConflictividades(cantidad):
+
+    if cantidad is None:
+        response = 0
+    else:
+        response = cantidad
+
+    return response
