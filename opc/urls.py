@@ -134,4 +134,5 @@ urlpatterns = [
     path('contextualizacion/todo/', contextualizacion.todo),
     path('contextualizacion/mes/', contextualizacion.mensual),
     path('contextualizacion/semana/', contextualizacion.semanal),
+    path('contextualizacion/dia/', contextualizacion.dia)
 ]

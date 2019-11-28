@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core import serializers
 from django.db import connection
 from django.forms.models import model_to_dict
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, HttpResponse
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import (
@@ -592,7 +592,156 @@ def semanal(request):
 
 def dia(request):
 
-    pass
+    barrioUbicacion = request.GET.get('barrioUbicacion')
+    barrioSeleccion = request.GET.get('barrioSeleccion')
+    year = request.GET.get('year')
+
+    # Decodificando el access token
+    tokenBackend = TokenBackend(settings.SIMPLE_JWT['ALGORITHM'], settings.SIMPLE_JWT['SIGNING_KEY'],
+                                settings.SIMPLE_JWT['VERIFYING_KEY'])
+    tokenDecoded = tokenBackend.decode(request.META['HTTP_AUTHORIZATION'].split()[1], verify=True)
+
+    # consultando el usuario
+    user = Usuario.objects.get(pk=tokenDecoded['user_id'])
+    edadUsuario = calculoEdad(user.fecha_nacimiento)
+
+    if barrioUbicacion is not None and barrioSeleccion is not None and year is not None:
+
+        conflictividadesCiudad = []
+        conflictividadesUbicacion = []
+        conflictividadesSeleccion = []
+        conflictividadesPerfil = []
+
+        diasSemana = {
+            'Sunday': 1,
+            'Monday': 2,
+            'Tuesday': 3,
+            'Wednesday': 4,
+            'Thursday': 5,
+            'Friday': 6,
+            'Saturday': 7
+        }
+        diaSemana = diasSemana.get(date.today().strftime("%A"))
+        hora = 0
+
+        while hora <= 23:
+
+            if hora < 10:
+                horaInicio = "0{}:00:00".format(str(hora))
+                horaFin = "0{}:59:59".format(str(hora))
+
+            else:
+                horaInicio = "{}:00:00".format(str(hora))
+                horaFin = "{}:59:59".format(str(hora))
+
+            queryIndicadorCiudad = "SELECT SUM(t.cantidad) as count FROM (" \
+                                   "SELECT * FROM v1.contextualizaciones " \
+                                   "WHERE dia = {1} and " \
+                                   "(fecha_hecho between '{0}-01-01' and '{0}-12-31') and" \
+                                   "(hora_hecho between '{2}' and '{3}')) t" \
+                                   .format(year, diaSemana, horaInicio, horaFin)
+
+
+            queryIndicadorUbicacion = "SELECT SUM(t.cantidad) as count FROM (" \
+                                      "SELECT * FROM v1.contextualizaciones " \
+                                      "WHERE dia = {1} and " \
+                                      "barrioid = {4} and " \
+                                      "(fecha_hecho between '{0}-01-01' and '{0}-12-31') and" \
+                                      "(hora_hecho between '{2}' and '{3}')) t" \
+                                      .format(year, diaSemana, horaInicio, horaFin, barrioUbicacion)
+
+            queryIndicadorSeleccion = "SELECT SUM(t.cantidad) as count FROM (" \
+                                      "SELECT * FROM v1.contextualizaciones " \
+                                      "WHERE dia = {1} and " \
+                                      "barrioid = {4} and " \
+                                      "(fecha_hecho between '{0}-01-01' and '{0}-12-31') and" \
+                                      "(hora_hecho between '{2}' and '{3}')) t" \
+                                      .format(year, diaSemana, horaInicio, horaFin, barrioSeleccion)
+
+            queryIndicadorPerfil = "SELECT SUM(t.cantidad) as count FROM (" \
+                                   "SELECT * FROM v1.contextualizaciones " \
+                                   "WHERE dia = {1} " \
+                                   "and barrioid = {4}" \
+                                   "and generoid = '{5}' " \
+                                   "and nivelid = '{6}' " \
+                                   "and edad = {7} " \
+                                   "and (fecha_hecho between '{0}-01-01' and '{0}-12-31') " \
+                                   "and (hora_hecho between '{2}' and '{3}')) t" \
+                                   .format(year, diaSemana, horaInicio, horaFin, user.barrioid, user.generoid, user.nivel_educativo_id, edadUsuario)
+
+            with connection.cursor() as cursor:
+
+                # Indicador Ciudad
+                cursor.execute(queryIndicadorCiudad)
+                indicadorCiudad = dictfetchall(cursor)[0]['count']
+
+                conflictividadesCiudad.append({
+                    'x': str(hora) + 'h',
+                    'y': indicadorCiudad
+                })
+
+                # Indicador Ubicación
+                cursor.execute(queryIndicadorUbicacion)
+                indicadorUbicacion = dictfetchall(cursor)[0]['count']
+
+                conflictividadesUbicacion.append({
+                    'x': str(hora) + 'h',
+                    'y': indicadorUbicacion
+                })
+
+                # Indicador Selección
+                cursor.execute(queryIndicadorSeleccion)
+                indicadorSeleccion = dictfetchall(cursor)[0]['count']
+
+                conflictividadesSeleccion.append({
+                    'x': str(hora) + 'h',
+                    'y': indicadorSeleccion
+                })
+
+                # Indicador Perfil
+                cursor.execute(queryIndicadorPerfil)
+                indicadorPerfil = dictfetchall(cursor)[0]['count']
+
+                conflictividadesPerfil.append({
+                    'x': str(hora) + 'h',
+                    'y': indicadorPerfil
+                })
+
+            hora += 1
+
+        data = [
+            {
+                'indicador': 'ciudad',
+                'conflictividades': conflictividadesCiudad
+            },
+            {
+                'indicador': 'Ubicación',
+                'conflictividades': conflictividadesUbicacion
+            },
+            {
+                'indicador': 'Selección',
+                'conflictividades': conflictividadesSeleccion
+            },
+            {
+                'indicador': 'Perfil',
+                'conflictividades': conflictividadesPerfil
+            }
+        ]
+
+        response = {
+            'code': 200,
+            'data': data,
+            'status': 'success'
+        }
+
+    else:
+        response = {
+            'code': 400,
+            'status': 'error'
+        }
+
+    return JsonResponse(response, safe=False, status=response['code'])
+
 
 def calculoEdad(born):
 
