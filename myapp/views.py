@@ -246,6 +246,12 @@ def eliminarUsuario(request, userid):
 def actualizarUsuario(request, userid):
     
     try:
+
+        # Obteniendo datos respecto a la ubicacion del usuario
+        latitud = request.POST.get('latitud')
+        longitud = request.POST.get('longitud')
+
+        # Asignando la nueva información al usuario
         usuario = models.Usuario.objects.get(pk = userid)
 
         usuario.useremail = request.POST.get('useremail')
@@ -257,6 +263,13 @@ def actualizarUsuario(request, userid):
         usuario.nivel_educativo_id = request.POST.get('nivel_educativo_id')
         usuario.telefono = request.POST.get('telefono')
 
+        #Asignando la información de ubicacion al usuario en caso de ser enviada
+        if latitud is not None and longitud is not None:
+            usuario.latitud = latitud
+            usuario.longitud = longitud
+            usuario.horaubicacion = datetime.today()
+
+        #Asignando la nueva contraseña en caso de ser enviada
         if request.POST.get('password') is not None and len(request.POST.get('password')) > 0:
 
             # Contexto Passlib

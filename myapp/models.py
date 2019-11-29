@@ -20,6 +20,9 @@ class Usuario(AbstractBaseUser):
     barrioid = models.IntegerField()
     nivel_educativo_id = models.UUIDField()
     telefono = models.CharField(max_length=20)
+    latitud = models.CharField(blank=True, null=True, max_length=30)
+    longitud = models.CharField(blank=True, null=True, max_length=30)
+    horaubicacion = models.CharField(blank=True, null=True, max_length=100)
 
     objects = MyUserManager()
 
@@ -125,7 +128,7 @@ class Proyecto(models.Model):
     proynombre = models.CharField(max_length = 255)
     proydescripcion = models.CharField(max_length = 1000)
     proyidexterno = models.CharField(max_length = 255)
-    proyfechacreacion = models.DateTimeField()
+    proyfechacreacion = models.CharField(max_length=100)
     proyfechacierre = models.DateField()
     proyestado = models.IntegerField()
     proypropietario = models.UUIDField()

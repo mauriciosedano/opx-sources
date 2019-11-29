@@ -98,7 +98,17 @@ def listadoProyectos(request):
 
             if 'user' in locals() and str(user.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a':
 
-                p['dimensiones_territoriales'] = list(models.DelimitacionGeografica.objects.filter(proyid__exact = p['proyid']).values())
+                p['dimensiones_territoriales'] = []
+                dimensionesTerritoriales = list(models.DelimitacionGeografica.objects.filter(proyid__exact = p['proyid']).values())
+
+                for dim in dimensionesTerritoriales:
+                    tareas = list(models.Tarea.objects.filter(dimensionid__exact=dim['dimensionid'])\
+                                                      .filter(proyid = p['proyid'])\
+                                                      .values())
+
+                    dim['tareas'] = tareas
+
+                    p['dimensiones_territoriales'].append(dim)
 
             listadoProyectos.append(p)
 
