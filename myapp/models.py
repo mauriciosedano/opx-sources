@@ -126,9 +126,10 @@ class Proyecto(models.Model):
     proydescripcion = models.CharField(max_length = 1000)
     proyidexterno = models.CharField(max_length = 255)
     proyfechacreacion = models.DateTimeField()
-    proyfechacierre = models.DateTimeField(null = True, blank = True)
+    proyfechacierre = models.DateField()
     proyestado = models.IntegerField()
     proypropietario = models.UUIDField()
+    proyfechainicio = models.DateField()
 
     class Meta:
         db_table = '"v1"."proyectos"'

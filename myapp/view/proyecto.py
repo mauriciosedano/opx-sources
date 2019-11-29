@@ -92,7 +92,14 @@ def listadoProyectos(request):
 
         listadoProyectos = []
         for p in proyectos:
+
+            #Consulta del proyectista
             p['proyectista'] = models.Usuario.objects.get(pk = p['proypropietario']).userfullname
+
+            if 'user' in locals() and str(user.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a':
+
+                p['dimensiones_territoriales'] = list(models.DelimitacionGeografica.objects.filter(proyid__exact = p['proyid']).values())
+
             listadoProyectos.append(p)
 
         if all is not None and all == "1":
@@ -150,6 +157,7 @@ def almacenamientoProyecto(request):
     proyDescripcion = request.POST.get('proydescripcion')
     proyIdExterno = 12345
     proyFechaCreacion = datetime.today()
+    proyfechainicio = request.POST.get('proyfechainicio')
     proyFechaCierre = request.POST.get('proyfechacierre')
     proyEstado = 1
     decisiones = json.loads(request.POST.get('decisiones'))
@@ -157,7 +165,9 @@ def almacenamientoProyecto(request):
     propietario = tokenDecoded['user_id']
     delimitacionGeograficas = request.POST.get('delimitacionesGeograficas')
 
-    proyecto = models.Proyecto(proynombre = proyNombre, proydescripcion = proyDescripcion, proyidexterno = proyIdExterno, proyfechacreacion = proyFechaCreacion, proyfechacierre = proyFechaCierre, proyestado = proyEstado, proypropietario = propietario)
+    proyecto = models.Proyecto(proynombre = proyNombre, proydescripcion = proyDescripcion, proyidexterno = proyIdExterno, \
+                               proyfechacreacion = proyFechaCreacion, proyfechainicio = proyfechainicio, proyfechacierre = proyFechaCierre, \
+                               proyestado = proyEstado, proypropietario = propietario)
 
     try:
         proyecto.full_clean()
@@ -286,11 +296,13 @@ def actualizarProyecto(request, proyid):
 
         proyecto.proynombre = request.POST.get('proynombre')
         proyecto.proydescripcion = request.POST.get('proydescripcion')
+        proyecto.proyfechainicio = request.POST.get('proyfechainicio')
+        proyecto.proyfechacierre = request.POST.get('proyfechacierre')
+
         decisiones = json.loads(request.POST.get('decisiones'))
         contextos = json.loads(request.POST.get('contextos'))
 
         proyecto.full_clean()
-
         proyecto.save()
 
         # ================ Actualizacion de decisiones ===============================

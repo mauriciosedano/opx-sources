@@ -4,7 +4,8 @@ let equipo = new Vue({
     data: {
         equipo: [],
         usuariosDisponibles: [],
-        proyectoID: ''
+        proyectoID: '',
+        loading: false,
     },
     created(){
 
@@ -18,14 +19,18 @@ let equipo = new Vue({
     methods: {
         obtenerEquipo(){
 
+            this.loader(true);
+
             axios({
-                url: '/equipos/' + this.proyectoID,
+                url: '/equipos/list/' + this.proyectoID,
                 method: 'GET',
                 headers: {
                     Authorization: getToken()
                 }
             })
             .then(response => {
+
+                this.loader(false);
 
                 if(response.data.code == 200 && response.data.status == 'success'){
 
@@ -89,6 +94,10 @@ let equipo = new Vue({
                     this.obtenerUsuariosDisponibles();
                 }
             })
+        },
+        loader(status){
+
+            this.loading = status;
         }
     }
 })

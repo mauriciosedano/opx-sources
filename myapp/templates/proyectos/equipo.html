@@ -2,7 +2,12 @@
 
 {% block content %}
 
-    <div class="row" id="gestion-equipo">
+    <div class="container-fluid" id="gestion-equipo">
+
+      <div :class="{loading:loading}">.</div>
+
+      <div class="row">
+
         <!-- Equipo del proyecto -->
         <div class="col-md-8">
           <div class="card">
@@ -79,6 +84,9 @@
             </div>
           </div>
         </div>
+
+      </div>
+
     </div>
 
 {% endblock %}
