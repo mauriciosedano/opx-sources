@@ -17,7 +17,7 @@ class Usuario(AbstractBaseUser):
     userestado = models.IntegerField()
     fecha_nacimiento = models.DateField()
     generoid = models.UUIDField()
-    barrioid = models.UUIDField(max_length=500)
+    barrioid = models.IntegerField()
     nivel_educativo_id = models.UUIDField()
     telefono = models.CharField(max_length=20)
 
@@ -193,7 +193,7 @@ class NivelEducativo(models.Model):
 
 class Barrio(models.Model):
 
-    barrioid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    barrioid = models.IntegerField(editable=False, primary_key=True)
     nombre = models.CharField(max_length=100)
 
     class Meta:
