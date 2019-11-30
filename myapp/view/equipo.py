@@ -42,7 +42,7 @@ def equipoProyecto(request, proyid):
 
         else:
 
-            query = "select e.equid, u.userfullname from v1.equipos as e inner join v1.usuarios as u on u.userid = e.userid where e.proyid = '" + proyid + "'"
+            query = "select e.equid, u.userfullname, u.latitud, u.longitud, u.horaubicacion from v1.equipos as e inner join v1.usuarios as u on u.userid = e.userid where e.proyid = '" + proyid + "'"
 
             with connection.cursor() as cursor:
                 cursor.execute(query)

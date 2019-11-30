@@ -130,7 +130,7 @@ def listadoUsuarios(request):
     # json_res = serializers.serialize('python', users)
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT userid, userfullname, useremail, userestado, v1.usuarios.rolid, fecha_nacimiento, barrioid, generoid, nivel_educativo_id, telefono, v1.roles.rolname FROM v1.usuarios INNER JOIN v1.roles ON v1.roles.rolid = v1.usuarios.rolid")
+        cursor.execute("SELECT userid, userfullname, useremail, userestado, v1.usuarios.rolid, fecha_nacimiento, barrioid, generoid, nivel_educativo_id, telefono, v1.roles.rolname, latitud, longitud, horaubicacion FROM v1.usuarios INNER JOIN v1.roles ON v1.roles.rolid = v1.usuarios.rolid")
         columns = dictfetchall(cursor)
 
         return JsonResponse(columns, safe=False)

@@ -18,100 +18,122 @@ from myapp.models import Contextualizacion, Conflictividad, Usuario
 from myapp.view.utilidades import dictfetchall
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((AllowAny,))
 def categorizacion(request):
 
-    barrioUbicacion = request.GET.get('barrioUbicacion')
-    barrioSeleccion = request.GET.get('barrioSeleccion')
-    year = request.GET.get('year')
+    try:
+        barrioUbicacion = request.GET.get('barrioUbicacion')
+        barrioSeleccion = request.GET.get('barrioSeleccion')
+        year = request.GET.get('year')
 
-    # Decodificando el access token
-    tokenBackend = TokenBackend(settings.SIMPLE_JWT['ALGORITHM'], settings.SIMPLE_JWT['SIGNING_KEY'],
-                                settings.SIMPLE_JWT['VERIFYING_KEY'])
-    tokenDecoded = tokenBackend.decode(request.META['HTTP_AUTHORIZATION'].split()[1], verify=True)
+        if request.META['HTTP_AUTHORIZATION'] != 'null':
 
-    # consultando el usuario
-    user = Usuario.objects.get(pk=tokenDecoded['user_id'])
-    edadUsuario = calculoEdad(user.fecha_nacimiento)
+            # Decodificando el access token
+            tokenBackend = TokenBackend(settings.SIMPLE_JWT['ALGORITHM'], settings.SIMPLE_JWT['SIGNING_KEY'],
+                                        settings.SIMPLE_JWT['VERIFYING_KEY'])
+            tokenDecoded = tokenBackend.decode(request.META['HTTP_AUTHORIZATION'].split()[1], verify=True)
 
-    if barrioUbicacion is not None and barrioSeleccion is not None and year is not None:
+            # consultando el usuario
+            user = Usuario.objects.get(pk=tokenDecoded['user_id'])
+            edadUsuario = calculoEdad(user.fecha_nacimiento)
 
-        conflictividades = Conflictividad.objects.all()
-        data = []
+        if barrioUbicacion is not None and barrioSeleccion is not None and year is not None:
 
-        for conf in conflictividades:
+            conflictividades = Conflictividad.objects.all()
+            data = []
 
-            queryIndicadorCiudad = "select SUM(t.cantidad) as count from \
-                                    (select * from v1.contextualizaciones \
-                                    where (confid = '{0}') \
-                                    and (fecha_hecho between '{1}-01-01' and '{1}-12-31')) t;" \
-                                    .format(conf.confid, year)
+            for conf in conflictividades:
 
-            queryIndicadorUbicacion = "select SUM(t.cantidad) as count from \
-                                    (select * from v1.contextualizaciones \
-                                    where confid = '{0}' \
-                                    and barrioid = '{1}' \
-                                    and (fecha_hecho between '{2}-01-01' and '{2}-12-31')) t;" \
-                                    .format(conf.confid, barrioUbicacion, year)
+                queryIndicadorCiudad = "select SUM(t.cantidad) as count from \
+                                        (select * from v1.contextualizaciones \
+                                        where (confid = '{0}') \
+                                        and (fecha_hecho between '{1}-01-01' and '{1}-12-31')) t;" \
+                                        .format(conf.confid, year)
 
-            queryIndicadorSeleccion = "select SUM(t.cantidad) as count from \
-                                       (select * from v1.contextualizaciones \
-                                       where confid = '{0}' \
-                                       and barrioid = '{1}' \
-                                       and (fecha_hecho between '{2}-01-01' and '{2}-12-31')) t;" \
-                                      .format(conf.confid, barrioSeleccion, year)
+                queryIndicadorUbicacion = "select SUM(t.cantidad) as count from \
+                                        (select * from v1.contextualizaciones \
+                                        where confid = '{0}' \
+                                        and barrioid = '{1}' \
+                                        and (fecha_hecho between '{2}-01-01' and '{2}-12-31')) t;" \
+                                        .format(conf.confid, barrioUbicacion, year)
 
-            queryIndicadorPerfil = "select SUM(t.cantidad) as count from \
-                                       (select * from v1.contextualizaciones \
-                                       where confid = '{0}' \
-                                       and barrioid = {1} \
-                                       and generoid = '{2}' \
-                                       and nivelid = '{3}' \
-                                       and edad = {4} \
-                                       and (fecha_hecho between '{5}-01-01' and '{5}-12-31')) t;" \
-                                       .format(conf.confid, user.barrioid, user.generoid, user.nivel_educativo_id, edadUsuario, year)
+                queryIndicadorSeleccion = "select SUM(t.cantidad) as count from \
+                                           (select * from v1.contextualizaciones \
+                                           where confid = '{0}' \
+                                           and barrioid = '{1}' \
+                                           and (fecha_hecho between '{2}-01-01' and '{2}-12-31')) t;" \
+                                          .format(conf.confid, barrioSeleccion, year)
+
+                if 'user' in locals():
+                    queryIndicadorPerfil = "select SUM(t.cantidad) as count from \
+                                               (select * from v1.contextualizaciones \
+                                               where confid = '{0}' \
+                                               and barrioid = {1} \
+                                               and generoid = '{2}' \
+                                               and nivelid = '{3}' \
+                                               and edad = {4} \
+                                               and (fecha_hecho between '{5}-01-01' and '{5}-12-31')) t;" \
+                                               .format(conf.confid, user.barrioid, user.generoid, user.nivel_educativo_id, edadUsuario, year)
 
 
 
-            with connection.cursor() as cursor:
-                cursor.execute(queryIndicadorCiudad)
-                indicadorCiudad = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
+                with connection.cursor() as cursor:
+                    cursor.execute(queryIndicadorCiudad)
+                    indicadorCiudad = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
-                cursor.execute(queryIndicadorUbicacion)
-                indicadorUbicacion = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
+                    cursor.execute(queryIndicadorUbicacion)
+                    indicadorUbicacion = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
-                cursor.execute(queryIndicadorSeleccion)
-                indicadorSeleccion = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
+                    cursor.execute(queryIndicadorSeleccion)
+                    indicadorSeleccion = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
-                cursor.execute(queryIndicadorPerfil)
-                indicadorPerfil = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
+                    if 'user' in locals():
+                        cursor.execute(queryIndicadorPerfil)
+                        indicadorPerfil = verificacionExistenciaConflictividades(dictfetchall(cursor)[0]['count'])
 
-                if(indicadorCiudad != 0):
-                    indicadorPromedio = indicadorCiudad / bisiesto(int(year))
-                else:
-                    indicadorPromedio = 0
+                    if(indicadorCiudad != 0):
+                        indicadorPromedio = indicadorCiudad / bisiesto(int(year))
+                    else:
+                        indicadorPromedio = 0
 
-            data.append({
-                'conflictividad': model_to_dict(conf),
-                'indicadores': {
-                    'ciudad': indicadorCiudad,
-                    'ubicacion': indicadorUbicacion,
-                    'seleccion': indicadorSeleccion,
-                    'perfil': indicadorPerfil,
-                    'promedio': indicadorPromedio
-                },
-            })
+                indicadores = {
+                    'conflictividad': model_to_dict(conf),
+                    'indicadores': {
+                        'ciudad': indicadorCiudad,
+                        'ubicacion': indicadorUbicacion,
+                        'seleccion': indicadorSeleccion,
+                        'promedio': indicadorPromedio
+                    },
+                }
+
+                if 'user'in locals():
+                    indicadores['indicadores']['perfil'] = indicadorPerfil
+
+                data.append(indicadores)
+
+                response = {
+                    'code': 200,
+                    'data': data,
+                    'status': 'success'
+                }
+
+        else:
 
             response = {
-                'code': 200,
-                'data': data,
-                'status': 'success'
+                'code': 400,
+                'status': 'error'
             }
 
-    else:
-
+    except(IndexError):
         response = {
             'code': 400,
+            'status': 'error'
+        }
+
+    except TokenBackendError as e:
+        response = {
+            'code': 400,
+            'message': str(e),
             'status': 'error'
         }
 

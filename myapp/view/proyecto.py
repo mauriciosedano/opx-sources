@@ -19,6 +19,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework_simplejwt.backends import TokenBackend
+from rest_framework_simplejwt.exceptions import TokenBackendError
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import (
@@ -42,7 +43,7 @@ def listadoProyectos(request):
 
     try:
 
-        if 'HTTP_AUTHORIZATION' in request.META:
+        if request.META['HTTP_AUTHORIZATION'] != 'null':
 
             # Decodificando el access token
             tokenBackend = TokenBackend(settings.SIMPLE_JWT['ALGORITHM'], settings.SIMPLE_JWT['SIGNING_KEY'],
@@ -149,6 +150,19 @@ def listadoProyectos(request):
         data = {
             'code': 404,
             'message': 'Página inexistente',
+            'status': 'error'
+        }
+
+    except IndexError:
+        data = {
+            'code': 400,
+            'status': 'error'
+        }
+
+    except TokenBackendError as e:
+        data = {
+            'code': 400,
+            'message': str(e),
             'status': 'error'
         }
 
