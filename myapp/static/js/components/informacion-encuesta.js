@@ -95,6 +95,9 @@ let informacionEncuesta = new Vue({
             }
 
             // Captura de campos de interés
+
+            this.camposInformacion = [];
+
             for(let i = 0; i < camposTotales.length; i++){
 
                 let matchs = 0

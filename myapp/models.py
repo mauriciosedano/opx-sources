@@ -209,6 +209,7 @@ class Cartografia(models.Model):
     instrid = models.UUIDField()
     osmid = models.CharField(max_length=255)
     elemosmid = models.UUIDField()
+    userid = models.UUIDField()
 
     class Meta:
         db_table = '"v1"."cartografias"'
@@ -232,6 +233,7 @@ class Encuesta(models.Model):
     contenido = models.CharField(max_length=5000)
     estado = models.IntegerField(default=0)
     observacion = models.CharField(blank=True, max_length=3000, null=True)
+    userid = models.UUIDField()
     
     class Meta:
         db_table = '"v1"."encuestas"'

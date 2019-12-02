@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.http.response import JsonResponse
 from myapp import models
-from myapp.view.utilidades import dictfetchall
+from myapp.view.utilidades import dictfetchall, usuarioAutenticado
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import (
     AllowAny,
@@ -152,7 +152,8 @@ def AgregarElemento(request, instrid):
                 wayElement = xmlObject.findall('way')[0]
 
                 #Almacenando Cartografia
-                cartografia = almacenarCartografia(instrid, wayElement.get('new_id'), osmelement.elemosmid)
+                user = usuarioAutenticado(request)
+                cartografia = almacenarCartografia(instrid, wayElement.get('new_id'), osmelement.elemosmid, user.userid)
 
                 response = {
                     'code': 200,
@@ -210,9 +211,9 @@ def AgregarElemento(request, instrid):
 
     return JsonResponse(response, status=response['code'])
 
-def almacenarCartografia(instrid, wayid, elemosmid):
+def almacenarCartografia(instrid, wayid, elemosmid, userid):
 
-    cartografia = models.Cartografia(instrid=instrid, osmid=wayid, elemosmid=elemosmid)
+    cartografia = models.Cartografia(instrid=instrid, osmid=wayid, elemosmid=elemosmid, userid=userid)
     cartografia.save()
 
     return serializers.serialize('python', [cartografia])[0]

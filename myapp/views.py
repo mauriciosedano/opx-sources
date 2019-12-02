@@ -8,6 +8,7 @@ import geopandas
 
 from myapp import models
 
+from django.conf import settings
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import (connection, transaction)
@@ -18,6 +19,7 @@ from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
+from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import (
@@ -25,7 +27,7 @@ from rest_framework.permissions import (
     IsAuthenticated
 )
 
-from myapp.view.utilidades import dictfetchall
+from myapp.view.utilidades import dictfetchall, usuarioAutenticado
 from myapp.view.osm import detalleCartografia
 
 # from rest_framework.response import Response
@@ -1037,7 +1039,7 @@ def actualizarInstrumento(request, instrid):
 
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
-def almacenarEncuestas(instrumento, informacion):
+def almacenarEncuestas(instrumento, informacion, userid):
 
     try:
         with transaction.atomic():
@@ -1048,7 +1050,7 @@ def almacenarEncuestas(instrumento, informacion):
                     
                 except ObjectDoesNotExist:
                 
-                    encuesta = models.Encuesta(instrid=instrumento.instrid, koboid = info['_uuid'], contenido=json.dumps(info))
+                    encuesta = models.Encuesta(instrid=instrumento.instrid, koboid = info['_uuid'], contenido=json.dumps(info), userid=userid)
                     encuesta.full_clean()
                     encuesta.save()
             
@@ -1107,7 +1109,7 @@ def informacionInstrumento(request, id):
 
             if(isinstance(informacion, dict)):
 
-                almacenarEncuestas(instrumento, informacion['info'])
+                #almacenarEncuestas(instrumento, informacion['info'])
                 encuestasDB = models.Encuesta.objects.filter(instrid__exact=instrumento.instrid)
                 encuestas = []
 
@@ -1118,7 +1120,7 @@ def informacionInstrumento(request, id):
                     contenido['observacion'] = e.observacion
 
                     encuestas.append(contenido)
-                
+
                 data = {
                     'status': 'success',
                     'code': 200,
@@ -1366,6 +1368,13 @@ def enlaceFormularioKoboToolbox(request, tareid):
         instrumento = models.Instrumento.objects.get(pk = tarea.instrid)
 
         if instrumento.instrtipo == 1:
+
+            informacion = informacionFormularioKoboToolbox(instrumento.instridexterno)
+
+            if (isinstance(informacion, dict)):
+
+                user = usuarioAutenticado(request)
+                almacenarEncuestas(instrumento, informacion['info'], user.userid)
 
             detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
 

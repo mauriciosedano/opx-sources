@@ -264,12 +264,34 @@ def actualizarTarea(request, tareid):
 
         tarea.full_clean()
 
-        tarea.save()
+        if tarea.tareestado == 2 and tarea.taretipo == 1:
 
-        response = {
-            'code': 200,
-            'tarea': serializers.serialize('python', [tarea])[0]
-        }
+            encuestasSinValidar = models.Encuesta.objects.filter(instrid__exact=tarea.instrid) \
+                                               .filter(estado__exact=0)
+
+            if len(encuestasSinValidar) == 0:
+                tarea.save()
+
+                response = {
+                    'code': 200,
+                    'tarea': serializers.serialize('python', [tarea])[0]
+                }
+
+            else:
+                response = {
+                    'code': 403,
+                    'message': 'Todas las encuestas deben ser validadas',
+                    'status': 'error'
+                }
+
+        else:
+
+            tarea.save()
+
+            response = {
+                'code': 200,
+                'tarea': serializers.serialize('python', [tarea])[0]
+            }
 
     except ObjectDoesNotExist:
         response = {

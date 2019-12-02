@@ -1,10 +1,15 @@
+from django.conf import settings
 from django.http.response import JsonResponse
+
 from myapp import models
+
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated
 )
+
+from rest_framework_simplejwt.backends import TokenBackend
 
 #========================== Utilidades =============================
 
@@ -57,3 +62,14 @@ def listadoBarrios(request):
     }
 
     return JsonResponse(data, status=data['code'], safe=False)
+
+def usuarioAutenticado(request):
+
+    # Decodificando el access token
+    tokenBackend = TokenBackend(settings.SIMPLE_JWT['ALGORITHM'], settings.SIMPLE_JWT['SIGNING_KEY'],
+                                settings.SIMPLE_JWT['VERIFYING_KEY'])
+    tokenDecoded = tokenBackend.decode(request.META['HTTP_AUTHORIZATION'].split()[1], verify=True)
+    # consultando el usuario
+    user = models.Usuario.objects.get(pk=tokenDecoded['user_id'])
+
+    return user
