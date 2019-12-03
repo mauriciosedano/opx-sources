@@ -239,7 +239,10 @@ def detalleCartografia(instrid):
 
         if instrumento.instrtipo == 2:
 
-            query = "SELECT c.*, eo.nombre as tipo_elemento_osm, eo.closed_way FROM v1.cartografias as c INNER JOIN v1.elementos_osm as eo ON c.elemosmid = eo.elemosmid WHERE c.instrid = '" + instrid + "'";
+            query = "SELECT c.*, eo.nombre as tipo_elemento_osm, eo.closed_way FROM v1.cartografias as c" \
+                    "INNER JOIN v1.elementos_osm as eo ON c.elemosmid = eo.elemosmid" \
+                    "WHERE c.instrid = '" + instrid + "'" \
+                    "AND c.estado <> 1"
 
             with connection.cursor() as cursor:
                 cursor.execute(query)
@@ -361,7 +364,10 @@ def eliminarCartografia(request, cartografiaid):
 
     try:
         cartografia = models.Cartografia.objects.get(pk = cartografiaid)
-        cartografia.delete()
+        cartografia.estado = 1
+        cartografia.save()
+
+        #cartografia.delete()
 
         response = {
             'code': 200,

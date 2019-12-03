@@ -23,6 +23,7 @@ class Usuario(AbstractBaseUser):
     latitud = models.CharField(blank=True, null=True, max_length=30)
     longitud = models.CharField(blank=True, null=True, max_length=30)
     horaubicacion = models.CharField(blank=True, null=True, max_length=100)
+    puntaje = models.IntegerField()
 
     objects = MyUserManager()
 
@@ -210,6 +211,7 @@ class Cartografia(models.Model):
     osmid = models.CharField(max_length=255)
     elemosmid = models.UUIDField()
     userid = models.UUIDField()
+    estado = models.IntegerField()
 
     class Meta:
         db_table = '"v1"."cartografias"'
@@ -262,3 +264,22 @@ class Contextualizacion(models.Model):
 
     class Meta:
         db_table = '"v1"."contextualizaciones"'
+
+class  Parametro(models.Model):
+
+    paramid = models.CharField(max_length=1000, primary_key=True)
+    paramvalor = models.CharField(max_length=1000)
+    paramdesc = models.CharField(max_length=1000)
+
+    class Meta:
+        db_table = '"v1"."parametros"'
+
+class AsignacionPuntaje(models.Model):
+
+    asigid = models.UUIDField(default = uuid.uuid4, primary_key=True)
+    userid = models.UUIDField()
+    tareid = models.UUIDField()
+    puntaje = models.IntegerField()
+
+    class Meta:
+        db_table = '"v1"."asignaciones_puntajes"'

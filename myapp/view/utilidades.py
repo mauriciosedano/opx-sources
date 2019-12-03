@@ -73,3 +73,14 @@ def usuarioAutenticado(request):
     user = models.Usuario.objects.get(pk=tokenDecoded['user_id'])
 
     return user
+
+def obtenerParametroSistema(parametro):
+
+    parametro = models.Parametro.objects.get(pk=parametro)
+
+    if parametro is not None:
+        response = parametro.paramvalor
+    else:
+        response = None
+
+    return response

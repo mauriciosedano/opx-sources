@@ -28,7 +28,7 @@ from rest_framework.permissions import (
 )
 
 from myapp.views import detalleFormularioKoboToolbox
-from myapp.view.utilidades import dictfetchall
+from myapp.view.utilidades import dictfetchall, obtenerParametroSistema
 
 # =========================== Tareas ==============================
 
@@ -249,49 +249,38 @@ def actualizarTarea(request, tareid):
     try:
         tarea = models.Tarea.objects.get(pk=tareid)
 
+        estado = int(request.POST.get('tareestado'))
+
         tarea.tarenombre = request.POST.get('tarenombre')
-        tarea.taretipo = request.POST.get('taretipo')
+        #tarea.taretipo = request.POST.get('taretipo')
         # tarea.tarerestricgeo = "{}"
         tarea.tarerestriccant = request.POST.get('tarerestriccant')
         # tarea.tarerestrictime = "{}"
-        tarea.instrid = request.POST.get('instrid')
+        #tarea.instrid = request.POST.get('instrid')
         tarea.proyid = request.POST.get('proyid')
         tarea.tarefechaejecucion = request.POST.get('tarefechaejecucion')
         tarea.taredescripcion = request.POST.get('taredescripcion')
-        tarea.tareestado = request.POST.get('tareestado')
         #tarea.geojson_subconjunto = request.POST.get('geojsonsubconjunto')
         tarea.observaciones = request.POST.get('observaciones')
 
         tarea.full_clean()
 
-        if tarea.tareestado == 2 and tarea.taretipo == 1:
+        if estado == 2:
 
-            encuestasSinValidar = models.Encuesta.objects.filter(instrid__exact=tarea.instrid) \
-                                               .filter(estado__exact=0)
+            if validarTarea(tarea):
 
-            if len(encuestasSinValidar) == 0:
+                tarea.tareestado = estado
                 tarea.save()
-
-                response = {
-                    'code': 200,
-                    'tarea': serializers.serialize('python', [tarea])[0]
-                }
-
-            else:
-                response = {
-                    'code': 403,
-                    'message': 'Todas las encuestas deben ser validadas',
-                    'status': 'error'
-                }
 
         else:
 
+            tarea.tareestado = estado
             tarea.save()
 
-            response = {
-                'code': 200,
-                'tarea': serializers.serialize('python', [tarea])[0]
-            }
+        response = {
+            'code': 200,
+            'tarea': serializers.serialize('python', [tarea])[0]
+        }
 
     except ObjectDoesNotExist:
         response = {
@@ -320,6 +309,102 @@ def actualizarTarea(request, tareid):
         }
 
     return JsonResponse(response, safe=False, status=response['code'])
+
+def validarTarea(tarea):
+
+    if ((tarea.tareestado == 1 and tarea.taretipo == 1) or (tarea.tareestado != 2 and tarea.taretipo == 2)):
+
+        if tarea.taretipo == 1:
+
+            encuestasSinValidar = models.Encuesta.objects.filter(instrid__exact=tarea.instrid) \
+                                                         .filter(estado__exact=0)
+
+            if len(encuestasSinValidar) == 0:
+
+                aportePositivo = int(obtenerParametroSistema('aporte-positivo-encuesta'))
+                aporteNegativo = int(obtenerParametroSistema('aporte-negativo-encuesta'))
+
+                encuestas = models.Encuesta.objects.filter(instrid__exact=tarea.instrid)
+
+                with transaction.atomic():
+                    for encuesta in encuestas:
+
+                        if encuesta.estado == 1:
+                            puntaje = aporteNegativo
+
+                        elif encuesta.estado == 2:
+                            puntaje = aportePositivo
+
+                        asignacionPuntaje(encuesta.userid, tarea.tareid, puntaje)
+
+                response = True
+
+            else:
+                raise ValidationError(['Todas las encuestas deben ser validadas'])
+
+        elif tarea.taretipo == 2:
+
+            cartografias = models.Cartografia.objects.filter(instrid__exact=tarea.instrid)
+
+            if len(cartografias) > 0:
+
+                aportePositivo = int(obtenerParametroSistema('aporte-positivo-cartografia'))
+                aporteNegativo = int(obtenerParametroSistema('aporte-negativo-cartografia'))
+
+                with transaction.atomic():
+
+                    for cartografia in cartografias:
+
+                        # Si las cartografias no fueron marcadas como malas se marcan como buenas
+                        if cartografia.estado == 0:
+                            cartografia.estado = 2
+                            cartografia.save()
+                            puntaje = aportePositivo
+
+                        if cartografia.estado == 1:
+                            puntaje = aporteNegativo
+
+                        if cartografia.estado == 2:
+                            puntaje = aportePositivo
+
+                        asignacionPuntaje(cartografia.userid, tarea.tareid, puntaje)
+
+                response = True
+
+            else:
+                raise ValidationError(['No hay cartografias'])
+    else:
+        raise ValidationError(['La tarea no esta terminada o ya fue validada'])
+
+    return response
+
+def asignacionPuntaje(userid, tareid, puntaje):
+
+    # Almacenar historial de asignación
+    asignacion = models.AsignacionPuntaje(userid=userid, tareid=tareid, puntaje=puntaje)
+    asignacion.save()
+
+    #Asignacion de puntos correspondientes
+    usuario = models.Usuario.objects.get(pk=userid)
+    usuario.puntaje = usuario.puntaje + puntaje
+    usuario.save()
+
+    promoverUsuario(usuario)
+
+def promoverUsuario(user):
+
+    puntajeValidador = int(obtenerParametroSistema('umbral-validador'))
+    puntajeProyectista = obtenerParametroSistema('umbral-proyectista')
+
+    # Promoción de voluntario a validador
+    if user.rolid == '0be58d4e-6735-481a-8740-739a73c3be86' and user.puntaje >= puntajeValidador:
+        user.rolid = '53ad3141-56bb-4ee2-adcf-5664ba03ad65'
+        user.save()
+
+    # Promocion de Validador a Proyectista
+    if user.rolid == '53ad3141-56bb-4ee2-adcf-5664ba03ad65' and user.puntaje >= puntajeProyectista:
+        user.rolid = '628acd70-f86f-4449-af06-ab36144d9d6a'
+        user.save()
 
 def listadoTareasView(request):
 
