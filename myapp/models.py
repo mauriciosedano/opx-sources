@@ -23,7 +23,7 @@ class Usuario(AbstractBaseUser):
     latitud = models.CharField(blank=True, null=True, max_length=30)
     longitud = models.CharField(blank=True, null=True, max_length=30)
     horaubicacion = models.CharField(blank=True, null=True, max_length=100)
-    puntaje = models.IntegerField()
+    puntaje = models.IntegerField(null=True, blank=True)
 
     objects = MyUserManager()
 
