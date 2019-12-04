@@ -3,17 +3,20 @@ let tarea = new Vue({
     el: '#gestion-tareas',
     created(){
 
-        this.listadoProyectos();
-
         if(window.location.pathname == '/tareas/'){
 
             this.listadoTareas();
+            this.listadoProyectos();
+
             this.general = true;
 
         } else if(window.location.pathname.substr(48,6) == "tareas"){
 
             this.proyectoID = window.location.pathname.substr(11, 36)
+
             this.listadoTareasProyecto(this.proyectoID)
+            this.listadoProyectos();
+
             this.general = false;
         }
     },

@@ -100,6 +100,7 @@ urlpatterns = [
     path('instrumentos/revisar-encuesta/<str:encuestaid>', views.revisarEncuesta),
 
     path('proyectos/', proyecto.listadoProyectosView),
+    path('proyectos/gestion/', proyecto.gestionProyectosView),
     path('proyectos/list/', proyecto.listadoProyectos),
     path('proyectos/store/', proyecto.almacenamientoProyecto),
     path('proyectos/delete/<str:proyid>/', proyecto.eliminarProyecto),

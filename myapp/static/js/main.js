@@ -111,5 +111,8 @@ require('./components/passwordReset').passwordReset;
 // Equipos de Proyectos
 require('./components/equipos').equipo;
 
+// Gestión de proyectos - Proyectista
+require('./components/gestion-proyectos-mapa').gestionProyecto;
+
 // Estilos
 import './../scss/app/app.scss';

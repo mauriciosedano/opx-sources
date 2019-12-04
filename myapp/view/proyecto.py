@@ -462,6 +462,10 @@ def listadoProyectosView(request):
 
     return render(request, 'proyectos/listado.html')
 
+def gestionProyectosView(request):
+
+    return render(request, "proyectos/gestion-proyectos-mapa.html")
+
 def tareasProyectoView(request, proyid):
 
     try:

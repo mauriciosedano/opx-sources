@@ -140,8 +140,8 @@ proyecto = new Vue({
 
                 let mapObject = L.map('dimension').setView([3.450572, -76.538705], 13);
 
-                L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-                  attribution: 'idesccali.gov.co © IDESC',
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 }).addTo(mapObject);
 
                 L.tileLayer.wms('http://ws-idesc.cali.gov.co:8081/geoserver/wms?service=WMS', {
