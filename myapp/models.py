@@ -133,7 +133,7 @@ class Proyecto(models.Model):
     proyfechacierre = models.DateField(null=True, blank=True)
     proyestado = models.IntegerField()
     proypropietario = models.UUIDField()
-    proyfechainicio = models.DateField()
+    proyfechainicio = models.DateField(null=True, blank=True)
 
     class Meta:
         db_table = '"v1"."proyectos"'
