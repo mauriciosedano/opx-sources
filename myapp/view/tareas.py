@@ -6,8 +6,10 @@ from passlib.context import CryptContext
 
 from myapp import models
 
+from django.conf import settings
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.mail import send_mail
 from django.core.paginator import(
     Paginator,
     EmptyPage
@@ -401,10 +403,30 @@ def promoverUsuario(user):
         user.rolid = '53ad3141-56bb-4ee2-adcf-5664ba03ad65'
         user.save()
 
+        notificacionPromocionUsuario(user, 'Validador')
+
     # Promocion de Validador a Proyectista
     if user.rolid == '53ad3141-56bb-4ee2-adcf-5664ba03ad65' and user.puntaje >= puntajeProyectista:
         user.rolid = '628acd70-f86f-4449-af06-ab36144d9d6a'
         user.save()
+
+        notificacionPromocionUsuario(user, 'Proyectista')
+
+
+def notificacionPromocionUsuario(user, rol):
+
+    subject = "Notificación OPC"
+    message = "<p>Felicitaciones. Ahora eres " + rol
+
+    # Envío de correo electrónico
+    send_mail(
+        subject,
+        message,
+        settings.EMAIL_HOST_USER,
+        [user.useremail],
+        fail_silently=False,
+        html_message=message
+    )
 
 def listadoTareasView(request):
 

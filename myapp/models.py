@@ -130,7 +130,7 @@ class Proyecto(models.Model):
     proydescripcion = models.CharField(max_length = 1000)
     proyidexterno = models.CharField(max_length = 255)
     proyfechacreacion = models.CharField(max_length=100)
-    proyfechacierre = models.DateField()
+    proyfechacierre = models.DateField(null=True, blank=True)
     proyestado = models.IntegerField()
     proypropietario = models.UUIDField()
     proyfechainicio = models.DateField()
