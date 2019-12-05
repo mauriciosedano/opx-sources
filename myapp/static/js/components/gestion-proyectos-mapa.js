@@ -4,7 +4,9 @@ gestionProyecto = new Vue({
     data: {
         informacionProyecto: {},
         map: {},
-        proyectos: []
+        proyectos: [],
+        proyectoGestion: {},
+        tareaGestion: {}
     },
     created(){
 
@@ -48,10 +50,53 @@ gestionProyecto = new Vue({
 
                                 if(feature.properties.type == 'dimension'){
 
+                                    axios({
+                                        url: '/proyectos/detail/' + feature.properties.id,
+                                        headers: {
+                                            Authorization: getToken()
+                                        }
+                                    })
+                                    .then(response => {
+
+                                        if(response.data.code == 200 && response.data.status == 'success'){
+                                            console.log('entro')
+                                            this.proyectoGestion = response.data.detail.proyecto;
+                                            $("#gestion-proyecto").modal('show');
+                                        }
+                                    })
+                                    .catch(() => {
+
+                                        Swal.fire({
+                                            title: 'Error',
+                                            text: 'No se puedo recuperar la información del Proyecto',
+                                            type: 'error'
+                                        });
+                                    });
 
                                 } else if(feature.properties.type == 'tarea'){
 
-                                    $("#gestion-objetivo").modal('show');
+                                    axios({
+                                        url: '/tareas/detail/' + feature.properties.id,
+                                        headers: {
+                                            Authorization: getToken()
+                                        }
+                                    })
+                                    .then(response => {
+
+                                        if(response.data.code == 200 && response.data.status == 'success'){
+                                            console.log('entro')
+                                            this.tareaGestion = response.data.tarea;
+                                            $("#gestion-objetivo-tarea").modal('show');
+                                        }
+                                    })
+                                    .catch(() => {
+
+                                        Swal.fire({
+                                            title: 'Error',
+                                            text: 'No se puedo recuperar la información de la Tarea',
+                                            type: 'error'
+                                        });
+                                    });
                                 }
                             })
                         }

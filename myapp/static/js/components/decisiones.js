@@ -37,7 +37,7 @@ let decision = new Vue({
 
             this.loader(true);
 
-            this.almacenamientoDecision.userid = getUser().id;
+            this.almacenamientoDecision.userid = getUser().userid;
 
             var queryString = Object.keys(this.almacenamientoDecision).map(key => {
                 return key + '=' + this.almacenamientoDecision[key]

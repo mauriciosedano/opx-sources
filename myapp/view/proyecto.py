@@ -323,44 +323,49 @@ def actualizarProyecto(request, proyid):
         proyecto.proyfechainicio = request.POST.get('proyfechainicio')
         proyecto.proyfechacierre = request.POST.get('proyfechacierre')
 
-        decisiones = json.loads(request.POST.get('decisiones'))
-        contextos = json.loads(request.POST.get('contextos'))
-
         proyecto.full_clean()
         proyecto.save()
 
-        # ================ Actualizacion de decisiones ===============================
-        decisionesProyecto = models.DecisionProyecto.objects.filter(proyid__exact = proyecto.proyid)
+        if(request.POST.get('decisiones') is not None  and request.POST.get('contextos') is not None):
 
-        if decisionesProyecto.exists():
+            decisiones = json.loads(request.POST.get('decisiones'))
+            contextos = json.loads(request.POST.get('contextos'))
 
-            for decisionProyecto in decisionesProyecto:
+            # ================ Actualizacion de decisiones ===============================
 
-                decisionProyecto.delete()
+            if len(decisiones) > 0:
 
-        if len(decisiones) > 0:
+                #Eliminando decisiones actuales
+                decisionesProyecto = models.DecisionProyecto.objects.filter(proyid__exact=proyecto.proyid)
 
-            for decision in decisiones:
+                if decisionesProyecto.exists():
 
-                decisionProyecto = models.DecisionProyecto(proyid = proyecto.proyid, desiid = decision)
-                decisionProyecto.save()
+                    for decisionProyecto in decisionesProyecto:
+                        decisionProyecto.delete()
 
-        # ============== Actualización de contextos ================================
+                # Añadiendo las nuevas decisiones
+                for decision in decisiones:
 
-        contextosProyecto = models.ContextoProyecto.objects.filter(proyid__exact = proyecto.proyid)
+                    decisionProyecto = models.DecisionProyecto(proyid = proyecto.proyid, desiid = decision)
+                    decisionProyecto.save()
 
-        if contextosProyecto.exists():
+            # ============== Actualización de contextos ================================
 
-            for contextoProyecto in contextosProyecto:
+            if len(contextos) > 0:
 
-                contextoProyecto.delete()
+                # Eliminando contextos actuales
+                contextosProyecto = models.ContextoProyecto.objects.filter(proyid__exact=proyecto.proyid)
 
-        if len(contextos) > 0:
+                if contextosProyecto.exists():
 
-            for contexto in contextos:
+                    for contextoProyecto in contextosProyecto:
+                        contextoProyecto.delete()
 
-                contextoProyecto = models.ContextoProyecto(proyid = proyecto.proyid, contextoid = contexto)
-                contextoProyecto.save()
+                # Añadiendo las nuevos contextos
+                for contexto in contextos:
+
+                    contextoProyecto = models.ContextoProyecto(proyid = proyecto.proyid, contextoid = contexto)
+                    contextoProyecto.save()
 
         return JsonResponse(serializers.serialize('python', [proyecto]), safe=False)
 
@@ -376,7 +381,7 @@ def actualizarProyecto(request, proyid):
 def detalleProyecto(request, proyid):
 
     try:
-        query = "select p.proynombre, p.proydescripcion, p.proyfechacreacion, p.proyfechacierre, p.proyestado, u.userfullname as proyectista  from v1.proyectos as p inner join v1.usuarios as u on u.userid = p.proypropietario where p.proyid = '" + proyid + "'"
+        query = "select p.proynombre, p.proydescripcion, p.proyfechacreacion, p.proyfechainicio, p.proyfechacierre, p.proyestado, u.userfullname as proyectista  from v1.proyectos as p inner join v1.usuarios as u on u.userid = p.proypropietario where p.proyid = '" + proyid + "'"
         with connection.cursor() as cursor:
 
             cursor.execute(query)
