@@ -267,7 +267,7 @@ def actualizarTarea(request, tareid):
 
         tarea.full_clean()
 
-        if estado == 2:
+        if estado == 2 and tarea.tareestado != 2:
 
             if validarTarea(tarea):
 
@@ -281,7 +281,8 @@ def actualizarTarea(request, tareid):
 
         response = {
             'code': 200,
-            'tarea': serializers.serialize('python', [tarea])[0]
+            'tarea': serializers.serialize('python', [tarea])[0],
+            'status': 'success'
         }
 
     except ObjectDoesNotExist:

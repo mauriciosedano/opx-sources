@@ -37,19 +37,18 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3>Gestión Objetivo de Tarea - </h3>
+                        <h3>Gestión Objetivo de Tarea - [[tareaGestion.tarenombre]] </h3>
+                        <button class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <form action="" class="form-horizontal">
                             <div class="form-group row">
-                                <div class="col-sm-6">
-                                    <input type="date" name="" id="" class="form-control">
+                                <div class="col-sm-12">
+                                    <label for=""> Cantidad de Encuestas </label>
+                                    <input v-model="tareaGestion.tarerestriccant" type="text" name="" id="" class="form-control">
                                 </div>
-                                <div class="col-sm-6">
-                                    <input type="date" name="" id="" class="form-control">
-                                </div>
-                                <div class="col-md-12">
-                                    <button type="button">Guardar</button>
+                                <div align="center" class="col-sm-12">
+                                    <button :disabled="tareaGestion.tarerestriccant && tareaGestion.tarerestriccant.length == 0" @click="edicionObjetivoTarea()" class="btn" type="button">Guardar</button>
                                 </div>
                             </div>
                         </form>
@@ -61,8 +60,26 @@
         <div class="modal fade" id="gestion-proyecto">
             <div class="modal-dialog">
                 <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Gestión de Tiempo de Proyecto - [[proyectoGestion.proynombre]] </h3>
+                         <button class="close" data-dismiss="modal">&times;</button>
+                    </div>
                     <div class="modal-body">
-                        <p>fgfrg</p>
+                        <form action="" class="form-horizontal">
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <label for="">Fecha Inicio</label>
+                                    <input v-model="proyectoGestion.proyfechainicio" type="date" name="" id="" class="form-control">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="">Fecha Fin</label>
+                                    <input v-model="proyectoGestion.proyfechacierre" type="date" name="" id="" class="form-control">
+                                </div>
+                                <div align="center" class="col-md-12">
+                                    <button @click="edicionTiempoProyecto()" class="btn" type="button">Guardar</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -42,9 +42,7 @@ gestionProyecto = new Vue({
 
                     L.geoJSON(layer,
                     {
-                        onEachFeature: function(feature, layer){
-                            console.log(feature)
-                            console.log(layer)
+                        onEachFeature: (feature, layer) => {
 
                             layer.on('click', () => {
 
@@ -59,8 +57,9 @@ gestionProyecto = new Vue({
                                     .then(response => {
 
                                         if(response.data.code == 200 && response.data.status == 'success'){
-                                            console.log('entro')
+
                                             this.proyectoGestion = response.data.detail.proyecto;
+                                            this.proyectoGestion['proyid'] = feature.properties.id;
                                             $("#gestion-proyecto").modal('show');
                                         }
                                     })
@@ -84,8 +83,9 @@ gestionProyecto = new Vue({
                                     .then(response => {
 
                                         if(response.data.code == 200 && response.data.status == 'success'){
-                                            console.log('entro')
+
                                             this.tareaGestion = response.data.tarea;
+                                            this.tareaGestion['tareid'] = feature.properties.id;
                                             $("#gestion-objetivo-tarea").modal('show');
                                         }
                                     })
@@ -186,9 +186,84 @@ gestionProyecto = new Vue({
             }
 
         },
-        gestionObjetivo(){
+        edicionObjetivoTarea(){
 
+            queryString = Object.keys(this.tareaGestion).map(key => {
 
-        }
+                return key + '=' + this.tareaGestion[key];
+            })
+            .join('&');
+
+            axios({
+                url: '/tareas/' + this.tareaGestion.tareid,
+                method: 'POST',
+                data: queryString,
+                headers: {
+                 'Content-Type': 'application/x-www-form-urlencoded',
+                 Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    $("#gestion-objetivo-tarea").modal('hide');
+
+                    Swal.fire({
+                        title: 'Exito',
+                        text: 'El Objetivo fue cambiado de forma satisfactoria',
+                        type: 'success'
+                    });
+                }
+            })
+            .catch(() => {
+
+                $("#gestion-objetivo-tarea").modal('hide');
+
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Ocurrio un error. Por favor intenta de nuevo.',
+                    type: 'error'
+                });
+            });
+        },
+        edicionTiempoProyecto(){
+
+        queryString = Object.keys(this.proyectoGestion).map(key => {
+
+                return key + '=' + this.proyectoGestion[key];
+            })
+            .join('&');
+
+        axios({
+            url: '/proyectos/' + this.proyectoGestion.proyid,
+            method: 'POST',
+            data: queryString,
+            headers: {
+             'Content-Type': 'application/x-www-form-urlencoded',
+             Authorization: getToken()
+            }
+        })
+        .then(response => {
+
+            $("#gestion-proyecto").modal('hide');
+
+            Swal.fire({
+                title: 'Exito',
+                text: 'El Objetivo fue cambiado de forma satisfactoria',
+                type: 'success'
+            });
+        })
+        .catch(() => {
+
+            $("#gestion-proyecto").modal('hide');
+
+            Swal.fire({
+                title: 'Error',
+                text: 'Ocurrio un error. Por favor intenta de nuevo.',
+                type: 'error'
+            });
+        });
+    }
     }
 })
