@@ -44,7 +44,7 @@ gestionProyecto = new Vue({
                     {
                         onEachFeature: (feature, layer) => {
 
-                            layer.on('click', () => {
+                            layer.on('dblclick', () => {
 
                                 if(feature.properties.type == 'dimension'){
 
@@ -99,7 +99,14 @@ gestionProyecto = new Vue({
                                     });
                                 }
                             })
+                        },
+                        style: (feature) => {
+
+                            return {color: feature.properties.color}
                         }
+                    })
+                    .bindPopup(function (layer) {
+                        return layer.feature.properties.description;
                     })
                     .addTo(this.map)
                 }
@@ -148,8 +155,10 @@ gestionProyecto = new Vue({
                         // Añadiendo Dimensiones geográficas
                         let feature = JSON.parse(dimensiones[i].geojson)
                         feature.properties = {
-                            type: 'dimension',
-                            id: dimensiones[i].proyid
+                            color: '#0CBAEF',
+                            description: dimensiones[i].nombre,
+                            id: dimensiones[i].proyid,
+                            type: 'dimension'
                         }
 
                         features.push(feature)
@@ -163,8 +172,10 @@ gestionProyecto = new Vue({
 
                                 let feature = JSON.parse(tareas[j].geojson_subconjunto)
                                 feature.properties = {
-                                    type: 'tarea',
-                                    id: tareas[j].tareid
+                                    color: '#F4B821',
+                                    description: tareas[j].tarenombre,
+                                    id: tareas[j].tareid,
+                                    type: 'tarea'
                                 }
 
                                 features.push(feature)

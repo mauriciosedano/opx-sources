@@ -117,6 +117,18 @@
                           <multiselect v-model="almacenamientoProyecto.contextos" :multiple="true" :options="contextos" track-by="contextoid" label="descripcion"></multiselect>
                         </div>
                       </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="" class="bmd-label-floating">Fecha Inicio</label>
+                          <input class="form-control" type="date" v-model="almacenamientoProyecto.proyfechainicio" />
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="" class="bmd-label-floating">Fecha Cierre</label>
+                          <input class="form-control" type="date" v-model="almacenamientoProyecto.proyfechacierre" />
+                        </div>
+                      </div>
                     </div>
                   </form>
                     </div>
@@ -178,7 +190,7 @@
 
                   <!-- Guardado De proyecto -->
                   <div align="center">
-                    <button class="btn" @click="almacenarProyecto" :disabled="!almacenamientoProyecto.proynombre || !almacenamientoProyecto.proydescripcion || !almacenamientoProyecto.decisiones || !almacenamientoProyecto.contextos || !almacenamientoProyecto.delimitacionesGeograficas.length > 0">Guardar Proyecto</button>
+                    <button class="btn" @click="almacenarProyecto" :disabled="!almacenamientoProyecto.proynombre || !almacenamientoProyecto.proydescripcion || !almacenamientoProyecto.decisiones || !almacenamientoProyecto.contextos || !almacenamientoProyecto.delimitacionesGeograficas.length > 0 || !almacenamientoProyecto.proyfechainicio || !almacenamientoProyecto.proyfechacierre">Guardar Proyecto</button>
                   </div>
 
                 </div>
@@ -223,9 +235,21 @@
                           <multiselect v-model="edicionProyecto.contextos" :multiple="true" :options="contextos" track-by="contextoid" label="descripcion"></multiselect>
                         </div>
                       </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="" class="bmd-label-floating">Fecha Inicio</label>
+                          <input class="form-control" type="date" v-model="edicionProyecto.proyfechainicio" />
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="" class="bmd-label-floating">Fecha Cierre</label>
+                          <input class="form-control" type="date" v-model="edicionProyecto.proyfechacierre" />
+                        </div>
+                      </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!edicionProyecto.proynombre || !edicionProyecto.proydescripcion || !edicionProyecto.decisiones || !edicionProyecto.contextos" class="btn" @click="editarProyecto()" type="button">Editar</button>
+                          <button :disabled="!edicionProyecto.proynombre || !edicionProyecto.proydescripcion || !edicionProyecto.decisiones || !edicionProyecto.contextos || !edicionProyecto.proyfechainicio || !edicionProyecto.proyfechacierre" class="btn" @click="editarProyecto()" type="button">Editar</button>
                         </div>
                       </div>
                     </div>

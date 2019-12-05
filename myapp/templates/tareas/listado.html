@@ -145,17 +145,11 @@
                         </div>
                       </div>
                       <div class="col-md-12">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Fecha de Ejecución</label>
-                          <input type="date" v-model="almacenamientoTarea.tarefechaejecucion" class="form-control">
-                        </div>
-                      </div>
-                      <div class="col-md-12">
                         <div id="taskmap"></div>
                       </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!almacenamientoTarea.tarenombre || !almacenamientoTarea.taretipo || !almacenamientoTarea.tarerestriccant || !almacenamientoTarea.instrid || !almacenamientoTarea.proyid || !almacenamientoTarea.geojsonsubconjunto || !almacenamientoTarea.tarefechaejecucion" class="btn" @click="almacenarTarea()" type="button">Guardar</button>
+                          <button :disabled="!almacenamientoTarea.tarenombre || !almacenamientoTarea.taretipo || !almacenamientoTarea.tarerestriccant || !almacenamientoTarea.instrid || !almacenamientoTarea.proyid || !almacenamientoTarea.geojsonsubconjunto" class="btn" @click="almacenarTarea()" type="button">Guardar</button>
                         </div>
                       </div>                
                     </div>
@@ -223,15 +217,9 @@
                           <textarea v-model="edicionTarea.taredescripcion" rows="5" class="form-control"></textarea>
                         </div>
                       </div>
-                      <div class="col-md-12">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Fecha de Ejecución</label>
-                          <input type="date" v-model="edicionTarea.tarefechaejecucion" class="form-control">
-                        </div>
-                      </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!edicionTarea.tarenombre || !edicionTarea.taretipo || !edicionTarea.tarerestriccant || !edicionTarea.instrid || !edicionTarea.proyid || !edicionTarea.tarefechaejecucion" class="btn" @click="editarTarea()" type="button">Editar</button>
+                          <button :disabled="!edicionTarea.tarenombre || !edicionTarea.taretipo || !edicionTarea.tarerestriccant || !edicionTarea.instrid || !edicionTarea.proyid" class="btn" @click="editarTarea()" type="button">Editar</button>
                         </div>
                       </div>
                     </div>

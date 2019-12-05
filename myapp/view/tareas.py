@@ -211,10 +211,9 @@ def almacenamientoTarea(request):
     proyID = request.POST.get('proyid')
     dimensionid = request.POST.get('dimensionid')
     geojson_subconjunto = request.POST.get('geojsonsubconjunto')
-    tarefechaejecucion = request.POST.get('tarefechaejecucion')
     taredescripcion = request.POST.get('taredescripcion')
 
-    tarea = models.Tarea(tarenombre = tareNombre, taretipo = tareTipo, tarerestricgeo = tareRestricGeo, tarerestriccant = tareRestricCant, tarerestrictime = tareRestricTime, instrid = instrID, proyid = proyID, dimensionid = dimensionid, geojson_subconjunto = geojson_subconjunto, tarefechaejecucion = tarefechaejecucion, taredescripcion = taredescripcion)
+    tarea = models.Tarea(tarenombre = tareNombre, taretipo = tareTipo, tarerestricgeo = tareRestricGeo, tarerestriccant = tareRestricCant, tarerestrictime = tareRestricTime, instrid = instrID, proyid = proyID, dimensionid = dimensionid, geojson_subconjunto = geojson_subconjunto, taredescripcion = taredescripcion)
 
     try:
         tarea.full_clean()
@@ -260,7 +259,6 @@ def actualizarTarea(request, tareid):
         # tarea.tarerestrictime = "{}"
         #tarea.instrid = request.POST.get('instrid')
         tarea.proyid = request.POST.get('proyid')
-        tarea.tarefechaejecucion = request.POST.get('tarefechaejecucion')
         tarea.taredescripcion = request.POST.get('taredescripcion')
         #tarea.geojson_subconjunto = request.POST.get('geojsonsubconjunto')
         tarea.observaciones = request.POST.get('observaciones')
