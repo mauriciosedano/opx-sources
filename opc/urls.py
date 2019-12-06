@@ -24,7 +24,8 @@ from myapp.view import (
     tareas,
     utilidades,
     osm,
-    contextualizacion
+    contextualizacion,
+    estadisticas
 )
 
 urlpatterns = [
@@ -135,5 +136,11 @@ urlpatterns = [
     path('contextualizacion/todo/', contextualizacion.todo),
     path('contextualizacion/mes/', contextualizacion.mensual),
     path('contextualizacion/semana/', contextualizacion.semanal),
-    path('contextualizacion/dia/', contextualizacion.dia)
+    path('contextualizacion/dia/', contextualizacion.dia),
+
+    path('estadisticas/usuarios-x-rol/', estadisticas.usuariosXRol),
+    path('estadisticas/cantidad-usuarios/', estadisticas.cantidadUsuarios),
+    path('estadisticas/ranking/', estadisticas.ranking),
+    path('estadisticas/<str:proyid>/tareas-x-tipo/', estadisticas.tareasXTipo),
+    path('estadisticas/<str:proyid>/tareas-x-estado/', estadisticas.tareasXEstado)
 ]

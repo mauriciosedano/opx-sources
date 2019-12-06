@@ -63,6 +63,14 @@
         </a>
       </div>
         <ul class="nav">
+          {%if '2f5bfac3-782e-4926-8e9f-88df72403a18' in request.session.permisos %}
+            <li class="nav-item  ">
+              <a class="nav-link" href="/proyectos/gestion/">
+                <i class="material-icons">Explorar</i>
+                <p>Explorar</p>
+              </a>
+            </li>
+          {% endif %}
           {% if '0ff17033-7e9a-4f6d-a66b-b80b69860ec0' in request.session.permisos %}
             <li class="nav-item  ">
               <a class="nav-link" href="/proyectos/">
