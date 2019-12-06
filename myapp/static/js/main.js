@@ -114,5 +114,8 @@ require('./components/equipos').equipo;
 // Gestión de proyectos - Proyectista
 require('./components/gestion-proyectos-mapa').gestionProyecto;
 
+// Estadisticas
+require('./components/estadisticas').estadisticas;
+
 // Estilos
 import './../scss/app/app.scss';

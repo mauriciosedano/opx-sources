@@ -142,5 +142,7 @@ urlpatterns = [
     path('estadisticas/cantidad-usuarios/', estadisticas.cantidadUsuarios),
     path('estadisticas/ranking/', estadisticas.ranking),
     path('estadisticas/<str:proyid>/tareas-x-tipo/', estadisticas.tareasXTipo),
-    path('estadisticas/<str:proyid>/tareas-x-estado/', estadisticas.tareasXEstado)
+    path('estadisticas/<str:proyid>/tareas-x-estado/', estadisticas.tareasXEstado),
+    path('estadisticas/proyectos-tareas/', estadisticas.proyectosTareas),
+    path('dashboard/', estadisticas.estadisticasView)
 ]

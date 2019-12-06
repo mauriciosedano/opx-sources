@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import connection
 from django.http.response import JsonResponse, HttpResponse
+from django.shortcuts import render
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import (
@@ -8,8 +9,9 @@ from rest_framework.permissions import (
     IsAuthenticated
 )
 
-from myapp.models import Proyecto, Rol, Usuario
+from myapp.models import Proyecto, Rol, Usuario, Tarea, Instrumento
 from myapp.view.utilidades import dictfetchall
+from myapp.views import detalleFormularioKoboToolbox
 
 # ==================== General ===================
 
@@ -19,7 +21,10 @@ def usuariosXRol(request):
 
     roles = Rol.objects.all()
 
-    data = []
+    data = {
+        'roles': [],
+        'cantidadUsuarios': []
+    }
 
     for rol in roles:
 
@@ -28,10 +33,8 @@ def usuariosXRol(request):
             query = "SELECT count(*) as cantidad from v1.usuarios where rolid = '" + str(rol.rolid) + "';"
             cursor.execute(query)
 
-            data.append({
-                'rol': rol.rolname,
-                'cantidad': dictfetchall(cursor)[0]['cantidad']
-            })
+            data['roles'].append(rol.rolname)
+            data['cantidadUsuarios'].append(dictfetchall(cursor)[0]['cantidad'])
 
     response = {
          'code': 200,
@@ -72,6 +75,50 @@ def ranking(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def proyectosTareas(request):
+
+    proyectos = Proyecto.objects.all()
+
+    data = []
+    progresoProyecto = 0
+
+    for proyecto in proyectos:
+
+        data.append({
+            'id': proyecto.proyid,
+            'name': proyecto.proynombre,
+            'start': proyecto.proyfechainicio,
+            'end': proyecto.proyfechacierre,
+            'dependencies': ''
+        })
+
+        tareas = Tarea.objects.filter(proyid__exact=proyecto.proyid)
+
+        for tarea in tareas:
+
+            if tarea.taretipo == 1:
+
+                task = {
+                    'id': tarea.tareid,
+                    'name': tarea.tarenombre,
+                    'start': proyecto.proyfechainicio,
+                    'end': proyecto.proyfechacierre,
+                    'dependencies': proyecto.proyid
+                }
+
+                instrumento = Instrumento.objects.get(pk=tarea.instrid)
+                detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
+                progreso = (detalleFormulario['deployment__submission_count'] * 100) / tarea.tarerestriccant
+
+                task['progress'] = progreso
+                progresoProyecto = progresoProyecto + progreso
+
+                data.append(task)
+
+    return JsonResponse(data, safe=False)
 
 # ==================== Especifico ============================
 
@@ -183,3 +230,9 @@ def tareasXEstado(request, proyid):
         }
 
     return JsonResponse(response, safe=False, status=response['code'])
+
+def estadisticasView(request):
+
+    return render(request, "dashboard/estadisticas.html")
+
+

@@ -67,12 +67,11 @@ def listadoTareas(request):
             for t in tareas:
                 # Tipo encuesta
                 if t['taretipo'] == 1:
-                    pass
-                    # instrumento = models.Instrumento.objects.get(pk=t['instrid'])
-                    # detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
-                    # progreso = (detalleFormulario['deployment__submission_count'] * 100) / t['tarerestriccant']
-                    #
-                    # t['progreso'] = progreso
+                    instrumento = models.Instrumento.objects.get(pk=t['instrid'])
+                    detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
+                    progreso = (detalleFormulario['deployment__submission_count'] * 100) / t['tarerestriccant']
+
+                    t['progreso'] = progreso
 
             if all is not None and all == "1":
 
