@@ -72,10 +72,11 @@ def cerrarChangeset(changeset):
 
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
-def AgregarElemento(request, instrid):
+def AgregarElemento(request, tareid):
 
     try:
-        instrumento = models.Instrumento.objects.get(pk = instrid)
+        tarea = models.Tarea.objects.get(tareid)
+        instrumento = models.Instrumento.objects.get(pk = tarea.instrid)
 
         if instrumento.instrtipo == 2:
 
@@ -153,7 +154,7 @@ def AgregarElemento(request, instrid):
 
                 #Almacenando Cartografia
                 user = usuarioAutenticado(request)
-                cartografia = almacenarCartografia(instrid, wayElement.get('new_id'), osmelement.elemosmid, user.userid)
+                cartografia = almacenarCartografia(instrumento.instrid, wayElement.get('new_id'), osmelement.elemosmid, user.userid, tarea.tareid)
 
                 response = {
                     'code': 200,
@@ -211,9 +212,9 @@ def AgregarElemento(request, instrid):
 
     return JsonResponse(response, status=response['code'])
 
-def almacenarCartografia(instrid, wayid, elemosmid, userid):
+def almacenarCartografia(instrid, wayid, elemosmid, userid, tareid):
 
-    cartografia = models.Cartografia(instrid=instrid, osmid=wayid, elemosmid=elemosmid, userid=userid)
+    cartografia = models.Cartografia(instrid=instrid, osmid=wayid, elemosmid=elemosmid, userid=userid, tareid=tareid)
     cartografia.save()
 
     return serializers.serialize('python', [cartografia])[0]
@@ -232,16 +233,17 @@ def elementosOsm(request):
 
     return JsonResponse(response, status=response['code'], safe=False)
 
-def detalleCartografia(instrid):
+def detalleCartografia(tareid):
 
     try:
-        instrumento = models.Instrumento.objects.get(pk = instrid)
+        tarea = models.Tarea.objects.get(pk=tareid)
+        instrumento = models.Instrumento.objects.get(pk = tarea.instrid)
 
         if instrumento.instrtipo == 2:
 
             query = "SELECT c.*, eo.nombre as tipo_elemento_osm, eo.closed_way FROM v1.cartografias as c " \
                     "INNER JOIN v1.elementos_osm as eo ON c.elemosmid = eo.elemosmid " \
-                    "WHERE c.instrid = '" + instrid + "' " \
+                    "WHERE c.tareid = '" + tareid + "' " \
                     "AND c.estado <> 1"
 
             with connection.cursor() as cursor:
@@ -316,7 +318,12 @@ def detalleCartografia(instrid):
                 }
 
             else:
-                raise ObjectDoesNotExist("No hay cartografias para este instrumento")
+                response = {
+                    'code': 200,
+                    'geojson': [],
+                    'status': 'success'
+                }
+                #raise ObjectDoesNotExist("No hay cartografias para este instrumento")
 
         else:
             raise TypeError("Instrumento Inválido")
@@ -352,9 +359,9 @@ def detalleCartografia(instrid):
 
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
-def cartografiasInstrumento(request, instrid):
+def cartografiasInstrumento(request, tareid):
 
-    response = detalleCartografia(instrid)
+    response = detalleCartografia(tareid)
 
     return JsonResponse(response, safe=False, status=response['code'])
 

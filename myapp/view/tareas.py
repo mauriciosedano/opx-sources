@@ -67,11 +67,17 @@ def listadoTareas(request):
             for t in tareas:
                 # Tipo encuesta
                 if t['taretipo'] == 1:
-                    instrumento = models.Instrumento.objects.get(pk=t['instrid'])
-                    detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
-                    progreso = (detalleFormulario['deployment__submission_count'] * 100) / t['tarerestriccant']
 
+                    encuestas = models.Encuesta.objects.filter(tareid__exact=t['tareid'])
+                    progreso = (len(encuestas) * 100) / t['tarerestriccant']
                     t['progreso'] = progreso
+
+                    # instrumento = models.Instrumento.objects.get(pk=t['instrid'])
+                    # detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
+                    #
+                    # if(detalleFormulario):
+                    #     progreso = (detalleFormulario['deployment__submission_count'] * 100) / t['tarerestriccant']
+                    #     t['progreso'] = progreso
 
             if all is not None and all == "1":
 
@@ -168,11 +174,17 @@ def detalleTarea(request, tareid):
         
         # Tipo encuesta
         if tareaDict['taretipo'] == 1:
-            instrumento = models.Instrumento.objects.get(pk=tareaDict['instrid'])
-            detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
-            progreso = (detalleFormulario['deployment__submission_count'] * 100) / tareaDict['tarerestriccant']
 
+            encuestas = models.Encuesta.objects.filter(tareid__exact=tarea.tareid)
+            progreso = (len(encuestas) * 100) / tareaDict['tarerestriccant']
             tareaDict['progreso'] = progreso
+
+            # instrumento = models.Instrumento.objects.get(pk=tareaDict['instrid'])
+            # detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
+            #
+            # if detalleFormulario:
+            #     progreso = (detalleFormulario['deployment__submission_count'] * 100) / tareaDict['tarerestriccant']
+            #     tareaDict['progreso'] = progreso
 
         data = {
             'code': 200,

@@ -1039,7 +1039,7 @@ def actualizarInstrumento(request, instrid):
 
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
-def almacenarEncuestas(instrumento, informacion, userid):
+def almacenarEncuestas(instrumento, informacion, userid, tareid):
 
     try:
         with transaction.atomic():
@@ -1050,7 +1050,7 @@ def almacenarEncuestas(instrumento, informacion, userid):
                     
                 except ObjectDoesNotExist:
                 
-                    encuesta = models.Encuesta(instrid=instrumento.instrid, koboid = info['_uuid'], contenido=json.dumps(info), userid=userid)
+                    encuesta = models.Encuesta(instrid=instrumento.instrid, koboid = info['_uuid'], contenido=json.dumps(info), userid=userid, tareid=tareid)
                     encuesta.full_clean()
                     encuesta.save()
             
@@ -1101,7 +1101,8 @@ def revisarEncuesta(request, encuestaid):
 def informacionInstrumento(request, id):
 
     try:
-        instrumento = models.Instrumento.objects.get(pk = id)
+        tarea = models.Instrumento.objects.get(id)
+        instrumento = models.Instrumento.objects.get(pk = tarea.instrid)
 
         if instrumento.instrtipo == 1:
 
@@ -1110,7 +1111,7 @@ def informacionInstrumento(request, id):
             if(isinstance(informacion, dict)):
 
                 #almacenarEncuestas(instrumento, informacion['info'])
-                encuestasDB = models.Encuesta.objects.filter(instrid__exact=instrumento.instrid)
+                encuestasDB = models.Encuesta.objects.filter(tareid__exact=tarea.tareid)
                 encuestas = []
 
                 for e in encuestasDB:
@@ -1142,7 +1143,7 @@ def informacionInstrumento(request, id):
         elif instrumento.instrtipo == 2:
 
             informacion = informacionProyectoTM(instrumento.instridexterno)
-            informacionMapeo = detalleCartografia(str(instrumento.instrid))
+            informacionMapeo = detalleCartografia(str(tarea.tareid))
 
             if(informacionMapeo['code'] == 200):
                 geojson = informacionMapeo['geojson']
@@ -1374,7 +1375,7 @@ def enlaceFormularioKoboToolbox(request, tareid):
             if (isinstance(informacion, dict)):
 
                 user = usuarioAutenticado(request)
-                almacenarEncuestas(instrumento, informacion['info'], user.userid)
+                almacenarEncuestas(instrumento, informacion['info'], user.userid, tarea.tareid)
 
             detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
 

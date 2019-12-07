@@ -9,7 +9,7 @@ from rest_framework.permissions import (
     IsAuthenticated
 )
 
-from myapp.models import Proyecto, Rol, Usuario, Tarea, Instrumento
+from myapp.models import Proyecto, Rol, Usuario, Tarea, Instrumento, Encuesta
 from myapp.view.utilidades import dictfetchall
 from myapp.views import detalleFormularioKoboToolbox
 
@@ -83,17 +83,21 @@ def proyectosTareas(request):
     proyectos = Proyecto.objects.all()
 
     data = []
+    project = {}
+    tareasProyecto = []
     progresoProyecto = 0
 
     for proyecto in proyectos:
+        progresoProyecto = 0
+        tareasProyecto = []
 
-        data.append({
+        project = {
             'id': proyecto.proyid,
             'name': proyecto.proynombre,
             'start': proyecto.proyfechainicio,
             'end': proyecto.proyfechacierre,
             'dependencies': ''
-        })
+        }
 
         tareas = Tarea.objects.filter(proyid__exact=proyecto.proyid)
 
@@ -109,14 +113,21 @@ def proyectosTareas(request):
                     'dependencies': proyecto.proyid
                 }
 
-                instrumento = Instrumento.objects.get(pk=tarea.instrid)
-                detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
-                progreso = (detalleFormulario['deployment__submission_count'] * 100) / tarea.tarerestriccant
-
+                encuestas = Encuesta.objects.filter(tareid__exact=tarea.tareid)
+                progreso = (len(encuestas) * 100) / tarea.tarerestriccant
                 task['progress'] = progreso
+                tareasProyecto.append(task)
+
                 progresoProyecto = progresoProyecto + progreso
 
-                data.append(task)
+
+        if progresoProyecto > 0:
+            progresoProyecto = (progresoProyecto * 100) / (len(tareas) * 100)
+
+        project['progress'] = progresoProyecto
+
+        data.append(project)
+        data.extend(tareasProyecto)
 
     return JsonResponse(data, safe=False)
 

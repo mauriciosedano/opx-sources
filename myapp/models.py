@@ -211,6 +211,7 @@ class Cartografia(models.Model):
     elemosmid = models.UUIDField()
     userid = models.UUIDField()
     estado = models.IntegerField()
+    tareid = models.UUIDField()
 
     class Meta:
         db_table = '"v1"."cartografias"'
@@ -235,6 +236,7 @@ class Encuesta(models.Model):
     estado = models.IntegerField(default=0)
     observacion = models.CharField(blank=True, max_length=3000, null=True)
     userid = models.UUIDField()
+    tareid = models.UUIDField()
     
     class Meta:
         db_table = '"v1"."encuestas"'
