@@ -398,11 +398,16 @@ def detalleProyecto(request, proyid):
 
                 for t in tareas:
                     if(t['taretipo'] == 1):
-                        instrumento = models.Instrumento.objects.get(pk = t['instrid'])
-                        detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
 
-                        if detalleFormulario:
-                            t['progreso'] = (detalleFormulario['deployment__submission_count'] * 100) / t['tarerestriccant']
+                        encuestas = models.Encuesta.objects.filter(tareid__exact=t['tareid'])
+                        progreso = (len(encuestas) * 100) / t['tarerestriccant']
+                        t['progreso'] = progreso
+
+                        # instrumento = models.Instrumento.objects.get(pk = t['instrid'])
+                        # detalleFormulario = detalleFormularioKoboToolbox(instrumento.instridexterno)
+                        #
+                        # if detalleFormulario:
+                        #     t['progreso'] = (detalleFormulario['deployment__submission_count'] * 100) / t['tarerestriccant']
 
                 data = {
                     'code': 200,

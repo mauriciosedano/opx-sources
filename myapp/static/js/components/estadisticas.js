@@ -46,7 +46,7 @@ estadisticas = new Vue({
 
                 let ctx = document.getElementById("usuarios-rol").getContext('2d')
                 new Chart(ctx, {
-                    type: 'doughnut',
+                    type: 'bar',
                     data: {
                       labels: data.roles,
                       datasets: [
@@ -85,67 +85,135 @@ estadisticas = new Vue({
         listadoProyectos(){
 
             axios({
-                url: '/proyectos/list/',
+                url: '/estadisticas/proyectos-tareas/',
                 method: 'GET',
-                params: {
-                    all: 1
-                },
                 headers: {
                     Authorization: getToken()
                 }
             })
             .then(response => {
 
-                anychart.onDocumentReady(function () {
-	            // create data
+                if(response.data.code == 200 && response.data.status == 'success'){
 
-	            proyectos = response.data.proyectos;
-	            data = []
+                    new Gantt('#proyectos-gantt', response.data.data, {
+                        on_click: (task) => {
 
-	            for(let i= 0; i<proyectos.length; i++){
+                            if(task.type == 'project'){
 
-	                let id = i+1
-	                id = id.toString(10)
+                                statsPromises = [this.tareasXTipo(task.id), this.tareasXEstado(task.id)];
 
-	                fechaInicio = proyectos[i].proyfechainicio.split("-")
-	                fechaFin = proyectos[i].proyfechacierre.split("-")
+                                Promise.all(statsPromises)
+                                .then(() => {
 
-	                anioA = parseInt(fechaInicio[0], 10)
-	                mesA = parseInt(fechaInicio[1], 10)
-	                diaA = parseInt(fechaInicio[2], 10)
-
-	                anioB = parseInt(fechaFin[0], 10)
-	                mesB = parseInt(fechaFin[1], 10)
-	                diaB = parseInt(fechaFin[2], 10)
-
-	                data.push({
-	                    id: id,
-	                    name: proyectos[i].proynombre,
-	                    actualStart: Date(anioA, mesA, diaA),
-                        actualEnd: Date(anioB, mesB, diaB)
-	                });
-	            }
-
-	            console.log(data)/
-
-                console.log(data);
-                // create a data tree
-                var treeData = anychart.data.tree(data, "as-tree");
-
-                // create a chart
-                var chart = anychart.ganttProject();
-
-                // set the data
-                chart.data(treeData);
-                // configure the scale
-                chart.getTimeline().scale().maximum(Date.UTC(2019, 12, 31));
-                // set the container id
-                chart.container("gantt");
-                // initiate drawing the chart
-                chart.draw();
-                // fit elements to the width of the timeline
-                chart.fitAll();
+                                    console.log("bn");
+                                    $("#estadisticas-tareas").modal('show');
+                                })
+                                .catch((reason) => {
+                                    console.log(reason)
+                                    Swal.fire({
+                                        title: 'Error',
+                                        text: 'Ocurrio un error. Por favor intenta de nuevo',
+                                        type: 'error'
+                                    });
+                                });
+                            }
+                        }
+                    });
+                }
             });
+        },
+        tareasXTipo(proyectoID){
+
+            return new Promise((resolve,reject) => {
+
+                axios({
+                    url: '/estadisticas/' + proyectoID + '/tareas-x-tipo/',
+                    method: 'GET',
+                    headers: {
+                        Authorization: getToken()
+                    }
+                })
+                .then(response => {
+
+                    if(response.data.code == 200 && response.data.status == 'success'){
+
+                        let data = response.data.data;
+
+                        let ctx = document.getElementById("tareas-x-tipo").getContext('2d')
+                        new Chart(ctx, {
+                            type: 'doughnut',
+                            data: {
+                              labels: data.tipos,
+                              datasets: [
+                                {
+                                  label: "Tareas Por Tipo",
+                                  backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+                                  data: data.cantidad
+                                }
+                              ]
+                            },
+                            options: {
+                              title: {
+                                display: true,
+                                text: 'Tareas Por Tipo'
+                              }
+                            }
+                        });
+
+                        resolve("");
+
+                    } else{
+
+                        reject("");
+                    }
+                })
+            })
+        },
+        tareasXEstado(proyectoID){
+
+            return new Promise((resolve,reject) => {
+
+                axios({
+                    url: '/estadisticas/' + proyectoID + '/tareas-x-estado/',
+                    method: 'GET',
+                    headers: {
+                        Authorization: getToken()
+                    }
+                })
+                .then(response => {
+
+                    if(response.data.code == 200 && response.data.status == 'success'){
+
+                        let data = response.data.data;
+
+                        let ctx = document.getElementById("tareas-x-estado").getContext('2d')
+                        new Chart(ctx, {
+                            type: 'doughnut',
+                            data: {
+                              labels: data.estados,
+                              datasets: [
+                                {
+                                  label: "Tareas Por Estado",
+                                  backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+                                  data: data.cantidad
+                                }
+                              ]
+                            },
+                            options: {
+                              title: {
+                                display: true,
+                                text: 'Tareas Por Estado'
+                              }
+                            }
+                        });
+
+                        resolve("");
+
+                    } else{
+
+                        reject("");
+                    }
+                })
             });
         }
     }

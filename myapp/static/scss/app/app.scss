@@ -27,6 +27,11 @@ body.template-logout{
     }
 }
 
+.card .card-header-warning .card-icon, .card .card-header-warning .card-text, .card .card-header-warning:not(.card-header-icon):not(.card-header-text), .card.bg-warning, .card.card-rotate.bg-warning .front, .card.card-rotate.bg-warning .back{
+
+    background: linear-gradient(60deg, #0CBAEF, #0CBAEF);
+}
+
 .card .card-header-primary .card-icon, .card .card-header-primary:not(.card-header-icon):not(.card-header-text), .card .card-header-primary .card-text{
     background: $cardHeaderColor;
 }

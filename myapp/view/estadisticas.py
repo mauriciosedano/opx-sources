@@ -96,7 +96,8 @@ def proyectosTareas(request):
             'name': proyecto.proynombre,
             'start': proyecto.proyfechainicio,
             'end': proyecto.proyfechacierre,
-            'dependencies': ''
+            'dependencies': '',
+            'type': 'project'
         }
 
         tareas = Tarea.objects.filter(proyid__exact=proyecto.proyid)
@@ -110,7 +111,8 @@ def proyectosTareas(request):
                     'name': tarea.tarenombre,
                     'start': proyecto.proyfechainicio,
                     'end': proyecto.proyfechacierre,
-                    'dependencies': proyecto.proyid
+                    'dependencies': proyecto.proyid,
+                    'type': 'task'
                 }
 
                 encuestas = Encuesta.objects.filter(tareid__exact=tarea.tareid)
@@ -129,7 +131,13 @@ def proyectosTareas(request):
         data.append(project)
         data.extend(tareasProyecto)
 
-    return JsonResponse(data, safe=False)
+    response = {
+        'code': 200,
+        'data': data,
+        'status': 'success'
+    }
+
+    return JsonResponse(response, safe=False, status=response['code'])
 
 # ==================== Especifico ============================
 
@@ -152,7 +160,10 @@ def tareasXTipo(request, proyid):
             }
         ]
 
-        data = {}
+        data = {
+            'tipos': [],
+            'cantidad': []
+        }
 
         for tipo in tiposTarea:
 
@@ -163,7 +174,8 @@ def tareasXTipo(request, proyid):
 
                  cursor.execute(query)
 
-                 data[tipo['label']] = dictfetchall(cursor)[0]['cantidad']
+                 data['tipos'].append(tipo['label'])
+                 data['cantidad'].append(dictfetchall(cursor)[0]['cantidad'])
 
         response = {
              'code': 200,
@@ -206,7 +218,10 @@ def tareasXEstado(request, proyid):
             }
         ]
 
-        data = []
+        data = {
+            'estados': [],
+            'cantidad': []
+        }
 
         for tipo in tiposTarea:
 
@@ -217,10 +232,8 @@ def tareasXEstado(request, proyid):
 
                  cursor.execute(query)
 
-                 data.append({
-                    'tipo': tipo['label'],
-                    'cantidad': dictfetchall(cursor)[0]['cantidad']
-                 })
+                 data['estados'].append(tipo['label'])
+                 data['cantidad'].append(dictfetchall(cursor)[0]['cantidad'])
 
         response = {
             'code': 200,
