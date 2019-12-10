@@ -75,7 +75,7 @@ def cerrarChangeset(changeset):
 def AgregarElemento(request, tareid):
 
     try:
-        tarea = models.Tarea.objects.get(tareid)
+        tarea = models.Tarea.objects.get(pk=tareid)
         instrumento = models.Instrumento.objects.get(pk = tarea.instrid)
 
         if instrumento.instrtipo == 2:
@@ -204,11 +204,11 @@ def AgregarElemento(request, tareid):
             'status': 'error'
         }
 
-    except:
-        response = {
-            'code': 500,
-            'status': 'error'
-        }
+    # except:
+    #     response = {
+    #         'code': 500,
+    #         'status': 'error'
+    #     }
 
     return JsonResponse(response, status=response['code'])
 

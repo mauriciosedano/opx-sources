@@ -210,7 +210,7 @@ class Cartografia(models.Model):
     osmid = models.CharField(max_length=255)
     elemosmid = models.UUIDField()
     userid = models.UUIDField()
-    estado = models.IntegerField()
+    estado = models.IntegerField(default=0)
     tareid = models.UUIDField()
 
     class Meta:
