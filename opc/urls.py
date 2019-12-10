@@ -25,7 +25,8 @@ from myapp.view import (
     utilidades,
     osm,
     contextualizacion,
-    estadisticas
+    estadisticas,
+    plantillaEquipo
 )
 
 urlpatterns = [
@@ -76,6 +77,11 @@ urlpatterns = [
     path('equipos/delete/<str:equid>', equipo.eliminarEquipo),
     path('equipos/proyecto/<str:proyid>', equipo.equipoProyectoView),
     path('equipos/<str:equid>', equipo.actualizarEquipo),
+
+    path('plantillas-equipo/list/', plantillaEquipo.listadoPlantillas),
+    path('plantillas-equipo/<str:planid>/delete/', plantillaEquipo.eliminarPlantilla),
+    path('plantillas-equipo/store/', plantillaEquipo.crearPlantilla),
+    path('plantillas-equipo/<str:planid>', plantillaEquipo.edicionPlantilla),
 
     path('acciones/list/', views.listadoAcciones),
 

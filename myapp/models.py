@@ -284,3 +284,23 @@ class AsignacionPuntaje(models.Model):
 
     class Meta:
         db_table = '"v1"."asignaciones_puntajes"'
+
+class PlantillaEquipo(models.Model):
+
+    planid = models.UUIDField(default=uuid.uuid4, primary_key=True)
+    descripcion = models.TextField()
+    userid = models.UUIDField()
+
+    class Meta:
+        db_table = '"v1"."plantillas_equipo"'
+
+
+class MiembroPlantilla(models.Model):
+
+    miplid = models.UUIDField(default=uuid.uuid4, primary_key=True)
+    userid = models.UUIDField()
+    estado = models.IntegerField()
+    planid = models.UUIDField()
+
+    class Meta:
+        db_table = '"v1"."miembros_plantilla"'
