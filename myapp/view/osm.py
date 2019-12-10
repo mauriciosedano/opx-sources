@@ -320,7 +320,7 @@ def detalleCartografia(tareid):
             else:
                 response = {
                     'code': 200,
-                    'geojson': [],
+                    'geojson': '{"type": "FeatureCollection", "features": []}',
                     'status': 'success'
                 }
                 #raise ObjectDoesNotExist("No hay cartografias para este instrumento")

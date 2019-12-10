@@ -1101,7 +1101,7 @@ def revisarEncuesta(request, encuestaid):
 def informacionInstrumento(request, id):
 
     try:
-        tarea = models.Instrumento.objects.get(id)
+        tarea = models.Instrumento.objects.get(pk=id)
         instrumento = models.Instrumento.objects.get(pk = tarea.instrid)
 
         if instrumento.instrtipo == 1:
