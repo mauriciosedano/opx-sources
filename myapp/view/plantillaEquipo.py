@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import connection
 from django.forms.models import model_to_dict
 from django.http.response import JsonResponse
+from django.shortcuts import render
 
 from myapp.models import PlantillaEquipo, MiembroPlantilla
 from rest_framework.decorators import api_view, permission_classes
@@ -289,3 +290,7 @@ def miembrosDisponibles(request, planid):
         }
 
     return JsonResponse(response, safe = False, status = response['code'])
+
+def plantillasView(request):
+
+    return render(request, "proyectos/gestion-plantillas.html")

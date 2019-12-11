@@ -71,6 +71,7 @@ urlpatterns = [
     path('decisiones-proyecto/delete/<str:desproid>/', views.eliminarDecisionProyecto),
     path('decisiones-proyecto/<str:desproid>', views.actualizarDecisionProyecto),
 
+    path('equipos/', plantillaEquipo.plantillasView),
     path('equipos/list/<str:proyid>', equipo.equipoProyecto),
     path('equipos/<str:proyid>/usuarios-disponibles/', equipo.usuariosDisponiblesProyecto),
     path('equipos/store/', equipo.almacenamientoEquipo),

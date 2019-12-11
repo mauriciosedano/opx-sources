@@ -117,5 +117,8 @@ require('./components/gestion-proyectos-mapa').gestionProyecto;
 // Estadisticas
 require('./components/estadisticas').estadisticas;
 
+// Gestión de Plantillas de Equipo
+require('./components/plantillas/plantillasEquipo').gestionPlantilla;
+
 // Estilos
 import './../scss/app/app.scss';

@@ -1,0 +1,110 @@
+{% extends "layouts/main.html" %}
+
+{% block content %}
+
+    <div class="container-fluid" id="gestion-plantillas">
+
+<!--      <div :class="{loading:loading}">.</div>-->
+
+      <div class="row">
+        <!-- Equipo del proyecto -->
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header card-header-primary">
+              <button class="btn button-right" data-backdrop="static" data-target="#agregar-plantilla" data-toggle="modal">Crear Plantilla</button>
+              <h4 class="card-title "> Equipos </h4>
+              <p class="card-category"> Equipo de Proyecto </p>
+            </div>
+            <div class="card-body">
+
+                <div class="table-responsive">
+                    <table class="table">
+                      <thead class=" text-primary">
+                        <tr>
+                            <th>
+                              Nombre
+                            </th>
+                            <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="plantilla in plantillas">
+                          <td>
+                            [[ plantilla.descripcion ]]
+                          </td>
+                          <td>
+                            <div class="dropdown">
+                              <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                              </a>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a @click.prevent="plantillaEdicion = plantilla" data-toggle="modal" data-target="#editar-plantilla" class="dropdown-item" href="#"> Edición </a>
+                                <a @click.prevent="eliminarPlantilla(plantilla.planid)" class="dropdown-item" href="#"> Eliminación </a>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <div class="row">
+
+            <!-- Creación de Plantilla -->
+            <div class="modal fade" id="agregar-plantilla">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="" class="form-horizontal">
+                                <div class="form-group row">
+                                    <div class="col-md-12">
+                                        <label class="bmd-label-floating">Nombre</label>
+                                        <input v-model="almacenamientoPlantilla.descripcion" type="text" class="form-control">
+                                    </div>
+                                    <div align="center" class="col-md-12">
+                                        <button :disabled="!almacenamientoPlantilla.descripcion" @click.prevent="guardarPlantilla()" class="btn" type="button"> Guardar </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edición de Plantilla -->
+            <div class="modal fade" id="editar-plantilla">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="" class="form-horizontal">
+                                <div class="form-group row">
+                                    <div class="col-md-12">
+                                        <label class="bmd-label-floating">Nombre</label>
+                                        <input v-model="plantillaEdicion.descripcion" type="text" class="form-control">
+                                    </div>
+                                    <div align="center" class="col-md-12">
+                                        <button :disabled="!plantillaEdicion.descripcion" @click.prevent="editarPlantilla()" class="btn" type="button"> Editar </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
