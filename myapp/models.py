@@ -88,7 +88,7 @@ class Equipo(models.Model):
     equid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     userid = models.UUIDField()
     proyid = models.UUIDField()
-    miembroestado = models.IntegerField()
+    miembroestado = models.IntegerField(default=1)
 
     class Meta:
         db_table = '"v1"."equipos"'
@@ -299,7 +299,7 @@ class MiembroPlantilla(models.Model):
 
     miplid = models.UUIDField(default=uuid.uuid4, primary_key=True)
     userid = models.UUIDField()
-    estado = models.IntegerField()
+    estado = models.IntegerField(default=1)
     planid = models.UUIDField()
 
     class Meta:

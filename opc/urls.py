@@ -75,13 +75,18 @@ urlpatterns = [
     path('equipos/<str:proyid>/usuarios-disponibles/', equipo.usuariosDisponiblesProyecto),
     path('equipos/store/', equipo.almacenamientoEquipo),
     path('equipos/delete/<str:equid>', equipo.eliminarEquipo),
-    path('equipos/proyecto/<str:proyid>', equipo.equipoProyectoView),
     path('equipos/<str:equid>', equipo.actualizarEquipo),
+    path('equipos/proyecto/<str:proyid>', equipo.equipoProyectoView),
 
     path('plantillas-equipo/list/', plantillaEquipo.listadoPlantillas),
     path('plantillas-equipo/<str:planid>/delete/', plantillaEquipo.eliminarPlantilla),
     path('plantillas-equipo/store/', plantillaEquipo.crearPlantilla),
     path('plantillas-equipo/<str:planid>', plantillaEquipo.edicionPlantilla),
+
+    path('miembros-plantilla/<str:planid>/list/', plantillaEquipo.miembrosPlantilla),
+    path('miembros-plantilla/<str:planid>/store/', plantillaEquipo.agregarMiembro),
+    path('miembros-plantilla/<str:miplid>/delete/', plantillaEquipo.eliminarMiembro),
+    path('miembros-plantilla/<str:planid>/usuarios-disponibles/', plantillaEquipo.miembrosDisponibles),
 
     path('acciones/list/', views.listadoAcciones),
 

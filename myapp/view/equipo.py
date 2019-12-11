@@ -202,7 +202,7 @@ def usuariosDisponiblesProyecto(request, proyid):
         # Busqueda de Usuarios
         search = request.GET.get('search')
 
-        query = "select u.userid, u.userfullname from v1.usuarios u where u.rolid = '0be58d4e-6735-481a-8740-739a73c3be86' and u.userid not in (select e.userid from v1.equipos e where e.proyid = '" + proyid + "')"
+        query = "select u.userid, u.userfullname from v1.usuarios u where (u.rolid = '0be58d4e-6735-481a-8740-739a73c3be86' or u.rolid = '53ad3141-56bb-4ee2-adcf-5664ba03ad65') and u.userid not in (select e.userid from v1.equipos e where e.proyid = '" + proyid + "')"
 
         if search is not None:
             query += "and u.userfullname ~* '" + search + "'"

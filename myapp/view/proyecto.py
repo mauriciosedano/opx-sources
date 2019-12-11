@@ -186,6 +186,7 @@ def almacenamientoProyecto(request):
     proyEstado = 1
     decisiones = json.loads(request.POST.get('decisiones'))
     contextos = json.loads(request.POST.get('contextos'))
+    equipos = json.loads(request.POST.get('equipos'))
     propietario = tokenDecoded['user_id']
     delimitacionGeograficas = request.POST.get('delimitacionesGeograficas')
 
@@ -204,6 +205,7 @@ def almacenamientoProyecto(request):
         almacenarDecisionProyecto(proyecto, decisiones)
         almacenarContextosProyecto(proyecto, contextos)
         almacenarDelimitacionesGeograficas(proyecto, delimitacionGeograficas)
+        asignarEquipos(proyecto, equipos)
 
         data = serializers.serialize('python', [proyecto])[0]
 
@@ -292,6 +294,17 @@ def almacenarDelimitacionesGeograficas(proyecto, delimitacionesGeograficas):
         }
 
     return data
+
+def asignarEquipos(proyecto, equipos):
+
+    for equipo in equipos:
+
+        usuarios = models.MiembroPlantilla.objects.filter(planid__exact=equipo)
+
+        for usuario in usuarios:
+
+            integrante = models.Equipo(userid=usuario.userid, proyid=proyecto.proyid)
+            integrante.save()
 
 @csrf_exempt
 @api_view(["DELETE"])
