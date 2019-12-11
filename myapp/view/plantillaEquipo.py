@@ -137,11 +137,18 @@ def edicionPlantilla(request, planid):
 def miembrosPlantilla(request, planid):
 
     try:
-        miembrosPlantilla = MiembroPlantilla.objects.filter(planid__exact=planid).values()
+        #miembrosPlantilla = MiembroPlantilla.objects.filter(planid__exact=planid).values()
+        with connection.cursor() as cursor:
+            query = "select mp.miplid, u.userfullname from v1.miembros_plantilla mp inner join v1.usuarios u on u.userid = mp.userid " \
+                    "where mp.planid = '" + planid + "'"
+
+            cursor.execute(query)
+
+            miembrosPlantilla = dictfetchall(cursor)
 
         response = {
             'code': 200,
-            'data': list(miembrosPlantilla),
+            'data': miembrosPlantilla,
             'status': 'success'
         }
 

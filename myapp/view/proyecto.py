@@ -217,9 +217,14 @@ def almacenamientoProyecto(request):
 
     except ValidationError as e:
 
+        try:
+            errors = dict(e)
+        except ValueError:
+            errors = list(e)[0]
+
         data = {
             'code': 400,
-            'errors': dict(e),
+            'errors': errors,
             'status': 'error'
         }
 
@@ -229,6 +234,13 @@ def almacenamientoProyecto(request):
             'code': 500,
             'message': str(e),
             'status': 'success'
+        }
+
+    except ObjectDoesNotExist as e:
+        data = {
+            'code': 404,
+            'message': str(e),
+            'status': 'error'
         }
 
     return JsonResponse(data, safe = False, status = data['code'])
@@ -297,14 +309,18 @@ def almacenarDelimitacionesGeograficas(proyecto, delimitacionesGeograficas):
 
 def asignarEquipos(proyecto, equipos):
 
-    for equipo in equipos:
+    with transaction.atomic():
 
-        usuarios = models.MiembroPlantilla.objects.filter(planid__exact=equipo)
+        for equipo in equipos:
 
-        for usuario in usuarios:
+            plantilla = models.PlantillaEquipo.objects.get(pk=equipo)
 
-            integrante = models.Equipo(userid=usuario.userid, proyid=proyecto.proyid)
-            integrante.save()
+            usuarios = models.MiembroPlantilla.objects.filter(planid__exact=equipo)
+
+            for usuario in usuarios:
+
+                integrante = models.Equipo(userid=usuario.userid, proyid=proyecto.proyid)
+                integrante.save()
 
 @csrf_exempt
 @api_view(["DELETE"])
