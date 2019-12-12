@@ -72,6 +72,7 @@ urlpatterns = [
     path('decisiones-proyecto/<str:desproid>', views.actualizarDecisionProyecto),
 
     path('equipos/', plantillaEquipo.plantillasView),
+    path('equipos/<str:planid>', plantillaEquipo.miembrosPlantillaView),
     path('equipos/list/<str:proyid>', equipo.equipoProyecto),
     path('equipos/<str:proyid>/usuarios-disponibles/', equipo.usuariosDisponiblesProyecto),
     path('equipos/store/', equipo.almacenamientoEquipo),

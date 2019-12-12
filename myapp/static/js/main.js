@@ -120,5 +120,8 @@ require('./components/estadisticas').estadisticas;
 // Gestión de Plantillas de Equipo
 require('./components/plantillas/plantillasEquipo').gestionPlantilla;
 
+// Gestión de Miembros de plantillas de equipo
+require('./components/plantillas/miembrosPlantilla').miembrosPlantilla;
+
 // Estilos
 import './../scss/app/app.scss';

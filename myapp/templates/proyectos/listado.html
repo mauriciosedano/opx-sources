@@ -119,6 +119,12 @@
                       </div>
                       <div class="col-md-6">
                         <div class="form-group">
+                          <label for="" class="bmd-label-floating">Equipos</label>
+                          <multiselect v-model="almacenamientoProyecto.plantillas" :multiple="true" :options="plantillas" track-by="planid" label="descripcion"></multiselect>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
                           <label for="" class="bmd-label-floating">Fecha Inicio</label>
                           <input class="form-control" type="date" v-model="almacenamientoProyecto.proyfechainicio" />
                         </div>
@@ -190,7 +196,7 @@
 
                   <!-- Guardado De proyecto -->
                   <div align="center">
-                    <button class="btn" @click="almacenarProyecto" :disabled="!almacenamientoProyecto.proynombre || !almacenamientoProyecto.proydescripcion || !almacenamientoProyecto.decisiones || !almacenamientoProyecto.contextos || !almacenamientoProyecto.delimitacionesGeograficas.length > 0 || !almacenamientoProyecto.proyfechainicio || !almacenamientoProyecto.proyfechacierre">Guardar Proyecto</button>
+                    <button class="btn" @click="almacenarProyecto" :disabled="!almacenamientoProyecto.proynombre || !almacenamientoProyecto.proydescripcion || !almacenamientoProyecto.decisiones || !almacenamientoProyecto.contextos || !almacenamientoProyecto.plantillas || !almacenamientoProyecto.delimitacionesGeograficas.length > 0 || !almacenamientoProyecto.proyfechainicio || !almacenamientoProyecto.proyfechacierre">Guardar Proyecto</button>
                   </div>
 
                 </div>

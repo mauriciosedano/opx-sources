@@ -186,7 +186,7 @@ def almacenamientoProyecto(request):
     proyEstado = 1
     decisiones = json.loads(request.POST.get('decisiones'))
     contextos = json.loads(request.POST.get('contextos'))
-    equipos = json.loads(request.POST.get('equipos'))
+    equipos = json.loads(request.POST.get('plantillas'))
     propietario = tokenDecoded['user_id']
     delimitacionGeograficas = request.POST.get('delimitacionesGeograficas')
 

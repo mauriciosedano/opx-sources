@@ -2,7 +2,7 @@ from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import connection
 from django.forms.models import model_to_dict
-from django.http.response import JsonResponse
+from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 from myapp.models import PlantillaEquipo, MiembroPlantilla
@@ -269,7 +269,7 @@ def miembrosDisponibles(request, planid):
 
         response = {
             'code': 200,
-            'usuarios': usuarios,
+            'data': usuarios,
             'status': 'success'
         }
 
@@ -294,3 +294,21 @@ def miembrosDisponibles(request, planid):
 def plantillasView(request):
 
     return render(request, "proyectos/gestion-plantillas.html")
+
+def miembrosPlantillaView(request, planid):
+
+    try:
+
+        plantilla = PlantillaEquipo.objects.get(pk=planid)
+
+        print(plantilla.descripcion)
+
+        response = render(request, "proyectos/gestion-miembros-plantilla.html", {'plantilla': plantilla})
+
+    except ObjectDoesNotExist:
+        response = HttpResponse("", status=404)
+
+    except ValidationError:
+        response = HttpResponse("", status=400)
+
+    return response

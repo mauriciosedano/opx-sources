@@ -6,8 +6,8 @@
 
 <!--      <div :class="{loading:loading}">.</div>-->
 
+      <!-- Plantillas de Equipo -->
       <div class="row">
-        <!-- Equipo del proyecto -->
         <div class="col-md-12">
           <div class="card">
             <div class="card-header card-header-primary">
@@ -38,6 +38,7 @@
 
                               </a>
                               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" :href="'/equipos/' + plantilla.planid"> Miembros </a>
                                 <a @click.prevent="plantillaEdicion = plantilla" data-toggle="modal" data-target="#editar-plantilla" class="dropdown-item" href="#"> Edición </a>
                                 <a @click.prevent="eliminarPlantilla(plantilla.planid)" class="dropdown-item" href="#"> Eliminación </a>
                               </div>

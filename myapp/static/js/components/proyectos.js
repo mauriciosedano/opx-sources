@@ -8,6 +8,7 @@ proyecto = new Vue({
             this.listadoProyectos();
             this.listadoDecisiones();
             this.listadoContextos();
+            this.listadoPlantillas();
         }
     },
     data: {
@@ -18,6 +19,7 @@ proyecto = new Vue({
         edicionProyecto: {},
         proyectos: [],
         contextos: [],
+        plantillas: [],
         loading: false,
         mapObject: {},
         delimitacionGeografica: {
@@ -81,10 +83,21 @@ proyecto = new Vue({
 
                     valor = JSON.stringify(contextos);
 
+                } else if(key == 'plantillas'){
+
+                    let plantillas = [];
+
+                    for(let i = 0; i < this.almacenamientoProyecto.plantillas.length; i++){
+
+
+                        plantillas.push(this.almacenamientoProyecto.plantillas[i].planid);
+                    }
+
+                    valor = JSON.stringify(plantillas);
+
                 } else if(key == 'delimitacionesGeograficas'){
 
                     valor = JSON.stringify(this.almacenamientoProyecto.delimitacionesGeograficas);
-
 
                 } else{
 
@@ -436,6 +449,23 @@ proyecto = new Vue({
         loader(status){
 
             this.loading = status;
+        },
+        listadoPlantillas(){
+
+            axios({
+                url: '/plantillas-equipo/list/',
+                method: 'GET',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.plantillas = response.data.data;
+                }
+            })
         }
     },
     computed: {
