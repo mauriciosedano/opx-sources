@@ -142,11 +142,15 @@ def listadoUsuarios(request):
 def detalleUsuario(request, userid):
 
     try:
-        usuario = models.Usuario.objects.get(pk=userid)
+        #usuario = models.Usuario.objects.get(pk=userid)
+        with connection.cursor() as cursor:
+            query = "SELECT u.*, r.rolname from v1.usuarios u INNER JOIN v1.roles r ON r.rolid = u.rolid"
+            cursor.execute(query)
+            usuarios = dictfetchall(cursor)
 
         data = {
             'code': 200,
-            'usuario': model_to_dict(usuario),
+            'usuario': usuarios,
             'status': 'success'
         }
 
@@ -1101,7 +1105,7 @@ def revisarEncuesta(request, encuestaid):
 def informacionInstrumento(request, id):
 
     try:
-        tarea = models.Instrumento.objects.get(pk=id)
+        tarea = models.Tarea.objects.get(pk=id)
         instrumento = models.Instrumento.objects.get(pk = tarea.instrid)
 
         if instrumento.instrtipo == 1:
