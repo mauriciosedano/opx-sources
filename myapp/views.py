@@ -12,7 +12,7 @@ from django.conf import settings
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import (connection, transaction)
-from django.db.utils import IntegrityError
+from django.db.utils import DataError, IntegrityError
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.http.response import JsonResponse
@@ -144,15 +144,21 @@ def detalleUsuario(request, userid):
     try:
         #usuario = models.Usuario.objects.get(pk=userid)
         with connection.cursor() as cursor:
-            query = "SELECT u.*, r.rolname from v1.usuarios u INNER JOIN v1.roles r ON r.rolid = u.rolid"
+            query = "SELECT u.*, r.rolname from v1.usuarios u INNER JOIN v1.roles r ON r.rolid = u.rolid " \
+                    "WHERE u.userid = '{}'".format(userid)
             cursor.execute(query)
             usuarios = dictfetchall(cursor)
 
-        data = {
-            'code': 200,
-            'usuario': usuarios,
-            'status': 'success'
-        }
+        if(len(usuarios) > 0):
+
+            data = {
+                'code': 200,
+                'usuario': usuarios[0],
+                'status': 'success'
+            }
+
+        else:
+            raise ObjectDoesNotExist("")
 
     except ObjectDoesNotExist:
 
@@ -162,6 +168,13 @@ def detalleUsuario(request, userid):
         }
 
     except ValidationError:
+
+        data = {
+            'code': 400,
+            'status': 'error'
+        }
+
+    except DataError:
 
         data = {
             'code': 400,
