@@ -294,9 +294,10 @@ def actualizarTarea(request, tareid):
             'status': 'success'
         }
 
-    except ObjectDoesNotExist:
+    except ObjectDoesNotExist as e:
         response = {
             'code': 404,
+            'message': str(e),
             'status': 'error'
         }
 
