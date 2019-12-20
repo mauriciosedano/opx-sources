@@ -22,12 +22,18 @@
                     <th>
                       Nombre
                     </th>
+                    <th>
+                      Equipo(s)
+                    </th>
                     <th></th>
                   </thead>
                   <tbody>
                     <tr v-for="eq in equipo">
                       <td>
                         [[ eq.userfullname ]]
+                      </td>
+                      <td>
+                        [[ eq.equipos ]]
                       </td>
                       <td>
                         <div class="dropdown">
@@ -60,12 +66,18 @@
                     <th>
                       Nombre
                     </th>
+                    <th>
+                      Equipo(s)
+                    </th>
                     <th></th>
                   </thead>
                   <tbody>
                     <tr v-for="u in usuariosDisponibles">
                       <td>
                         [[ u.userfullname ]]
+                      </td>
+                      <td>
+                        [[ u.equipos ]]
                       </td>
                       <td>
                         <div class="dropdown">

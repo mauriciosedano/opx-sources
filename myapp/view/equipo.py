@@ -22,7 +22,7 @@ from rest_framework.permissions import (
     IsAuthenticated
 )
 
-from myapp.view.utilidades import dictfetchall
+from myapp.view.utilidades import dictfetchall, usuarioAutenticado
 
 # ========================== Equipos ==============================
 
@@ -42,18 +42,43 @@ def equipoProyecto(request, proyid):
 
         else:
 
-            query = "select e.equid, u.userfullname, u.latitud, u.longitud, u.horaubicacion from v1.equipos as e inner join v1.usuarios as u on u.userid = e.userid where e.proyid = '" + proyid + "'"
+            #query = "select e.equid, u.userfullname, u.latitud, u.longitud, u.horaubicacion from v1.equipos as e inner join v1.usuarios as u on u.userid = e.userid where e.proyid = '" + proyid + "'"
 
-            with connection.cursor() as cursor:
-                cursor.execute(query)
+            user = usuarioAutenticado(request)
 
-                equipo = dictfetchall(cursor)
+            if (str(user.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a'):
 
-            data = {
-                'code': 200,
-                'equipo': equipo,
-                'status': 'success'
-            }
+                query = "select distinct on(u.userid) \
+                    e.equid, u.userfullname, u.latitud, u.longitud, u.horaubicacion, \
+                    (select string_agg(pe.descripcion, ', ') \
+                    from v1.miembros_plantilla as mp \
+                    inner join v1.plantillas_equipo as pe on pe.planid = mp.planid \
+                    where mp.userid = u.userid) as equipos \
+                    from v1.equipos as e \
+                    inner join v1.usuarios as u on u.userid = e.userid \
+                    inner join v1.miembros_plantilla as mp on mp.userid = u.userid \
+                    inner join v1.plantillas_equipo as pe on pe.planid = mp.planid \
+                    where pe.userid = '{}' \
+                    and e.proyid = '{}'" \
+                    .format(user.userid, proyid)
+
+                with connection.cursor() as cursor:
+                    cursor.execute(query)
+
+                    equipo = dictfetchall(cursor)
+
+                data = {
+                    'code': 200,
+                    'equipo': equipo,
+                    'status': 'success'
+                }
+
+            else:
+                data = {
+                    'code': 403,
+                    'message': 'Usuario no permitido',
+                    'status': 'error'
+                }
 
     except ValidationError as e:
 
@@ -198,25 +223,49 @@ def usuariosDisponiblesProyecto(request, proyid):
     try:
 
         proyecto = models.Proyecto.objects.get(pk = proyid)
+        user = usuarioAutenticado(request)
 
-        # Busqueda de Usuarios
-        search = request.GET.get('search')
+        if (str(user.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a'):
 
-        query = "select u.userid, u.userfullname from v1.usuarios u where (u.rolid = '0be58d4e-6735-481a-8740-739a73c3be86' or u.rolid = '53ad3141-56bb-4ee2-adcf-5664ba03ad65') and u.userid not in (select e.userid from v1.equipos e where e.proyid = '" + proyid + "')"
+            # Busqueda de Usuarios
+            search = request.GET.get('search')
 
-        if search is not None:
-            query += "and u.userfullname ~* '" + search + "'"
+            # query = "select u.userid, u.userfullname from v1.usuarios u where (u.rolid = '0be58d4e-6735-481a-8740-739a73c3be86' or u.rolid = '53ad3141-56bb-4ee2-adcf-5664ba03ad65') and u.userid not in (select e.userid from v1.equipos e where e.proyid = '" + proyid + "')"
 
-        with connection.cursor() as cursor:
-            cursor.execute(query)
+            query = "select distinct on(u.userid) \
+                    u.userid, u.userfullname, \
+                    (select string_agg(pe.descripcion, ', ') \
+                    from v1.miembros_plantilla as mp \
+                    inner join v1.plantillas_equipo as pe on pe.planid = mp.planid \
+                    where mp.userid = u.userid) as equipos \
+                    from v1.miembros_plantilla as mp \
+                    inner join v1.usuarios as u on u.userid = mp.userid \
+                    inner join v1.plantillas_equipo as pe on pe.planid = mp.planid \
+                    where pe.userid = '{}' \
+                    and u.userid not in (select e.userid from v1.equipos e where e.proyid = '{}') \
+                    and (u.rolid = '0be58d4e-6735-481a-8740-739a73c3be86' or u.rolid = '53ad3141-56bb-4ee2-adcf-5664ba03ad65')" \
+                    .format(user.userid, proyid)
 
-            usuarios = dictfetchall(cursor)
+            if search is not None:
+                query += "and u.userfullname ~* '" + search + "'"
 
-        data = {
-            'code': 200,
-            'usuarios': usuarios,
-            'status': 'success'
-        }
+            with connection.cursor() as cursor:
+                cursor.execute(query)
+
+                usuarios = dictfetchall(cursor)
+
+            data = {
+                'code': 200,
+                'usuarios': usuarios,
+                'status': 'success'
+            }
+
+        else:
+            data = {
+                'code': 403,
+                'message': 'Usuario no permitido',
+                'status': 'error'
+            }
 
     except ObjectDoesNotExist:
 
