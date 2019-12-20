@@ -26,7 +26,8 @@ from myapp.view import (
     osm,
     contextualizacion,
     estadisticas,
-    plantillaEquipo
+    plantillaEquipo,
+    tiposProyecto
 )
 
 urlpatterns = [
@@ -122,6 +123,11 @@ urlpatterns = [
     path('proyectos/detail/<str:proyid>', proyecto.detalleProyecto),
     path('proyectos/dimensiones-territoriales/<str:proyid>', proyecto.dimensionesTerritoriales),
     path('proyectos/<str:proyid>/tareas/', proyecto.tareasProyectoView),
+
+    path('tipos-proyecto/list/', tiposProyecto.listadoTiposProyecto),
+    path('tipos-proyecto/<str:tiproid>/delete/', tiposProyecto.eliminarTipoProyecto),
+    path('tipos-proyecto/<str:tiproid>', tiposProyecto.edicionTipoProyecto),
+    path('tipos-proyecto/store/', tiposProyecto.almacenamientoTiposProyecto),
 
     path('roles/', views.listadoRolesView),
     path('roles/list/', views.listadoRoles),

@@ -304,3 +304,13 @@ class MiembroPlantilla(models.Model):
 
     class Meta:
         db_table = '"v1"."miembros_plantilla"'
+
+
+class TipoProyecto(models.Model):
+
+    tiproid = models.UUIDField(default = uuid.uuid4, primary_key=True)
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField()
+
+    class Meta:
+        db_table = '"v1"."tipos_proyecto"'
