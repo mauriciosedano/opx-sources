@@ -1,88 +1,38 @@
 estadisticas = new Vue({
-    el: '#dashboard',
+    el: '#reportes-durante',
     delimiters: ['[[', ']]'],
+    data: {
+        proyectos: [],
+        vistaTarjetas: true,
+        vistaGantt: false
+    },
     created(){
 
-        if(window.location.pathname == '/dashboard/'){
+        if(window.location.pathname == '/reportes/durante/'){
 
-           this.obtenerCantidadUsuarios();
-           this.usuariosXRol();
-           this.obtenerRanking();
-           this.listadoProyectos();
+            this.listadoProyectos();
+            this.listadoProyectosGantt();
         }
     },
-    data: {
-
-        cantidadUsuarios: 0,
-        ranking: []
-    },
     methods: {
-        obtenerCantidadUsuarios(){
-
-            axios({
-                url: '/estadisticas/cantidad-usuarios/',
-                method: 'GET',
-                headers: {
-                    Authorization: getToken()
-                }
-            })
-            .then(response => {
-
-                this.cantidadUsuarios = response.data.data;
-            })
-        },
-        usuariosXRol(){
-
-            axios({
-                url: '/estadisticas/usuarios-x-rol/',
-                method: 'GET',
-                headers: {
-                    Authorization: getToken()
-                }
-            })
-            .then(response => {
-
-                let data = response.data.data;
-
-                let ctx = document.getElementById("usuarios-rol").getContext('2d')
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                      labels: data.roles,
-                      datasets: [
-                        {
-                          label: "Usuarios x Rol",
-                          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-                          data: data.cantidadUsuarios
-                        }
-                      ]
-                    },
-                    options: {
-                      title: {
-                        display: true,
-                        text: 'Usuarios x Rol'
-                      }
-                    }
-                });
-            })
-
-
-        },
-        obtenerRanking(){
-
-            axios({
-                url: '/estadisticas/ranking/',
-                method: 'GET',
-                headers: {
-                    Authorization: getToken()
-                }
-            })
-            .then(response => {
-
-                this.ranking = response.data.data;
-            })
-        },
         listadoProyectos(){
+
+            axios({
+                url: '/estadisticas/estado-proyectos/',
+                method: 'GET',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.proyectos = response.data.data;
+                }
+            });
+        },
+        listadoProyectosGantt(){
 
             axios({
                 url: '/estadisticas/proyectos-tareas/',
@@ -215,6 +165,19 @@ estadisticas = new Vue({
                     }
                 })
             });
+        },
+        cambioVista(vista){
+
+            if(vista == 1){
+
+                this.vistaTarjetas = true;
+                this.vistaGantt = false;
+
+            } else if(vista == 2){
+
+                this.vistaTarjetas = false;
+                this.vistaGantt = true;
+            }
         }
     }
-})
+});

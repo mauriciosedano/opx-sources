@@ -135,8 +135,29 @@
               </a>
             </li>
           {% endif %}
+          {% if '75a42144-766e-4696-b385-a266425a5aaa' in request.session.permisos %}
+            <li class="nav-item ">
+              <a class="nav-link" href="/dashboard/">
+                <i class="material-icons">bar_chart</i>
+                <p>Reportes - Antes</p>
+              </a>
+            </li>
+            <li class="nav-item ">
+              <a class="nav-link" href="#">
+                <i class="material-icons">bar_chart</i>
+                <p>Reportes - Durante</p>
+              </a>
+            </li>
+            <li class="nav-item ">
+              <a class="nav-link" href="#">
+                <i class="material-icons">bar_chart</i>
+                <p>Reportes - Después</p>
+              </a>
+            </li>
+          {% endif %}
         </ul>
-        <div align="center" class="logo-footer">
+        <!--class="logo-footer"-->
+        <div align="center" >
          <img class="img-fluid" src="{% static 'img/app/alcaldia-cali.png' %}" alt="">
         </div>
       </div>

@@ -119,6 +119,15 @@
                       </div>
                       <div class="col-md-6">
                         <div class="form-group">
+                          <label for="" class="bmd-label-floating">Tipo</label>
+                          <select class="form-control" v-model="almacenamientoProyecto.tiproid">
+                            <option value="">Seleccione</option>
+                            <option v-for="tp in tiposProyecto" :value="tp.tiproid"> [[ tp.nombre ]] </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
                           <label for="" class="bmd-label-floating">Equipos</label>
                           <multiselect v-model="almacenamientoProyecto.plantillas" :multiple="true" :options="plantillas" track-by="planid" label="descripcion"></multiselect>
                         </div>
@@ -196,7 +205,7 @@
 
                   <!-- Guardado De proyecto -->
                   <div align="center">
-                    <button class="btn" @click="almacenarProyecto" :disabled="!almacenamientoProyecto.proynombre || !almacenamientoProyecto.proydescripcion || !almacenamientoProyecto.decisiones || !almacenamientoProyecto.contextos || !almacenamientoProyecto.plantillas || !almacenamientoProyecto.delimitacionesGeograficas.length > 0 || !almacenamientoProyecto.proyfechainicio || !almacenamientoProyecto.proyfechacierre">Guardar Proyecto</button>
+                    <button class="btn" @click="almacenarProyecto" :disabled="!almacenamientoProyecto.proynombre || !almacenamientoProyecto.proydescripcion || !almacenamientoProyecto.tiproid || !almacenamientoProyecto.decisiones || !almacenamientoProyecto.contextos || !almacenamientoProyecto.plantillas || !almacenamientoProyecto.delimitacionesGeograficas.length > 0 || !almacenamientoProyecto.proyfechainicio || !almacenamientoProyecto.proyfechacierre">Guardar Proyecto</button>
                   </div>
 
                 </div>
@@ -253,9 +262,18 @@
                           <input class="form-control" type="date" v-model="edicionProyecto.proyfechacierre" />
                         </div>
                       </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="" class="bmd-label-floating">Tipo</label>
+                          <select class="form-control" v-model="edicionProyecto.tiproid">
+                            <option value="">Seleccione</option>
+                            <option v-for="tp in tiposProyecto" :value="tp.tiproid"> [[ tp.nombre ]] </option>
+                          </select>
+                        </div>
+                      </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
-                          <button :disabled="!edicionProyecto.proynombre || !edicionProyecto.proydescripcion || !edicionProyecto.decisiones || !edicionProyecto.contextos || !edicionProyecto.proyfechainicio || !edicionProyecto.proyfechacierre" class="btn" @click="editarProyecto()" type="button">Editar</button>
+                          <button :disabled="!edicionProyecto.proynombre || !edicionProyecto.proydescripcion || !edicionProyecto.decisiones || !edicionProyecto.contextos || !edicionProyecto.proyfechainicio || !edicionProyecto.proyfechacierre || !edicionProyecto.tiproid" class="btn" @click="editarProyecto()" type="button">Editar</button>
                         </div>
                       </div>
                     </div>

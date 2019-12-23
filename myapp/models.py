@@ -134,6 +134,7 @@ class Proyecto(models.Model):
     proyestado = models.IntegerField()
     proypropietario = models.UUIDField()
     proyfechainicio = models.DateField(null=True, blank=True)
+    tiproid = models.UUIDField()
 
     class Meta:
         db_table = '"v1"."proyectos"'

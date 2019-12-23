@@ -260,11 +260,17 @@ def todo(request):
 
             if 'user' in locals():
 
+                totalConflictividadesPerfil = 0
+
+                for cp in conflictividadesPerfil:
+                    totalConflictividadesPerfil =  totalConflictividadesPerfil + cp
+
                 data['datasets'].append({
                     'label': 'Perfil',
                     'fill': False,
                     'borderColor': 'red',
-                    'data': conflictividadesPerfil
+                    'data': conflictividadesPerfil,
+                    'promedio': totalConflictividadesPerfil / len(conflictividadesPerfil)
                 })
 
             response = {

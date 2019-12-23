@@ -3,6 +3,7 @@
 @import "instrumentos.scss";
 @import "proyectos.scss";
 @import "tareas.scss";
+@import "reportes/durante.scss";
 
 .loading{
     background-image: url(/static/img/app/loader.gif);
@@ -108,4 +109,37 @@ table thead tr th{
 .sidebar .nav li a, .sidebar .nav li .dropdown-menu a{
 
     color: $menuItemsColor !important;
+}
+
+span.iniciales-usuario{
+    background: #0CBAEF;
+    border-radius: 50%;
+    color: #FFFFFF;
+    padding: 5px;
+}
+
+#progress-bar{
+    position: relative;
+    width: 100%; height: 20px;
+    border: 1px solid #cccccc;
+    border-radius:10px;
+    #curprogress{
+        border-radius: 10px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-color: #0CBAEF;
+        height: 100%;
+        font-size: 0px;
+    }
+}
+
+.nav-tabs .nav-item .nav-link, .nav-tabs .nav-item .nav-link:hover, .nav-tabs .nav-item .nav-link:focus{
+
+    color: #0CBAEF !important;
+}
+
+.display-none{
+
+    display: none;
 }

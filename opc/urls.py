@@ -73,7 +73,7 @@ urlpatterns = [
     path('decisiones-proyecto/<str:desproid>', views.actualizarDecisionProyecto),
 
     path('equipos/', plantillaEquipo.plantillasView),
-    path('equipos/<str:planid>', plantillaEquipo.miembrosPlantillaView),
+    path('equipos/<str:planid>/miembros/', plantillaEquipo.miembrosPlantillaView),
     path('equipos/list/<str:proyid>', equipo.equipoProyecto),
     path('equipos/<str:proyid>/usuarios-disponibles/', equipo.usuariosDisponiblesProyecto),
     path('equipos/store/', equipo.almacenamientoEquipo),
@@ -124,6 +124,7 @@ urlpatterns = [
     path('proyectos/dimensiones-territoriales/<str:proyid>', proyecto.dimensionesTerritoriales),
     path('proyectos/<str:proyid>/tareas/', proyecto.tareasProyectoView),
 
+    path('tipos-proyecto/', tiposProyecto.tiposProyectoView),
     path('tipos-proyecto/list/', tiposProyecto.listadoTiposProyecto),
     path('tipos-proyecto/<str:tiproid>/delete/', tiposProyecto.eliminarTipoProyecto),
     path('tipos-proyecto/<str:tiproid>', tiposProyecto.edicionTipoProyecto),
@@ -157,11 +158,36 @@ urlpatterns = [
     path('contextualizacion/semana/', contextualizacion.semanal),
     path('contextualizacion/dia/', contextualizacion.dia),
 
+    # ========================== Estadisticas Antes =================================
+    path('estadisticas/datos-generales/', estadisticas.datosGenerales),
     path('estadisticas/usuarios-x-rol/', estadisticas.usuariosXRol),
-    path('estadisticas/cantidad-usuarios/', estadisticas.cantidadUsuarios),
+    path('estadisticas/usuarios-x-genero/', estadisticas.usuariosXGenero),
+    path('estadisticas/usuarios-x-nivel-educativo/', estadisticas.usuariosXNivelEducativo),
+    path('estadisticas/usuarios-x-barrio/', estadisticas.usuariosXBarrio),
     path('estadisticas/ranking/', estadisticas.ranking),
-    path('estadisticas/<str:proyid>/tareas-x-tipo/', estadisticas.tareasXTipo),
-    path('estadisticas/<str:proyid>/tareas-x-estado/', estadisticas.tareasXEstado),
+    path('estadisticas/tareas-x-tipo/', estadisticas.tareasXTipo),
+
+    # ======================== Estadisticas Durante ===================================
+
     path('estadisticas/proyectos-tareas/', estadisticas.proyectosTareas),
-    path('dashboard/', estadisticas.estadisticasView)
+    path('estadisticas/estado-proyectos/', estadisticas.estadoActualProyectos),
+
+    # ======================== Estadisticas Después ===================================
+
+    path('estadisticas/proyectos-tareas-vencidos/', estadisticas.proyectosTareasVencidos),
+    path('estadisticas/estado-proyectos-vencidos/', estadisticas.estadoActualProyectosVencidos),
+
+    # ======================== Estadísticas - Detalle Proyecto ========================
+
+    path('estadisticas/<str:proyid>/tareas-x-tipo/', estadisticas.tareasXTipoProyecto),
+    path('estadisticas/<str:proyid>/tareas-x-estado/', estadisticas.tareasXEstadoProyecto),
+    path('estadisticas/<str:proyid>/usuarios-x-rol/', estadisticas.usuariosXRolProyecto),
+    path('estadisticas/<str:proyid>/usuarios-x-barrio/', estadisticas.usuariosXBarrioProyecto),
+    path('estadisticas/<str:proyid>/usuarios-x-genero/', estadisticas.usuariosXGeneroProyecto),
+    path('estadisticas/<str:proyid>/usuarios-x-nivel-educativo/', estadisticas.usuariosXNivelEducativoProyecto),
+
+    # ========================= Vista Estadísticas =====================================
+
+    path('reportes/antes/', estadisticas.estadisticasView),
+    path('reportes/durante/', estadisticas.estadisticasDuranteView)
 ]

@@ -9,7 +9,7 @@ miembrosPlantilla = new Vue({
     created(){
 
         window.setTimeout(() => {
-            if(window.location.pathname.substr(1, 7) == "equipos"){
+            if(window.location.pathname.substr(1, 7) == "equipos" && window.location.pathname.substr(46, 8) == "miembros"){
             
                 this.listadoMiembros();
                 this.listadoUsuariosDisponibles();

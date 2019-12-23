@@ -179,6 +179,7 @@ def almacenamientoProyecto(request):
 
     proyNombre = request.POST.get('proynombre')
     proyDescripcion = request.POST.get('proydescripcion')
+    tipoProyecto = request.POST.get('tiproid')
     proyIdExterno = 12345
     proyFechaCreacion = datetime.today()
     proyfechainicio = request.POST.get('proyfechainicio')
@@ -192,7 +193,7 @@ def almacenamientoProyecto(request):
 
     proyecto = models.Proyecto(proynombre = proyNombre, proydescripcion = proyDescripcion, proyidexterno = proyIdExterno, \
                                proyfechacreacion = proyFechaCreacion, proyfechainicio = proyfechainicio, proyfechacierre = proyFechaCierre, \
-                               proyestado = proyEstado, proypropietario = propietario)
+                               proyestado = proyEstado, proypropietario = propietario, tiproid=tipoProyecto)
 
     try:
         proyecto.full_clean()
@@ -349,6 +350,7 @@ def actualizarProyecto(request, proyid):
 
         proyecto.proynombre = request.POST.get('proynombre')
         proyecto.proydescripcion = request.POST.get('proydescripcion')
+        proyecto.tiproid = request.POST.get('tiproid')
         proyecto.proyfechainicio = request.POST.get('proyfechainicio')
         proyecto.proyfechacierre = request.POST.get('proyfechacierre')
 

@@ -19,10 +19,11 @@ from myapp.view.utilidades import usuarioAutenticado, dictfetchall
 def listadoPlantillas(request):
 
     user = usuarioAutenticado(request)
+    rol = str(user.rolid)
 
-    if(str(user.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a'):
+    if(rol == '628acd70-f86f-4449-af06-ab36144d9d6a' or rol == '8945979e-8ca5-481e-92a2-219dd42ae9fc'):
 
-        plantillas = PlantillaEquipo.objects.all().values()
+        plantillas = PlantillaEquipo.objects.filter(userid__exact = user.userid).values()
 
         response = {
             'code': 200,

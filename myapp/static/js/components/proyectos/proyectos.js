@@ -9,15 +9,18 @@ proyecto = new Vue({
             this.listadoDecisiones();
             this.listadoContextos();
             this.listadoPlantillas();
+            this.listadoTiposProyecto();
         }
     },
     data: {
         almacenamientoProyecto: {
-            delimitacionesGeograficas: []
+            delimitacionesGeograficas: [],
+            tiproid: ''
         },
         decisiones: [],
         edicionProyecto: {},
         proyectos: [],
+        tiposProyecto: [],
         contextos: [],
         plantillas: [],
         loading: false,
@@ -445,6 +448,23 @@ proyecto = new Vue({
 
                 this.contextos = response.data;
             });
+        },
+        listadoTiposProyecto(){
+
+            axios({
+                url: '/tipos-proyecto/list/',
+                method: 'GET',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.tiposProyecto = response.data.data;
+                }
+            })
         },
         loader(status){
 

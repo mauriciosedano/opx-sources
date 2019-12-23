@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.forms.models import model_to_dict
 from django.http.response import JsonResponse
+from django.shortcuts import render
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import (
@@ -78,9 +79,14 @@ def edicionTipoProyecto(request, tiproid):
 
     except ValidationError as e:
 
+        try:
+            errors = dict(e)
+        except ValueError:
+            errors = list(e)[0]
+
         response = {
             'code': 400,
-            'errors': dict(e),
+            'errors': errors,
             'status': 'error'
         }
 
@@ -108,3 +114,7 @@ def eliminarTipoProyecto(request, tiproid):
 
 
     return JsonResponse(response, safe=False, status=response['code'])
+
+def tiposProyectoView(request):
+
+    return render(request, "proyectos/tipos-proyecto.html")

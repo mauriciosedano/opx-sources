@@ -69,11 +69,32 @@ Vue.filter('estado-entidad', function(value){
 
 });
 
+Vue.filter('iniciales-usuario', function(value){
+
+    let nombreSeparado = value.split(' ');
+    let iniciales = "";
+
+    for(let i=0; i<nombreSeparado.length; i++){
+
+        iniciales += nombreSeparado[i].charAt(0);
+    }
+
+    return iniciales;
+});
+
+Vue.filter('fechas', function(value){
+
+    return value.substr(0, 10);
+});
+
 // const webdriver = require('selenium-webdriver');
 // const chrome = require('selenium-webdriver/chrome');
 
+// Instancia Vue para Gestión de Tipos de Proyecto
+require('./components/proyectos/tiposProyecto').tiposProyecto;
+
 // Instancia Vue para Gestión de proyectos
-require('./components/proyectos').proyecto;
+require('./components/proyectos/proyectos').proyecto;
 
 // Instancia Vue para Gestión de Tareas
 require('./components/tareas').tarea;
@@ -112,10 +133,11 @@ require('./components/passwordReset').passwordReset;
 require('./components/equipos').equipo;
 
 // Gestión de proyectos - Proyectista
-require('./components/gestion-proyectos-mapa').gestionProyecto;
+require('./components/proyectos/gestion-proyectos-mapa').gestionProyecto;
 
 // Estadisticas
-require('./components/estadisticas').estadisticas;
+require('./components/reportes/antes').estadisticas;
+require('./components/reportes/durante').estadisticas;
 
 // Gestión de Plantillas de Equipo
 require('./components/plantillas/plantillasEquipo').gestionPlantilla;
