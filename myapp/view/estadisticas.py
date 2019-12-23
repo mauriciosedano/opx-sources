@@ -10,7 +10,7 @@ from rest_framework.permissions import (
     IsAuthenticated
 )
 
-from myapp.models import Proyecto, Rol, Usuario, Tarea, Instrumento, Encuesta, NivelEducativo, Barrio, Equipo
+from myapp.models import Proyecto, Rol, Usuario, Tarea, Instrumento, Encuesta, NivelEducativo, Barrio, Equipo, ContextoProyecto, DecisionProyecto
 from myapp.view.utilidades import dictfetchall
 from myapp.views import detalleFormularioKoboToolbox
 
@@ -843,6 +843,43 @@ def usuariosXNivelEducativoProyecto(request, proyid):
         response = {
             'code': 200,
             'data': data,
+            'status': 'success'
+        }
+
+    except ObjectDoesNotExist:
+        response = {
+            'code': 404,
+            'status': 'error'
+        }
+
+    except ValidationError:
+        response = {
+            'code': 400,
+            'status': 'error'
+        }
+
+    return JsonResponse(response, safe=False, status=response['code'])
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def datosGeneralesProyecto(request, proyid):
+
+    try:
+        proyecto = Proyecto.objects.get(pk=proyid)
+
+        contextos = len(ContextoProyecto.objects.filter(proyid__exact=proyid))
+        decisiones = len(DecisionProyecto.objects.filter(proyid__exact=proyid))
+        campanas = len(Tarea.objects.filter(proyid__exact=proyid))
+        convocatoria = len(Equipo.objects.filter(proyid__exact=proyid))
+
+        response = {
+            'code': 200,
+            'data': {
+                'contextos': contextos,
+                'decisiones': decisiones,
+                'campana': campanas,
+                'convocatoria': convocatoria
+            },
             'status': 'success'
         }
 

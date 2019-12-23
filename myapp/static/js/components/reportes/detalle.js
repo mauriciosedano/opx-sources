@@ -2,7 +2,8 @@ estadisticas = new Vue({
     el: '#reportes-detalle-proyecto',
     delimiters: ['[[', ']]'],
     data: {
-        proyectoID: ''
+        proyectoID: '',
+        datosGenerales: []
     },
     created(){
 
@@ -10,6 +11,7 @@ estadisticas = new Vue({
 
             window.setTimeout(() => {
 
+                this.obtenerDatosGenerales();
                 this.tiposTarea();
                 this.usuariosXBarrio();
                 this.usuariosXNivelEducativo();
@@ -203,6 +205,23 @@ estadisticas = new Vue({
                     });
                 }
             })
+        },
+        obtenerDatosGenerales(){
+
+            axios({
+                url: '/estadisticas/' + this.proyectoID + '/datos-generales/',
+                method: 'GET',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.datosGenerales = response.data.data;
+                }
+            });
         }
     }
 })

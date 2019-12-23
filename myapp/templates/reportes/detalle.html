@@ -5,6 +5,40 @@
     <div class="container-fluid" id="reportes-detalle-proyecto" :run="proyectoID = '{{ proyecto.proyid }}'">
 
         <div class="row">
+            <div class="card">
+                <div class="card-body">
+                    <h2> {{ proyecto.proynombre }} </h2>
+                    <p> {{proyecto.proydescripcion }} </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="card">
+            <div class="card-body">
+              <table class="table table-hover">
+                <thead>
+                <tr>
+                  <th>Decisiones</th>
+                  <th>Contextos</th>
+                  <th>Campaña</th>
+                  <th>Convocatoria</th>
+                </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td> [[ datosGenerales.decisiones ]] </td>
+                    <td> [[ datosGenerales.contextos ]] </td>
+                    <td> [[ datosGenerales.campana ]] </td>
+                    <td> [[ datosGenerales.convocatoria ]] </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
