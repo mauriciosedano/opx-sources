@@ -138,6 +138,8 @@ require('./components/proyectos/gestion-proyectos-mapa').gestionProyecto;
 // Estadisticas
 require('./components/reportes/antes').estadisticas;
 require('./components/reportes/durante').estadisticas;
+require('./components/reportes/despues').estadisticas;
+require('./components/reportes/detalle').estadisticas;
 
 // Gestión de Plantillas de Equipo
 require('./components/plantillas/plantillasEquipo').gestionPlantilla;

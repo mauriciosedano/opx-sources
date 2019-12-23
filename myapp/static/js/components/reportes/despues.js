@@ -1,5 +1,5 @@
 estadisticas = new Vue({
-    el: '#reportes-durante',
+    el: '#reportes-despues',
     delimiters: ['[[', ']]'],
     data: {
         proyectos: [],
@@ -8,7 +8,7 @@ estadisticas = new Vue({
     },
     created(){
 
-        if(window.location.pathname == '/reportes/durante/'){
+        if(window.location.pathname == '/reportes/despues/'){
 
             this.listadoProyectos();
             this.listadoProyectosGantt();
@@ -18,7 +18,7 @@ estadisticas = new Vue({
         listadoProyectos(){
 
             axios({
-                url: '/estadisticas/estado-proyectos/',
+                url: '/estadisticas/estado-proyectos-vencidos/',
                 method: 'GET',
                 headers: {
                     Authorization: getToken()
@@ -35,7 +35,7 @@ estadisticas = new Vue({
         listadoProyectosGantt(){
 
             axios({
-                url: '/estadisticas/proyectos-tareas/',
+                url: '/estadisticas/proyectos-tareas-vencidos/',
                 method: 'GET',
                 headers: {
                     Authorization: getToken()

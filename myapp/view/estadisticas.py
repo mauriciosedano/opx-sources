@@ -869,4 +869,24 @@ def estadisticasDuranteView(request):
 
     return render(request, "reportes/durante.html")
 
+def estadisticasDespuesView(request):
+
+    return render(request, "reportes/despues.html")
+
+
+def estadisticasDetalleView(request, proyid):
+
+    try:
+        proyecto = Proyecto.objects.get(pk=proyid)
+
+        return render(request, "reportes/detalle.html", {'proyecto': proyecto})
+
+    except ObjectDoesNotExist:
+        response = HttpResponse("", status=404)
+
+    except ValidationError:
+        response = HttpResponse("", status=400)
+
+
+    return response
 

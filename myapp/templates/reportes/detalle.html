@@ -1,0 +1,47 @@
+{% extends "layouts/main.html" %}
+
+{% block content %}
+
+    <div class="container-fluid" id="reportes-detalle-proyecto" :run="proyectoID = '{{ proyecto.proyid }}'">
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <canvas id="tipos-tarea" width="400" height="600"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <canvas id="usuarios-barrio" width="400" height="600"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <canvas id="usuarios-nivel-educativo" width="400" height="600"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <canvas id="usuarios-rol" width="400" height="600"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <canvas id="usuarios-genero" width="400" height="600"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

@@ -189,5 +189,7 @@ urlpatterns = [
     # ========================= Vista Estadísticas =====================================
 
     path('reportes/antes/', estadisticas.estadisticasView),
-    path('reportes/durante/', estadisticas.estadisticasDuranteView)
+    path('reportes/durante/', estadisticas.estadisticasDuranteView),
+    path('reportes/despues/', estadisticas.estadisticasDespuesView),
+    path('reportes/<str:proyid>/detalle/', estadisticas.estadisticasDetalleView)
 ]
