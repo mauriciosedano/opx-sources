@@ -24,12 +24,30 @@
                         </div>
                     </div>
                 </form>
-            </div>  
+            </div>
+
             <div class="card-body">
 
-                <div id="map"></div>
+                <div id="container-mapa-gestion-cambios">
+                    <div id="map"></div>
+                    <div id="fab-gestion-cambios">
+                        <button v-if="acciones.territorio" @click="gestionTerritorioProyecto()" class="btn btn-social btn-just-icon btn-round">
+                            <span>TT</span>
+                            <div class="ripple-container"></div>
+                        </button>
+                        <button v-if="acciones.tiempo" @click="gestionTiempoProyecto()" class="btn btn-social btn-just-icon btn-round">
+                            <span>T</span>
+                            <div class="ripple-container">TM</div>
+                        </button>
+                        <button v-if="acciones.objetivo" @click="gestionObjetivoProyecto()" class="btn btn-social btn-just-icon btn-round">
+                            <span>OB</span>
+                            <div class="ripple-container"></div>
+                        </button>
+                    </div>
+                </div>
 
             </div>
+
           </div>
         </div>
 
@@ -80,6 +98,38 @@
                                 </div>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="gestion-territorio-proyecto">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Cambio de Territorio</h3>
+                        <div class="button close" data-dismiss="modal">&times;</div>
+                    </div>
+                    <div class="modal-body">
+                        <div align="center" v-if="gestionTerritorial.areaDimensionTerritorial">
+                            <div id="mapa-dimension-territorial"></div>
+                            <button v-if="datosCambioTerritorial.geojson" @click="paso2GestionTerritorial()" class="btn">Siguiente</button>
+                        </div>
+                        <div v-if="gestionTerritorial.listadoTareas">
+                            <table class="table table-stripped">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Edición</th>
+                                </tr>
+                                <tr v-for="tarea in datosCambioTerritorial.tareas">
+                                    <td> [[ tarea.tarenombre ]] </td>
+                                    <td> <button> Editar </button> </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div v-if="gestionTerritorial.areaTarea">
+                            <div id="mapa-tarea"></div>
+                        </div>
                     </div>
                 </div>
             </div>

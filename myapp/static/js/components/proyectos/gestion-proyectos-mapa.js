@@ -6,7 +6,22 @@ gestionProyecto = new Vue({
         map: {},
         proyectos: [],
         proyectoGestion: {},
-        tareaGestion: {}
+        tareaGestion: {},
+        capaEdicion: '',
+        acciones: {
+            objetivo: false,
+            tiempo: false,
+            territorio: false
+        },
+        gestionTerritorial: {
+            areaDimensionTerritorial: true,
+            listadoTareas: false,
+            areaTarea: false
+        },
+        datosCambioTerritorial: {
+            geojson: false,
+            tareas: []
+        }
     },
     created(){
 
@@ -22,10 +37,10 @@ gestionProyecto = new Vue({
             window.setTimeout(() => {
 
                 this.map = L.map('map',  {
-                center: [3.450572, -76.538705],
-                drawControl: false,
-                zoom: 13
-            });
+                    center: [3.450572, -76.538705],
+                    drawControl: false,
+                    zoom: 13
+                });
 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -44,61 +59,23 @@ gestionProyecto = new Vue({
                     {
                         onEachFeature: (feature, layer) => {
 
-                            layer.on('dblclick', () => {
+                            layer.on('click', () => {
+
+                                this.capaEdicion = feature.properties;
 
                                 if(feature.properties.type == 'dimension'){
 
-                                    axios({
-                                        url: '/proyectos/detail/' + feature.properties.id,
-                                        headers: {
-                                            Authorization: getToken()
-                                        }
-                                    })
-                                    .then(response => {
-
-                                        if(response.data.code == 200 && response.data.status == 'success'){
-
-                                            this.proyectoGestion = response.data.detail.proyecto;
-                                            this.proyectoGestion['proyid'] = feature.properties.id;
-                                            $("#gestion-proyecto").modal('show');
-                                        }
-                                    })
-                                    .catch(() => {
-
-                                        Swal.fire({
-                                            title: 'Error',
-                                            text: 'No se puedo recuperar la información del Proyecto',
-                                            type: 'error'
-                                        });
-                                    });
+                                    this.acciones.objetivo = false;
+                                    this.acciones.tiempo = true;
+                                    this.acciones.territorio = true;
 
                                 } else if(feature.properties.type == 'tarea'){
 
-                                    axios({
-                                        url: '/tareas/detail/' + feature.properties.id,
-                                        headers: {
-                                            Authorization: getToken()
-                                        }
-                                    })
-                                    .then(response => {
-
-                                        if(response.data.code == 200 && response.data.status == 'success'){
-
-                                            this.tareaGestion = response.data.tarea;
-                                            this.tareaGestion['tareid'] = feature.properties.id;
-                                            $("#gestion-objetivo-tarea").modal('show');
-                                        }
-                                    })
-                                    .catch(() => {
-
-                                        Swal.fire({
-                                            title: 'Error',
-                                            text: 'No se puedo recuperar la información de la Tarea',
-                                            type: 'error'
-                                        });
-                                    });
+                                    this.acciones.objetivo = true;
+                                    this.acciones.tiempo = false;
+                                    this.acciones.territorio = false;
                                 }
-                            })
+                            });
                         },
                         style: (feature) => {
 
@@ -112,6 +89,78 @@ gestionProyecto = new Vue({
                 }
             }, 1000);
 
+        },
+        cargarMapaGestionTerritorial(){
+
+            map = L.map('mapa-dimension-territorial',  {
+                center: [3.450572, -76.538705],
+                drawControl: false,
+                zoom: 13
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            }).addTo(map);
+
+            L.tileLayer.wms('http://ws-idesc.cali.gov.co:8081/geoserver/wms?service=WMS', {
+              layers: 'idesc:mc_barrios',
+              format: 'image/png',
+              transparent: !0,
+              version: '1.1.0'
+            }).addTo(map);
+
+            var editableLayers = new L.FeatureGroup();
+
+            map.addLayer(editableLayers);
+
+            var options = {
+                // position: 'topright',
+                draw: {
+                    polygon: {
+                        allowIntersection: true, // Restricts shapes to simple polygons
+                        drawError: {
+                            color: '#e1e100', // Color the shape will turn when intersects
+                            message: '<strong>Oh snap!</strong> you can\'t draw that!' // Message that will show when intersect
+                        },
+                        shapeOptions: {
+                            color: '#0CBAEF'
+                        }
+                    },
+                    polyline: false,
+                    circle: false, // Turns off this drawing tool
+                    rectangle: false,
+                    marker: false,
+                    circlemaker: false
+                },
+                edit: {
+                    featureGroup: editableLayers, //REQUIRED!!
+                    //remove: false
+                }
+            };
+
+            var drawControl = new L.Control.Draw(options);
+
+            map.addControl(drawControl);
+
+            map.on(L.Draw.Event.CREATED, (e) => {
+                type = e.layerType;
+                layer = e.layer;
+
+                if (type === 'polygon' && this.cantidadAreasMapa(editableLayers) == 0) {
+
+                    editableLayers.addLayer(layer);
+
+                    this.datosCambioTerritorial['geojson'] = JSON.stringify(layer.toGeoJSON());
+                }
+            });
+
+            map.on(L.Draw.Event.DELETED, (e) => {
+
+                 if(this.cantidadAreasMapa(editableLayers) == 0){
+
+                    this.cambioTerritorial.geojson = null;
+                 }
+            });
         },
         eliminarMapa(){
 
@@ -157,6 +206,7 @@ gestionProyecto = new Vue({
                         feature.properties = {
                             color: '#0CBAEF',
                             description: dimensiones[i].nombre,
+                            dimensionid: dimensiones[i].dimensionid,
                             id: dimensiones[i].proyid,
                             type: 'dimension'
                         }
@@ -196,6 +246,93 @@ gestionProyecto = new Vue({
                 }
             }
 
+        },
+        gestionTiempoProyecto(){
+
+            axios({
+                url: '/proyectos/detail/' + this.capaEdicion.id,
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.proyectoGestion = response.data.detail.proyecto;
+                    this.proyectoGestion['proyid'] = this.capaEdicion.id;
+                    $("#gestion-proyecto").modal('show');
+                }
+            })
+            .catch(() => {
+
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se puedo recuperar la información del Proyecto',
+                    type: 'error'
+                });
+            });
+        },
+        gestionTerritorioProyecto(){
+
+            this.obtenerTareasDimensionTerritorial();
+
+            $("#gestion-territorio-proyecto").modal({
+                backdrop: 'static',
+                show: true
+            });
+
+           window.setTimeout(() => {
+            this.cargarMapaGestionTerritorial();
+           }, 1000);
+        },
+        paso2GestionTerritorial(){
+
+            this.gestionTerritorial.areaDimensionTerritorial = false;
+            this.gestionTerritorial.listadoTareas = true;
+            this.areaTarea = false;
+        },
+        obtenerTareasDimensionTerritorial(){
+
+            axios({
+                url: '/tareas-dimension-territorial/' + this.capaEdicion.dimensionid,
+                method: 'GET',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                this.datosCambioTerritorial.tareas = response.data.data;
+            });
+        },
+        gestionObjetivoProyecto(){
+
+            axios({
+                url: '/tareas/detail/' + this.capaEdicion.id,
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                console.log(response);
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.tareaGestion = response.data.tarea;
+                    this.tareaGestion['tareid'] = this.capaEdicion.id;
+                    $("#gestion-objetivo-tarea").modal('show');
+                }
+            })
+            .catch(() => {
+
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se puedo recuperar la información de la Tarea',
+                    type: 'error'
+                });
+            });
         },
         edicionObjetivoTarea(){
 
@@ -275,6 +412,10 @@ gestionProyecto = new Vue({
                 type: 'error'
             });
         });
-    }
+    },
+        cantidadAreasMapa(editableLayers){
+
+            return Object.keys(editableLayers._layers).length;
+        }
     }
 })

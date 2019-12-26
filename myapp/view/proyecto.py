@@ -412,7 +412,7 @@ def actualizarProyecto(request, proyid):
 def detalleProyecto(request, proyid):
 
     try:
-        query = "select p.proynombre, p.proydescripcion, p.proyfechacreacion, p.proyfechainicio, p.proyfechacierre, p.proyestado, u.userfullname as proyectista  from v1.proyectos as p inner join v1.usuarios as u on u.userid = p.proypropietario where p.proyid = '" + proyid + "'"
+        query = "select p.proynombre, p.proydescripcion, p.proyfechacreacion, p.proyfechainicio, p.proyfechacierre, p.proyestado, p.tiproid, u.userfullname as proyectista  from v1.proyectos as p inner join v1.usuarios as u on u.userid = p.proypropietario where p.proyid = '" + proyid + "'"
         with connection.cursor() as cursor:
 
             cursor.execute(query)
@@ -499,6 +499,49 @@ def dimensionesTerritoriales(request, proyid):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
+def gestionTerritorio(request, dimensionid):
+
+    try:
+
+        with transaction.atomic():
+            dimensionTerritorial = models.DelimitacionGeografica.objects.get(dimensionid)
+
+            data = json.loads(request.body)
+
+            if 'geojson' in data:
+                dimensionTerritorial.geojson = data['geojson']
+                dimensionTerritorial.save()
+
+                if 'tareas' in data:
+                    for tarea in data['tareas']:
+
+                        tarea = models.Tarea.objects.get(tarea['tareid'])
+
+                        if(tarea.dimensionid == dimensionTerritorial.dimensionid):
+                            tarea.geojson_subconjunto = tarea['geojson_subconjunto']
+                            tarea.save()
+
+                        else:
+                            raise ValidationError("La Tarea no pertenece a la dimensión")
+
+                else:
+                    raise ValidationError("JSON Inválido")
+
+            else:
+                raise ValidationError("JSON Inválido")
+
+    except ObjectDoesNotExist:
+        response = {
+            'code': 404,
+            'status': 'error'
+        }
+
+    except ValidationError:
+        response = {
+            'code': 400,
+            'status': 'error'
+        }
+
 def listadoProyectosView(request):
 
     return render(request, 'proyectos/listado.html')
@@ -518,4 +561,3 @@ def tareasProyectoView(request, proyid):
         data = HttpResponse("", status=400)
 
     return data
-

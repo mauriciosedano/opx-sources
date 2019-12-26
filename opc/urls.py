@@ -145,6 +145,7 @@ urlpatterns = [
     path('tareas/datos-geoespaciales/', tareas.listadoTareasMapa),
     path('tareas/detail/<str:tareid>', tareas.detalleTarea),
     path('instrumentos/informacion/<str:id>', views.informacionInstrumentoView),
+    path('tareas-dimension-territorial/<str:dimensionid>', tareas.tareasXDimensionTerritorial),
 
     path('generos/list/', utilidades.listadoGeneros),
     path('niveles-educativos/list/', utilidades.listadoNivelesEducativos),

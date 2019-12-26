@@ -439,6 +439,33 @@ def notificacionPromocionUsuario(user, rol):
         html_message=message
     )
 
+def tareasXDimensionTerritorial(request, dimensionid):
+
+    try:
+        dimensionTerritorial = models.DelimitacionGeografica.objects.get(pk=dimensionid)
+
+        tareas = models.Tarea.objects.filter(dimensionid__exact=dimensionid).values()
+
+        response = {
+            'code': 200,
+            'data': list(tareas),
+            'status': 'success'
+        }
+
+    except ObjectDoesNotExist:
+        response = {
+            'code': 404,
+            'status': 'error'
+        }
+
+    except ValidationError:
+        response = {
+            'code': 400,
+            'status': 'error'
+        }
+
+    return JsonResponse(response, safe=False, status=response['code'])
+
 def listadoTareasView(request):
 
     return render(request, 'tareas/listado.html')

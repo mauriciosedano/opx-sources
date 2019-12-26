@@ -63,20 +63,30 @@
         </a>
       </div>
         <ul class="nav">
-          {%if '2f5bfac3-782e-4926-8e9f-88df72403a18' in request.session.permisos %}
-            <li class="nav-item  ">
-              <a class="nav-link" href="/proyectos/gestion/">
-                <i class="material-icons">dashboard</i>
-                <p>Explorar</p>
-              </a>
-            </li>
-          {% endif %}
           {% if '0ff17033-7e9a-4f6d-a66b-b80b69860ec0' in request.session.permisos %}
-            <li class="nav-item  ">
-              <a class="nav-link" href="/proyectos/">
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="collapse" href="#collapse-proyectos">
                 <i class="material-icons">dashboard</i>
                 <p>Proyectos</p>
               </a>
+              <div class="collapse submenu" id="collapse-proyectos">
+                <ul class="nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="/proyectos/">
+                      <i class="material-icons">dashboard</i>
+                      <p>Listado</p>
+                    </a>
+                  </li>
+                  {%if '2f5bfac3-782e-4926-8e9f-88df72403a18' in request.session.permisos %}
+                    <li class="nav-item  ">
+                      <a class="nav-link" href="/proyectos/gestion/">
+                        <i class="material-icons">dashboard</i>
+                        <p>Gestión de Cambios</p>
+                      </a>
+                    </li>
+                  {% endif %}
+                </ul>
+              </div>
             </li>
           {% endif %}
           {% if '833344ac-cff3-4623-8e9a-ae8be687f801' in request.session.permisos %}
@@ -137,22 +147,33 @@
           {% endif %}
           {% if '75a42144-766e-4696-b385-a266425a5aaa' in request.session.permisos %}
             <li class="nav-item ">
-              <a class="nav-link" href="/reportes/antes/">
+              <a class="nav-link" data-toggle="collapse" href="#collapse-reportes" aria-expanded="true" aria-controls="collapse-reportes">
                 <i class="material-icons">bar_chart</i>
-                <p>Reportes - Antes</p>
+                <p>Reportes</p>
               </a>
-            </li>
-            <li class="nav-item ">
-              <a class="nav-link" href="/reportes/durante/">
-                <i class="material-icons">bar_chart</i>
-                <p>Reportes - Durante</p>
-              </a>
-            </li>
-            <li class="nav-item ">
-              <a class="nav-link" href="/reportes/despues/">
-                <i class="material-icons">bar_chart</i>
-                <p>Reportes - Después</p>
-              </a>
+              <div class="collapse submenu" id="collapse-reportes">
+                <ul class="nav">
+                  <li class="nav-item ">
+                    <a class="nav-link" data-toggle="collapse" href="#collapse-reportes" aria-expanded="true" aria-controls="collapse-reportes" href="/reportes/antes/">
+                      <i class="material-icons">bar_chart</i>
+                      <p>Reportes - Antes</p>
+                    </a>
+                  </li>
+
+                  <li class="nav-item ">
+                    <a class="nav-link" href="/reportes/durante/">
+                      <i class="material-icons">bar_chart</i>
+                      <p>Reportes - Durante</p>
+                    </a>
+                  </li>
+                  <li class="nav-item ">
+                    <a class="nav-link" href="/reportes/despues/">
+                      <i class="material-icons">bar_chart</i>
+                      <p>Reportes - Después</p>
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </li>
           {% endif %}
         </ul>
