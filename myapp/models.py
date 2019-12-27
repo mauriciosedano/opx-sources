@@ -176,6 +176,7 @@ class DelimitacionGeografica(models.Model):
     proyid = models.UUIDField()
     nombre = models.CharField(max_length=255)
     geojson = models.CharField(max_length=1000)
+    estado = models.IntegerField(default=1)
 
     class Meta:
         db_table = '"v1"."dimensiones_territoriales"'

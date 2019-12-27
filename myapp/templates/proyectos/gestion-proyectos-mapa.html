@@ -113,22 +113,26 @@
                     <div class="modal-body">
                         <div align="center" v-if="gestionTerritorial.areaDimensionTerritorial">
                             <div id="mapa-dimension-territorial"></div>
-                            <button v-if="datosCambioTerritorial.geojson" @click="paso2GestionTerritorial()" class="btn">Siguiente</button>
+                            <button :disabled="!datosCambioTerritorial.geojson" @click="paso2GestionTerritorial()" class="btn">Siguiente</button>
                         </div>
-                        <div v-if="gestionTerritorial.listadoTareas">
+                        <div align="center" v-if="gestionTerritorial.listadoTareas">
                             <table class="table table-stripped">
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Edición</th>
+                                    <th>Estado</th>
                                 </tr>
                                 <tr v-for="tarea in datosCambioTerritorial.tareas">
                                     <td> [[ tarea.tarenombre ]] </td>
-                                    <td> <button> Editar </button> </td>
+                                    <td> <button @click="paso3GestionTerritorial(tarea)" class="btn"> Editar </button> </td>
+                                    <td :inner-html.prop="tarea.redimensionado | estadoTareasRedimension"></td>
                                 </tr>
                             </table>
+                            <button @click="edicionTerritorioProyecto()" class="btn">Guardar</button>
                         </div>
-                        <div v-if="gestionTerritorial.areaTarea">
+                        <div align="center" v-if="gestionTerritorial.areaTarea">
                             <div id="mapa-tarea"></div>
+                            <button :disabled="!tareaEdicion" @click="paso2GestionTerritorial()" class="btn">Volver</button>
                         </div>
                     </div>
                 </div>

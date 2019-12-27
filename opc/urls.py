@@ -123,6 +123,7 @@ urlpatterns = [
     path('proyectos/detail/<str:proyid>', proyecto.detalleProyecto),
     path('proyectos/dimensiones-territoriales/<str:proyid>', proyecto.dimensionesTerritoriales),
     path('proyectos/<str:proyid>/tareas/', proyecto.tareasProyectoView),
+    path('proyectos/<str:dimensionid>/cambio-territorio/', proyecto.cambioTerritorio),
 
     path('tipos-proyecto/', tiposProyecto.tiposProyectoView),
     path('tipos-proyecto/list/', tiposProyecto.listadoTiposProyecto),

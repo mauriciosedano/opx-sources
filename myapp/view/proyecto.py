@@ -499,30 +499,41 @@ def dimensionesTerritoriales(request, proyid):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
-def gestionTerritorio(request, dimensionid):
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def cambioTerritorio(request, dimensionid):
 
     try:
 
         with transaction.atomic():
-            dimensionTerritorial = models.DelimitacionGeografica.objects.get(dimensionid)
+            dimensionTerritorialOld = models.DelimitacionGeografica.objects.get(pk=dimensionid)
 
             data = json.loads(request.body)
 
             if 'geojson' in data:
-                dimensionTerritorial.geojson = data['geojson']
-                dimensionTerritorial.save()
+                dimensionTerritorialNew = models.DelimitacionGeografica(proyid=dimensionTerritorialOld.proyid, nombre=dimensionTerritorialOld.nombre, geojson=data['geojson'])
+                dimensionTerritorialNew.save()
 
                 if 'tareas' in data:
                     for tarea in data['tareas']:
 
-                        tarea = models.Tarea.objects.get(tarea['tareid'])
+                        tareaObj = models.Tarea.objects.get(pk=tarea['tareid'])
 
-                        if(tarea.dimensionid == dimensionTerritorial.dimensionid):
-                            tarea.geojson_subconjunto = tarea['geojson_subconjunto']
-                            tarea.save()
+                        if(tarea['dimensionid'] == str(dimensionTerritorialOld.dimensionid)):
+                            tareaObj.geojson_subconjunto = tarea['geojson_subconjunto']
+                            tareaObj.dimensionid = dimensionTerritorialNew.dimensionid
+                            tareaObj.save()
 
                         else:
                             raise ValidationError("La Tarea no pertenece a la dimensión")
+
+                    dimensionTerritorialOld.estado = 0
+                    dimensionTerritorialOld.save()
+
+                    response = {
+                        'code': 200,
+                        'status': 'success'
+                    }
 
                 else:
                     raise ValidationError("JSON Inválido")
@@ -536,11 +547,14 @@ def gestionTerritorio(request, dimensionid):
             'status': 'error'
         }
 
-    except ValidationError:
+    except ValidationError as e:
         response = {
             'code': 400,
+            'message': str(e),
             'status': 'error'
         }
+
+    return JsonResponse(response, safe=False, status=response['code'])
 
 def listadoProyectosView(request):
 

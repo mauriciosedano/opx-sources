@@ -4,10 +4,13 @@ gestionProyecto = new Vue({
     data: {
         informacionProyecto: {},
         map: {},
+        mapaTarea: {},
         proyectos: [],
         proyectoGestion: {},
         tareaGestion: {},
         capaEdicion: '',
+        tareaEdicion: false,
+        proyectoEdicion: {},
         acciones: {
             objetivo: false,
             tiempo: false,
@@ -90,7 +93,7 @@ gestionProyecto = new Vue({
             }, 1000);
 
         },
-        cargarMapaGestionTerritorial(){
+        cargarMapaDimensionTerritorial(){
 
             map = L.map('mapa-dimension-territorial',  {
                 center: [3.450572, -76.538705],
@@ -162,6 +165,89 @@ gestionProyecto = new Vue({
                  }
             });
         },
+        cargarMapaTarea(tarea){
+
+            this.mapaTarea = L.map('mapa-tarea',  {
+                center: [3.450572, -76.538705],
+                drawControl: false,
+                zoom: 13
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            }).addTo(this.mapaTarea);
+
+            L.tileLayer.wms('http://ws-idesc.cali.gov.co:8081/geoserver/wms?service=WMS', {
+              layers: 'idesc:mc_barrios',
+              format: 'image/png',
+              transparent: !0,
+              version: '1.1.0'
+            })
+            .addTo(this.mapaTarea);
+
+            let geojson = {
+                type: "FeatureCollection",
+                features: [JSON.parse(this.datosCambioTerritorial.geojson)]
+            }
+
+            L.geoJSON(geojson).addTo(this.mapaTarea);
+
+            var editableLayers = new L.FeatureGroup();
+
+            this.mapaTarea.addLayer(editableLayers);
+
+            var options = {
+                // position: 'topright',
+                draw: {
+                    polygon: {
+                        allowIntersection: true, // Restricts shapes to simple polygons
+                        drawError: {
+                            color: '#e1e100', // Color the shape will turn when intersects
+                            message: '<strong>Oh snap!</strong> you can\'t draw that!' // Message that will show when intersect
+                        },
+                        shapeOptions: {
+                            color: '#0CBAEF'
+                        }
+                    },
+                    polyline: false,
+                    circle: false, // Turns off this drawing tool
+                    rectangle: false,
+                    marker: false,
+                    circlemaker: false
+                },
+                edit: {
+                    featureGroup: editableLayers, //REQUIRED!!
+                    //remove: false
+                }
+            };
+
+            var drawControl = new L.Control.Draw(options);
+
+            this.mapaTarea.addControl(drawControl);
+
+            this.mapaTarea.on(L.Draw.Event.CREATED, (e) => {
+                type = e.layerType;
+                layer = e.layer;
+
+                if (type === 'polygon' && this.cantidadAreasMapa(editableLayers) == 0 && this.validarSubconjunto(layer.toGeoJSON())) {
+
+                    editableLayers.addLayer(layer);
+
+                    tarea['geojson_subconjunto'] = JSON.stringify(layer.toGeoJSON());
+                    tarea['redimensionado'] = true;
+                    this.tareaEdicion = true;
+                }
+            });
+
+            this.mapaTarea.on(L.Draw.Event.DELETED, (e) => {
+
+                 if(this.cantidadAreasMapa(editableLayers) == 0){
+
+                    tarea['redimensionado'] = false;
+                    this.tareaEdicion = false;
+                 }
+            });
+        },
         eliminarMapa(){
 
             this.map.remove();
@@ -189,6 +275,7 @@ gestionProyecto = new Vue({
         cargarInformacionProyecto(informacionProyecto){
 
             this.eliminarMapa();
+            this.proyectoEdicion = informacionProyecto;
 
             if(informacionProyecto.hasOwnProperty('dimensiones_territoriales')){
 
@@ -246,65 +333,6 @@ gestionProyecto = new Vue({
                 }
             }
 
-        },
-        gestionTiempoProyecto(){
-
-            axios({
-                url: '/proyectos/detail/' + this.capaEdicion.id,
-                headers: {
-                    Authorization: getToken()
-                }
-            })
-            .then(response => {
-
-                if(response.data.code == 200 && response.data.status == 'success'){
-
-                    this.proyectoGestion = response.data.detail.proyecto;
-                    this.proyectoGestion['proyid'] = this.capaEdicion.id;
-                    $("#gestion-proyecto").modal('show');
-                }
-            })
-            .catch(() => {
-
-                Swal.fire({
-                    title: 'Error',
-                    text: 'No se puedo recuperar la información del Proyecto',
-                    type: 'error'
-                });
-            });
-        },
-        gestionTerritorioProyecto(){
-
-            this.obtenerTareasDimensionTerritorial();
-
-            $("#gestion-territorio-proyecto").modal({
-                backdrop: 'static',
-                show: true
-            });
-
-           window.setTimeout(() => {
-            this.cargarMapaGestionTerritorial();
-           }, 1000);
-        },
-        paso2GestionTerritorial(){
-
-            this.gestionTerritorial.areaDimensionTerritorial = false;
-            this.gestionTerritorial.listadoTareas = true;
-            this.areaTarea = false;
-        },
-        obtenerTareasDimensionTerritorial(){
-
-            axios({
-                url: '/tareas-dimension-territorial/' + this.capaEdicion.dimensionid,
-                method: 'GET',
-                headers: {
-                    Authorization: getToken()
-                }
-            })
-            .then(response => {
-
-                this.datosCambioTerritorial.tareas = response.data.data;
-            });
         },
         gestionObjetivoProyecto(){
 
@@ -375,6 +403,32 @@ gestionProyecto = new Vue({
                 });
             });
         },
+        gestionTiempoProyecto(){
+
+            axios({
+                url: '/proyectos/detail/' + this.capaEdicion.id,
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.proyectoGestion = response.data.detail.proyecto;
+                    this.proyectoGestion['proyid'] = this.capaEdicion.id;
+                    $("#gestion-proyecto").modal('show');
+                }
+            })
+            .catch(() => {
+
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se puedo recuperar la información del Proyecto',
+                    type: 'error'
+                });
+            });
+        },
         edicionTiempoProyecto(){
 
         queryString = Object.keys(this.proyectoGestion).map(key => {
@@ -413,9 +467,185 @@ gestionProyecto = new Vue({
             });
         });
     },
+        gestionTerritorioProyecto(){
+
+            this.obtenerTareasDimensionTerritorial();
+
+            $("#gestion-territorio-proyecto").modal({
+                backdrop: 'static',
+                show: true
+            });
+
+           window.setTimeout(() => {
+            this.cargarMapaDimensionTerritorial();
+           }, 1000);
+        },
+        obtenerTareasDimensionTerritorial(){
+
+            axios({
+                url: '/tareas-dimension-territorial/' + this.capaEdicion.dimensionid,
+                method: 'GET',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    let tareas = response.data.data;
+
+                    for(let i=0; i<tareas.length; i++){
+
+                        tareas[i]['redimensionado'] = false;
+                    }
+
+                    this.datosCambioTerritorial.tareas = tareas;
+                }
+            });
+        },
+        edicionTerritorioProyecto(){
+
+            let tareas = this.datosCambioTerritorial.tareas;
+            let cantidadTareas = tareas.length;
+            tareasNoRedimensionadas = 0;
+
+            if(cantidadTareas > 0){
+
+                for(let i=0; i<cantidadTareas; i++){
+
+                    if(!tareas[i].redimensionado){
+
+                        tareasNoRedimensionadas++;
+                    }
+                }
+
+                if(tareasNoRedimensionadas == 0){
+
+                    console.log(JSON.stringify(this.datosCambioTerritorial));
+
+                    axios({
+                        url: '/proyectos/' + this.capaEdicion.dimensionid + '/cambio-territorio/',
+                        method: 'POST',
+                        data: JSON.stringify(this.datosCambioTerritorial),
+                        headers: {
+                            Authorization: getToken()
+                        }
+                    })
+                    .then(response => {
+
+                        if(response.data.code == 200 && response.data.status == 'success'){
+
+                            this.cargarInformacionProyecto(this.proyectoEdicion);
+
+                            $("#gestion-territorio-proyecto").modal('hide');
+
+                            Swal.fire({
+                                title: 'Exito',
+                                text: 'Cambio Correcto',
+                                type: 'success'
+                            });
+                        }
+                    })
+                    .catch(() => {
+
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Ocurrio un error. Por favor intenta de nuevo',
+                            type: 'error'
+                        });
+                    })
+
+                } else {
+
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Todas las Tareas no estan redimensionadas',
+                        type: 'error'
+                    });
+                }
+
+            } else{
+
+                 Swal.fire({
+                    title: 'Error',
+                    text: 'No hay tareas que redimensionar',
+                    type: 'error'
+                });
+            }
+        },
+        paso2GestionTerritorial(){
+
+            this.gestionTerritorial.areaDimensionTerritorial = false;
+            this.gestionTerritorial.listadoTareas = true;
+            this.gestionTerritorial.areaTarea = false;
+
+            this.tareaEdicion = false;
+        },
+        paso3GestionTerritorial(tarea){
+
+            this.gestionTerritorial.areaDimensionTerritorial = false;
+            this.gestionTerritorial.listadoTareas = false;
+            this.gestionTerritorial.areaTarea = true;
+
+            if(Object.keys(this.mapaTarea).length > 0){
+
+                this.mapaTarea.remove();
+            }
+
+            window.setTimeout(() => { this.cargarMapaTarea(tarea) }, 1000);
+        },
         cantidadAreasMapa(editableLayers){
 
             return Object.keys(editableLayers._layers).length;
+        },
+        obtenerCoordenadas(geojson){
+
+            coordenadas = [];
+
+            coordenadasGeojson = JSON.parse(geojson).geometry.coordinates[0];
+
+            for(let i=0; i < coordenadasGeojson.length; i++){
+
+                coordenadas.push(coordenadasGeojson[i].reverse())
+            }
+
+            return coordenadas;
+        },
+        validarSubconjunto(geojson){
+
+            coordsFails = 0;
+
+            var polyPoints = this.obtenerCoordenadas(this.datosCambioTerritorial.geojson);
+
+            coordenadas = this.obtenerCoordenadas(JSON.stringify(geojson));
+
+            for(var k = 0; k < coordenadas.length; k++){
+
+                var x = coordenadas[k][0], y = coordenadas[k][1];
+
+                var inside = false;
+                for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
+                    var xi = polyPoints[i][0], yi = polyPoints[i][1];
+                    var xj = polyPoints[j][0], yj = polyPoints[j][1];
+
+                    var intersect = ((yi > y) != (yj > y))  && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                    if (intersect) inside = !inside;
+                }
+
+                if(!inside){
+                    coordsFails++
+                };
+            }
+
+            if(coordsFails > 0){
+
+                return false;
+
+            } else{
+
+                return true;
+            }
         }
     }
 })

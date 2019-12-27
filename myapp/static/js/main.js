@@ -87,6 +87,22 @@ Vue.filter('fechas', function(value){
     return value.substr(0, 10);
 });
 
+Vue.filter('estadoTareasRedimension', function(value){
+
+    let response = "";
+
+    if(value){
+
+        response = "<i class='material-icons'> check_circle_outline </span>"
+
+    } else{
+
+        response = "<i class='material-icons'> cancel </span>";
+    }
+
+    return response;
+});
+
 // const webdriver = require('selenium-webdriver');
 // const chrome = require('selenium-webdriver/chrome');
 
