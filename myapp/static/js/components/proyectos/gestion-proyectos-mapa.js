@@ -10,7 +10,6 @@ gestionProyecto = new Vue({
         tareaGestion: {},
         capaEdicion: '',
         tareaEdicion: false,
-        proyectoEdicion: {},
         acciones: {
             objetivo: false,
             tiempo: false,
@@ -254,7 +253,9 @@ gestionProyecto = new Vue({
         },
         obtenerProyectos(){
 
-            axios({
+            return new Promise((resolve, reject) => {
+
+                axios({
                 url: '/proyectos/list/',
                 method: 'GET',
                 params: {
@@ -264,18 +265,23 @@ gestionProyecto = new Vue({
                     Authorization: getToken()
                 }
             })
-            .then(response => {
+                .then(response => {
 
-                if(response.data.code == 200 && response.data.status == 'success'){
+                    if(response.data.code == 200 && response.data.status == 'success'){
 
-                    this.proyectos = response.data.proyectos;
-                }
-            })
+                        this.proyectos = response.data.proyectos;
+                        resolve(this.proyectos);
+                    }
+                })
+                .catch(() => {
+
+                    reject("");
+                })
+            });
         },
         cargarInformacionProyecto(informacionProyecto){
 
             this.eliminarMapa();
-            this.proyectoEdicion = informacionProyecto;
 
             if(informacionProyecto.hasOwnProperty('dimensiones_territoriales')){
 
@@ -522,8 +528,6 @@ gestionProyecto = new Vue({
 
                 if(tareasNoRedimensionadas == 0){
 
-                    console.log(JSON.stringify(this.datosCambioTerritorial));
-
                     axios({
                         url: '/proyectos/' + this.capaEdicion.dimensionid + '/cambio-territorio/',
                         method: 'POST',
@@ -536,14 +540,31 @@ gestionProyecto = new Vue({
 
                         if(response.data.code == 200 && response.data.status == 'success'){
 
-                            this.cargarInformacionProyecto(this.proyectoEdicion);
+                            this.obtenerProyectos().then(response => {
 
-                            $("#gestion-territorio-proyecto").modal('hide');
+                               proyectoEdicion = response.find(element => element.proyid == this.capaEdicion.id);
 
-                            Swal.fire({
-                                title: 'Exito',
-                                text: 'Cambio Correcto',
-                                type: 'success'
+                               this.cargarInformacionProyecto(proyectoEdicion);
+
+                               $("#gestion-territorio-proyecto").modal('hide');
+
+                               this.acciones = {
+                                 objetivo: false,
+                                 territorio: false,
+                                 tiempo: false
+                               }
+
+                               this.gestionTerritorial = {
+                                 areaDimensionTerritorial: true,
+                                 areaTarea: false,
+                                 listadoTareas: false
+                               }
+
+                               Swal.fire({
+                                   title: 'Exito',
+                                   text: 'Cambio Correcto',
+                                   type: 'success'
+                               });
                             });
                         }
                     })

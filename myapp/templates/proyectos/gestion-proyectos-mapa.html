@@ -13,36 +13,38 @@
             </div>
               
             <div class="card-body">
-                <form action="">
-                    <div class="form-group row">
-                        <div class="col-xs-12">
-                            <label for="">Seleccione Un Proyecto</label>
-                            <select v-model="informacionProyecto" @change="cargarInformacionProyecto(informacionProyecto)" name="" id="" class="form-control">
-                                <option value="">Seleccione un Proyecto</option>
-                                <option v-for="proyecto in proyectos" :value="proyecto"> [[ proyecto.proynombre ]] </option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
+
             </div>
 
             <div class="card-body">
 
-                <div id="container-mapa-gestion-cambios">
-                    <div id="map"></div>
-                    <div id="fab-gestion-cambios">
-                        <button v-if="acciones.territorio" @click="gestionTerritorioProyecto()" class="btn btn-social btn-just-icon btn-round">
-                            <span>TT</span>
+                <form action="" class="form-horizontal">
+                    <div class="form-group">
+                        <label for="">Seleccione Un Proyecto</label>
+                        <select v-model="informacionProyecto" @change="cargarInformacionProyecto(informacionProyecto)" name="" id="" class="form-control">
+                            <option value="">Seleccione un Proyecto</option>
+                            <option v-for="proyecto in proyectos" :value="proyecto"> [[ proyecto.proynombre ]] </option>
+                        </select>
+                    </div>
+                </form>
+
+                <div>
+                    <div id="container-mapa-gestion-cambios">
+                        <div id="map"></div>
+                        <div id="fab-gestion-cambios">
+                        <button v-if="acciones.territorio" @click="gestionTerritorioProyecto()" class="btn btn-info btn-social btn-just-icon btn-round">
+                            <i class="material-icons">my_location</i>
                             <div class="ripple-container"></div>
                         </button>
-                        <button v-if="acciones.tiempo" @click="gestionTiempoProyecto()" class="btn btn-social btn-just-icon btn-round">
-                            <span>T</span>
-                            <div class="ripple-container">TM</div>
-                        </button>
-                        <button v-if="acciones.objetivo" @click="gestionObjetivoProyecto()" class="btn btn-social btn-just-icon btn-round">
-                            <span>OB</span>
+                        <button v-if="acciones.tiempo" @click="gestionTiempoProyecto()" class="btn btn-info btn-social btn-just-icon btn-round">
+                            <i class="material-icons">access_time</i>
                             <div class="ripple-container"></div>
                         </button>
+                        <button v-if="acciones.objetivo" @click="gestionObjetivoProyecto()" class="btn btn-info btn-social btn-just-icon btn-round">
+                            <i class="material-icons">done</i>
+                            <div class="ripple-container"></div>
+                        </button>
+                    </div>
                     </div>
                 </div>
 
