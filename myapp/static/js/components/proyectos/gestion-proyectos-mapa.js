@@ -6,6 +6,7 @@ gestionProyecto = new Vue({
         map: {},
         mapaTarea: {},
         proyectos: [],
+        proyectoSeleccionado: {},
         proyectoGestion: {},
         tareaGestion: {},
         capaEdicion: '',
@@ -35,6 +36,7 @@ gestionProyecto = new Vue({
 
             this.cargarMapa();
             this.obtenerProyectos();
+            setTimeout(() => this.ubicacionEquipoProyecto(), 1000);
         }
     },
     methods: {
@@ -287,9 +289,11 @@ gestionProyecto = new Vue({
         },
         cargarInformacionProyecto(informacionProyecto){
 
-            this.eliminarMapa();
+            this.proyectoSeleccionado = informacionProyecto;
 
             if(informacionProyecto.hasOwnProperty('dimensiones_territoriales')){
+
+                this.eliminarMapa();
 
                 dimensiones = informacionProyecto.dimensiones_territoriales;
                 cantidadDimensiones = informacionProyecto.dimensiones_territoriales.length;
@@ -758,6 +762,65 @@ gestionProyecto = new Vue({
                 backdrop: 'static',
                 show: true,
             });
+        },
+        ubicacionEquipoProyecto(){
+
+            // Cantidad de capas en el mapa
+            capasMapa =  Object.keys(this.map._layers)
+
+            // Contador de features para el mapa
+            cantidadFeaturesMapa = 0;
+
+            // Calculo de features para el mapa
+            for(let i=0; i<capasMapa.length; i++){
+
+                if(this.map._layers[capasMapa[i]].hasOwnProperty('feature')){
+
+                    cantidadFeaturesMapa++;
+                }
+            }
+
+            // Consulta de ubicación para el equipo del proyecto seleccionado
+            if(cantidadFeaturesMapa > 0){
+
+                axios({
+                    headers: {
+                        Authorization: getToken()
+                    },
+                    method: 'GET',
+                    url: '/equipos/list/' + this.proyectoSeleccionado.proyid
+                })
+                .then(response => {
+
+                    console.log("algo");
+
+                    if(response.data.code == 200 && response.data.status == 'success'){
+
+                        let equipo = response.data.equipo;
+
+                        setTimeout(() => this.ubicacionEquipoProyecto(), 30000);
+
+                        /*if(equipo.length > 0){
+
+                            for(let i=0; i<equipo.length; i++){
+
+                                if(equipo[i].latitud && equipo[i].longitud){
+
+                                    console.log(equipo[i].latitud);
+
+
+                                }
+                            }
+                        }*/
+                    }
+
+                })
+
+            } else{
+                console.log("nada");
+
+                setTimeout(() => this.ubicacionEquipoProyecto(), 30000);
+            }
         }
     }
 });
