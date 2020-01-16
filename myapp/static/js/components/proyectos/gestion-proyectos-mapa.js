@@ -2,7 +2,7 @@ gestionProyecto = new Vue({
     el: '#gestion-proyectos-mapa',
     delimiters: ['[[', ']]'],
     data: {
-        informacionProyecto: {},
+        informacionProyecto: "",
         map: {},
         mapaTarea: {},
         proyectos: [],
@@ -13,7 +13,8 @@ gestionProyecto = new Vue({
         acciones: {
             objetivo: false,
             tiempo: false,
-            territorio: false
+            territorio: false,
+            equipo: false
         },
         gestionTerritorial: {
             areaDimensionTerritorial: true,
@@ -23,7 +24,10 @@ gestionProyecto = new Vue({
         datosCambioTerritorial: {
             geojson: false,
             tareas: []
-        }
+        },
+        // Gestión de Equipos
+        equipoProyecto: [],
+        usuariosDisponiblesProyecto: []
     },
     created(){
 
@@ -70,12 +74,14 @@ gestionProyecto = new Vue({
                                     this.acciones.objetivo = false;
                                     this.acciones.tiempo = true;
                                     this.acciones.territorio = true;
+                                    this.acciones.equipo = true;
 
                                 } else if(feature.properties.type == 'tarea'){
 
                                     this.acciones.objetivo = true;
                                     this.acciones.tiempo = false;
                                     this.acciones.territorio = false;
+                                    this.acciones.equipo = false;
                                 }
                             });
                         },
@@ -437,42 +443,42 @@ gestionProyecto = new Vue({
         },
         edicionTiempoProyecto(){
 
-        queryString = Object.keys(this.proyectoGestion).map(key => {
+            queryString = Object.keys(this.proyectoGestion).map(key => {
 
-                return key + '=' + this.proyectoGestion[key];
+                    return key + '=' + this.proyectoGestion[key];
+                })
+                .join('&');
+
+            axios({
+                url: '/proyectos/' + this.proyectoGestion.proyid,
+                method: 'POST',
+                data: queryString,
+                headers: {
+                 'Content-Type': 'application/x-www-form-urlencoded',
+                 Authorization: getToken()
+                }
             })
-            .join('&');
+            .then(response => {
 
-        axios({
-            url: '/proyectos/' + this.proyectoGestion.proyid,
-            method: 'POST',
-            data: queryString,
-            headers: {
-             'Content-Type': 'application/x-www-form-urlencoded',
-             Authorization: getToken()
-            }
-        })
-        .then(response => {
+                $("#gestion-proyecto").modal('hide');
 
-            $("#gestion-proyecto").modal('hide');
+                Swal.fire({
+                    title: 'Exito',
+                    text: 'El Objetivo fue cambiado de forma satisfactoria',
+                    type: 'success'
+                });
+            })
+            .catch(() => {
 
-            Swal.fire({
-                title: 'Exito',
-                text: 'El Objetivo fue cambiado de forma satisfactoria',
-                type: 'success'
+                $("#gestion-proyecto").modal('hide');
+
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Ocurrio un error. Por favor intenta de nuevo.',
+                    type: 'error'
+                });
             });
-        })
-        .catch(() => {
-
-            $("#gestion-proyecto").modal('hide');
-
-            Swal.fire({
-                title: 'Error',
-                text: 'Ocurrio un error. Por favor intenta de nuevo.',
-                type: 'error'
-            });
-        });
-    },
+        },
         gestionTerritorioProyecto(){
 
             this.obtenerTareasDimensionTerritorial();
@@ -667,6 +673,91 @@ gestionProyecto = new Vue({
 
                 return true;
             }
+        },
+        // Gestión de Equipos
+        obtenerEquipoProyecto(proyid){
+
+            axios({
+                method: 'GET',
+                url: '/equipos/list/' + proyid,
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.equipoProyecto = response.data.equipo;
+                }
+            });
+        },
+        agregarIntegranteEquipo(userid){
+
+            let data = 'userid=' + userid + "&proyid=" +  this.capaEdicion.id;
+
+            axios({
+                data: data,
+                headers: {
+                    'Authorization': getToken(),
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                method: 'POST',
+                url: '/equipos/store/'
+            })
+            .then(response => {
+
+                if(response.data.code == 201 && response.data.status == 'success'){
+
+                    this.obtenerEquipoProyecto(this.capaEdicion.id);
+                    this.obtenerUsuariosDisponiblesProyecto();
+                }
+            })
+        },
+        eliminarIntegranteEquipo(equid){
+
+            axios({
+                headers: {
+                    Authorization: getToken()
+                },
+                method: 'DELETE',
+                url: '/equipos/delete/' + equid
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.obtenerEquipoProyecto(this.capaEdicion.id);
+                    this.obtenerUsuariosDisponiblesProyecto();
+                }
+            });
+        },
+        obtenerUsuariosDisponiblesProyecto(proyid){
+
+            axios({
+                headers:{
+                    Authorization: getToken()
+                },
+                method: 'GET',
+                url: '/equipos/' + this.capaEdicion.id + '/usuarios-disponibles/'
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.usuariosDisponiblesProyecto = response.data.usuarios;
+                }
+            });
+        },
+        gestionEquipoProyecto(){
+
+            this.obtenerEquipoProyecto(this.capaEdicion.id);
+            this.obtenerUsuariosDisponiblesProyecto(this.capaEdicion.id);
+
+            $("#gestion-equipo-proyecto").modal({
+                backdrop: 'static',
+                show: true,
+            });
         }
     }
-})
+});
