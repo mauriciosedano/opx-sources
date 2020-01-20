@@ -28,7 +28,9 @@ gestionProyecto = new Vue({
         },
         // Gestión de Equipos
         equipoProyecto: [],
-        usuariosDisponiblesProyecto: []
+        usuariosDisponiblesProyecto: [],
+        // Ubicación Equipo
+        equipoProyectoMapa: []
     },
     created(){
 
@@ -792,32 +794,42 @@ gestionProyecto = new Vue({
                 })
                 .then(response => {
 
-                    console.log("algo");
+                    // Eliminación de Marcadores de Equipo de Proyecto
+                    for(let i=0; i<this.equipoProyectoMapa.length; i++){
+
+                        this.equipoProyectoMapa[i].remove();
+                    }
+
+                    this.equipoProyectoMapa = [];
 
                     if(response.data.code == 200 && response.data.status == 'success'){
 
                         let equipo = response.data.equipo;
 
-                        setTimeout(() => this.ubicacionEquipoProyecto(), 30000);
-
-                        /*if(equipo.length > 0){
+                        if(equipo.length > 0){
 
                             for(let i=0; i<equipo.length; i++){
 
                                 if(equipo[i].latitud && equipo[i].longitud){
 
-                                    console.log(equipo[i].latitud);
+                                    marcador = L.marker([
+                                            parseFloat(equipo[i].latitud),
+                                            parseFloat(equipo[i].longitud)
+                                        ], {title: equipo[i].userfullname}
+                                    )
+                                    .addTo(this.map);
 
-
+                                    this.equipoProyectoMapa.push(marcador);
                                 }
                             }
-                        }*/
+                        }
+
+                        setTimeout(() => this.ubicacionEquipoProyecto(), 30000);
                     }
 
                 })
 
             } else{
-                console.log("nada");
 
                 setTimeout(() => this.ubicacionEquipoProyecto(), 30000);
             }
