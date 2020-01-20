@@ -188,6 +188,7 @@ urlpatterns = [
     path('estadisticas/<str:proyid>/usuarios-x-genero/', estadisticas.usuariosXGeneroProyecto),
     path('estadisticas/<str:proyid>/usuarios-x-nivel-educativo/', estadisticas.usuariosXNivelEducativoProyecto),
     path('estadisticas/<str:proyid>/datos-generales/', estadisticas.datosGeneralesProyecto),
+    path('estadisticas/exportar/<str:proyid>', estadisticas.exportarDatos),
 
     # ========================= Vista Estadísticas =====================================
 

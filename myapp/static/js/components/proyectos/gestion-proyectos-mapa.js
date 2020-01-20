@@ -831,7 +831,7 @@ gestionProyecto = new Vue({
 
             } else{
 
-                setTimeout(() => this.ubicacionEquipoProyecto(), 30000);
+                setTimeout(() => this.ubicacionEquipoProyecto(), 5000);
             }
         }
     }

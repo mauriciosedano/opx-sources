@@ -14,6 +14,9 @@ from myapp.models import Proyecto, Rol, Usuario, Tarea, Instrumento, Encuesta, N
 from myapp.view.utilidades import dictfetchall
 from myapp.views import detalleFormularioKoboToolbox
 
+import csv
+import json
+
 # ==================== Antes ===================
 
 @api_view(['GET'])
@@ -897,6 +900,53 @@ def datosGeneralesProyecto(request, proyid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+@api_view(["GET"])
+@permission_classes((AllowAny,))
+def exportarDatos(request, proyid):
+
+    try:
+        proyecto = Proyecto.objects.get(pk=proyid)
+
+        tareas = Tarea.objects.filter(proyid__exact=proyid)
+
+        encuestas = []
+
+        for t in tareas:
+            encuestasTarea = Encuesta.objects.filter(tareid__exact=t.tareid)
+
+            for e in encuestasTarea:
+                encuestas.append(json.loads(e.contenido))
+
+        if len(encuestas) > 0:
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="informacion.csv"'
+
+            writer = csv.writer(response)
+            writer.writerow(encuestas[0].keys())
+
+            for e in encuestas:
+                row = [v for v in e.values()]
+                writer.writerow(row)
+
+        else:
+            raise ObjectDoesNotExist("")
+
+    except ObjectDoesNotExist:
+        response = HttpResponse("", status=404)
+
+    except ValidationError:
+        response = HttpResponse("", status=400)
+
+    return response
+
+def limpiezaDatos(request, proyid):
+
+    file = open("informacion.csv")
+
+    if file.mode == "r":
+        content = file.read()
+
+
 # ================ Vistas ===============
 def estadisticasView(request):
 
@@ -909,7 +959,6 @@ def estadisticasDuranteView(request):
 def estadisticasDespuesView(request):
 
     return render(request, "reportes/despues.html")
-
 
 def estadisticasDetalleView(request, proyid):
 
@@ -926,4 +975,3 @@ def estadisticasDetalleView(request, proyid):
 
 
     return response
-
