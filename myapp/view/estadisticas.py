@@ -1006,9 +1006,17 @@ def limpiezaDatos(request, proyid):
                 if coincidencias == 0:
                     data.append(d)
 
-            contenidoFormateado.append(fila)
+            contenidoFormateado.append(data)
 
-    print(contenidoFormateado)
+    #print(contenidoFormateado)
+
+    csvFile = io.StringIO()
+    writer = csv.writer(csvFile)
+
+    for cf in contenidoFormateado:
+        writer.writerow(cf)
+
+    print(csvFile.getValue())
 
 # ================ Vistas ===============
 def estadisticasView(request):
