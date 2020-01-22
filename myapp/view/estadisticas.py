@@ -16,6 +16,7 @@ from myapp.views import detalleFormularioKoboToolbox
 
 import csv
 import json
+import os
 
 # ==================== Antes ===================
 
@@ -915,7 +916,10 @@ def exportarDatos(request, proyid):
             encuestasTarea = Encuesta.objects.filter(tareid__exact=t.tareid)
 
             for e in encuestasTarea:
-                encuestas.append(json.loads(e.contenido))
+
+                contenido = json.loads(e.contenido)
+                del contenido['_geolocation']
+                encuestas.append(contenido)
 
         if len(encuestas) > 0:
             response = HttpResponse(content_type='text/csv')
@@ -941,11 +945,70 @@ def exportarDatos(request, proyid):
 
 def limpiezaDatos(request, proyid):
 
-    file = open("informacion.csv")
+    camposDescarte = [
+        '_notes',
+        '_bamboo_dataset_id',
+        '_tags',
+        '_xform_id_string',
+        'meta/instanceID',
+        '_version_',
+        '_status',
+        '__version__',
+        '_validation_status',
+        '_uuid',
+        '_submitted_by',
+        'formhub / uuid',
+        'formhub/uuid',
+        '_id',
+        '_geolocation'
+    ]
+
+    columnasDescarte = []
+    contenidoFormateado = []
+
+    # Especificando ubicación del archivo
+    module_dir = os.path.dirname(__file__)  # get current directory
+    file_path = os.path.join(module_dir, 'myapp/static/informacion.csv')
+
+    # Abriendo el archivo en modo lectura
+    file = open(file_path, "r")
 
     if file.mode == "r":
         content = file.read()
 
+        lines = content.splitlines()
+
+        campos = lines[0].split(',')
+
+        # Obtener posición de columnas a descartar
+        for i, c in enumerate(campos):
+
+            for cd in camposDescarte:
+
+                if c == cd:
+                    columnasDescarte.append(i)
+
+        # Obtener los Datos de Interés
+        for line in lines:
+
+            fila = line.split(',')
+            data = []
+
+            for i, d in enumerate(fila):
+
+                coincidencias = 0
+
+                for c in columnasDescarte:
+
+                    if i == c:
+                        coincidencias += 1
+
+                if coincidencias == 0:
+                    data.append(d)
+
+            contenidoFormateado.append(fila)
+
+    print(contenidoFormateado)
 
 # ================ Vistas ===============
 def estadisticasView(request):
