@@ -20,6 +20,31 @@ proyecto = new Vue({
         decisiones: [],
         edicionProyecto: {},
         proyectos: [],
+        proyectosFields: [
+            'estado',
+            {
+                key: 'proynombre',
+                label: 'Nombre',
+                sortable: true
+            },
+            {
+                key: 'proydescripcion',
+                label: 'Descripción'
+            },
+            {
+                key: 'proyfechacreacion',
+                label: 'Creación'
+            },
+            {
+                key: 'acciones',
+                label: ''
+            }
+        ],
+        pagination: {
+            currentPage: 1,
+            totalRows: 2,
+            perPage: 1
+        },
         tiposProyecto: [],
         contextos: [],
         plantillas: [],

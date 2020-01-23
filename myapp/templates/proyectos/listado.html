@@ -17,7 +17,7 @@
             </div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table">
+                <!--<table class="table">
                   <thead class=" text-primary">
                     <th>
                       Estado
@@ -62,7 +62,33 @@
                       </td>
                     </tr>
                   </tbody>
-                </table>
+                </table>-->
+                <b-table :fields="proyectosFields" :items="filteredProjects" responsive="sm" id="my-table" :current-page="pagination.currentPage">
+                  <template v-slot:cell(estado)="data">
+                    [[ data.item.proyestado | estado-entidad ]]
+                  </template>
+                  <template v-slot:cell(acciones)="data">
+                    <div class="dropdown">
+                          <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                          </a>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a @click.prevent="edicionProyecto = data.item" data-toggle="modal" data-target="#editar-proyecto" class="dropdown-item" href="#"> Edición </a>
+                        <a @click="eliminarProyecto(data.item.proyid)" class="dropdown-item" href="#"> Eliminación </a>
+                        <a class="dropdown-item" :href="'/equipos/proyecto/' + data.item.proyid"> Equipo </a>
+                        <a class="dropdown-item" :href="'/proyectos/' + data.item.proyid + '/tareas/'"> Tareas </a>
+                      </div>
+                    </div>
+                  </template>
+                </b-table>
+
+                <b-pagination
+                  v-model="pagination.currentPage"
+                  :total-rows="pagination.totalRows"
+                  :per-page="pagination.perPage"
+                  aria-controls="my-table"
+                ></b-pagination>
+
               </div>
             </div>
           </div>

@@ -45,9 +45,14 @@ window.axios = require('axios');
 // Sweet Alert 2
 import Swal from 'sweetalert2';
 
+// Vue Multiselect
 import Multiselect from 'vue-multiselect';
 
+// Bootstrap Vue
+import BootstrapVue from 'bootstrap-vue';
+
 Vue.component('multiselect', Multiselect);
+Vue.use(BootstrapVue);
 
 // Leaflet
 require('./plugins/leaflet/leaflet.js');

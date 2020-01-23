@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "axios": "^0.19.0",
+    "bootstrap-vue": "^2.2.2",
     "frappe-gantt": "^0.3.0",
     "leaflet-draw": "^1.0.4",
     "sweetalert2": "^8.16.3",
