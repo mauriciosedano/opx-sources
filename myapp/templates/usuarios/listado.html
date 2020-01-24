@@ -15,9 +15,16 @@
                   <h4 class="card-title ">Usuarios</h4>
                   <p class="card-category"> Gestión de Usuarios </p>
                 </div>
+                <div class="card-header">
+                  <form action="">
+                    <div class="form-group">
+                      <input class="form-control" placeholder="Busqueda ..." type="text" v-model="filter">
+                    </div>
+                  </form>
+                </div>
                 <div class="card-body">
                   <div class="table-responsive">
-                    <table class="table">
+                    <!--<table class="table">
                       <thead class=" text-primary">
                         <th>
                           Estado
@@ -60,7 +67,35 @@
                           </td>
                         </tr>
                       </tbody>
-                    </table>
+                    </table>-->
+
+                    <b-table
+                      :fields="userFields"
+                      :items="filteredUsers"
+                      :per-page="pagination.perPage"
+                      :current-page="pagination.currentPage"
+                    >
+                      <template v-slot:cell(userestado)="data">
+                        [[ data.item.userestado | estado-entidad ]]
+                      </template>
+                      <template v-slot:cell(acciones)="data">
+                        <div class="dropdown">
+                          <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                          </a>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a @click.prevent="edicionUsuario = data.item" data-backdrop="static"  data-toggle="modal" data-target="#editar-usuario" class="dropdown-item" href="#"> Edición </a>
+                            <a @click="eliminarUsuario(data.item.userid)" class="dropdown-item" href="#"> Eliminación </a>
+                          </div>
+                        </div>
+                      </template>
+                    </b-table>
+
+                    <b-pagination
+                      v-model="pagination.currentPage"
+                      :per-page="pagination.perPage"
+                      :total-rows="filteredUsers.length"
+                    ></b-pagination>
                   </div>
                 </div>
               </div>

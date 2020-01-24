@@ -20,7 +20,37 @@ let usuario = new Vue({
         loading: false,
         generos: [],
         barrios: [],
-        nivelesEducativos: []
+        nivelesEducativos: [],
+        // Paginación
+        pagination: {
+            currentPage: 1,
+            perPage: 5
+        },
+        // Búsqueda
+        filter: '',
+        // Campos Usuario
+        userFields: [
+            {
+                label: 'Estado',
+                key: 'userestado'
+            },
+            {
+                label: 'Nombre',
+                key: 'userfullname'
+            },
+            {
+                label: 'E-mail',
+                key: 'useremail'
+            },
+            {
+                label: 'Rol',
+                key: 'rolname'
+            },
+            {
+                label: '',
+                key: 'acciones'
+            }
+        ]
     },
     methods: {
         listadoUsuarios(){
@@ -247,6 +277,26 @@ let usuario = new Vue({
 
                 return "Cartografia";
             }
+        }
+    },
+    computed: {
+        filteredUsers(){
+
+            var filter = this.filter && this.filter.toLowerCase();
+            var usuarios = this.usuarios;
+
+            if(filter){
+
+                usuarios = usuarios.filter((row) => {
+
+                    return Object.keys(row).some((key) => {
+
+                        return String(row[key]).toLowerCase().indexOf(filter) > -1;
+                    });
+                });
+            }
+
+            return usuarios;
         }
     }
 });

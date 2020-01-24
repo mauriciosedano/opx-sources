@@ -525,7 +525,7 @@ proyecto = new Vue({
               })
             })
           }
-          return proyectos
+          return proyectos;
         }
     }
 })

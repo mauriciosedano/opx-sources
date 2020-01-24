@@ -13,7 +13,31 @@ let decision = new Vue({
         edicionDecision: {},
         almacenamientoDecision: {},
         usuarios: [],
-        loading: false
+        loading: false,
+        // Paginación
+        pagination: {
+            currentPage: 1,
+            perPage: 5
+        },
+        // Busqueda
+        filter: '',
+        // Campos Decision
+        decisionesFields: [
+            {
+                label: 'Descripción',
+                key: 'desidescripcion',
+                sortable: true
+            },
+            {
+                label: 'Usuario',
+                key: 'userfullname',
+                sortable: true
+            },
+            {
+                label: '',
+                key: 'acciones'
+            }
+        ]
     },
     methods: {
         listadoDecisiones(){
@@ -189,6 +213,26 @@ let decision = new Vue({
         loader(status){
 
             this.loading = status;
+        }
+    },
+    computed: {
+        filteredDesitions(){
+
+            var filter = this.filter && this.filter.toLowerCase();
+            var decisiones = this.decisiones;
+
+            if(filter){
+
+                decisiones = decisiones.filter((row) => {
+
+                    return Object.keys(row).some((key) => {
+
+                        return String(row[key]).toLowerCase().indexOf(filter) > -1
+                    });
+                });
+            }
+
+            return decisiones;
         }
     }
 })

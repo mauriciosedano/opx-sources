@@ -14,7 +14,37 @@ let datoContexto = new Vue({
         datosContexto: [],
         edicionDatoContexto: {},
         almacenamientoDatoContexto: {},
-        loading: false
+        loading: false,
+        // Paginación
+        pagination: {
+            currentPage: 1,
+            perPage: 10
+        },
+        // Busqueda
+        filter: '',
+        // Campos Datos de Contexto
+        contextsDataFields: [
+            {
+                label: 'HDX',
+                key: 'hdxtag'
+            },
+            {
+                label: 'Descripción',
+                key: 'descripcion'
+            },
+            {
+                label: 'Valor',
+                key: 'datavalor'
+            },
+            {
+                label: 'Métrica',
+                key: 'datatipe'
+            },
+            {
+                label: '',
+                key: 'acciones'
+            }
+        ]
     },
     methods: {
         listadoDatosContexto(){
@@ -202,6 +232,26 @@ let datoContexto = new Vue({
         loader(status){
 
             this.loading = status;
+        }
+    },
+    computed: {
+        filteredContextsData(){
+
+            var filter = this.filter && this.filter.toLowerCase();
+            var datosContexto = this.datosContexto;
+
+            if(filter){
+
+                datosContexto = datosContexto.filter((row) => {
+
+                    return Object.keys(row).some((key) => {
+
+                        return String(row[key]).toLowerCase().indexOf(filter) > -1;
+                    });
+                });
+            }
+
+            return datosContexto;
         }
     }
 })

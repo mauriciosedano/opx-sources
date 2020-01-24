@@ -21,7 +21,7 @@ let instrumento = new Vue({
         // Paginación
         pagination: {
             currentPage: 1,
-            perPage: 5
+            perPage: 1
         },
         // Busqueda
         filter: '',
@@ -526,6 +526,21 @@ let instrumento = new Vue({
         }
     },
     computed: {
+        filteredInstruments(){
 
+            var filter = this.filter && this.filter.toLowerCase();
+            var instrumentos = this.instrumentos;
+
+            if(filter){
+
+                var instrumentos = instrumentos.filter((row) => {
+                    return Object.keys(row).some((key) => {
+                        return String(row[key]).toLowerCase().indexOf(filter) > -1
+                    });
+                });
+            }
+
+            return instrumentos;
+        }
     }
 });

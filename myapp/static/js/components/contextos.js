@@ -11,7 +11,26 @@ let contexto = new Vue({
         contextos: [],
         edicionContexto: {},
         almacenamientoContexto: {},
-        loading: false
+        loading: false,
+        // Paginación
+        pagination: {
+            currentPage: 1,
+            perPage: 5
+        },
+        // Busqueda
+        filter: '',
+        // Campos Contextos
+        contextsFields: [
+            {
+                label: 'Descripción',
+                key: 'descripcion',
+                sortable: true
+            },
+            {
+                label: '',
+                key: 'acciones'
+            }
+        ]
     },
     methods: {
         listadoContextos(){
@@ -171,6 +190,26 @@ let contexto = new Vue({
         loader(status){
 
             this.loading = status;
+        }
+    },
+    computed: {
+        filteredContexts(){
+
+            var filter = this.filter && this.filter.toLowerCase();
+            var contextos = this.contextos;
+
+            if(filter){
+
+                contextos = contextos.filter((row) => {
+
+                    return Object.keys(row).some((key) => {
+
+                       return String(row[key]).toLowerCase().indexOf(filter) > -1;
+                    });
+                });
+            }
+
+            return contextos;
         }
     }
 })
