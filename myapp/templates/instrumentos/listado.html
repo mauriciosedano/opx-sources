@@ -17,7 +17,7 @@
                 </div>
                 <div class="card-body">
                   <div class="table-responsive">
-                    <table class="table">
+                    <!--<table class="table">
                       <thead class=" text-primary">
                         <th>
                           Tipo
@@ -57,7 +57,20 @@
                           </td>
                         </tr>
                       </tbody>
-                    </table>
+                    </table>-->
+
+                    <b-table
+                      :fields="instrumentosFields"
+                      :items="filteredInstruments"
+                      :per-page="pagination.perPage"
+                      :current-page="pagination.currentPage"
+                    ></b-table>
+
+                    <b-pagination
+                      v-model="pagination.currentPage"
+                      :per-page="pagination.perPage"
+                      :total-rows="filteredInstruments.length"
+                    ></b-pagination>
                   </div>
                 </div>
               </div>

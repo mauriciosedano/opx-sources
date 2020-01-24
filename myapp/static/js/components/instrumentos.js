@@ -17,7 +17,32 @@ let instrumento = new Vue({
         fase2Cartografia: false,
         allowRegister: false,
         loading: false,
-        cantidadFormulariosKobo: 0
+        cantidadFormulariosKobo: 0,
+        // Paginación
+        pagination: {
+            currentPage: 1,
+            perPage: 5
+        },
+        // Busqueda
+        filter: '',
+        // Campos Instrumento
+        instrumentosFields: [
+            {
+                label: 'Tipo',
+                key: 'instrtipo',
+                sortable: true
+            },
+            {
+                label: 'Nombre',
+                key: 'instrnombre',
+                sortable: true
+            },
+            {
+                label: 'Descripción',
+                key: 'instrdescripcion',
+                sortable: true
+            }
+        ]
     },
     methods: {
         listadoInstrumentos(){
@@ -499,5 +524,8 @@ let instrumento = new Vue({
                 return "Cartografía";
             }
         }
+    },
+    computed: {
+
     }
 });

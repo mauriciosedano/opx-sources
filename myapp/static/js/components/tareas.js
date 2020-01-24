@@ -34,7 +34,44 @@ let tarea = new Vue({
         dimensionTerritorialReferencia: {},
         filterKey: '',
         general: true,
-        proyectoID: null
+        proyectoID: null,
+        // Datos de Paginación
+        pagination: {
+            currentPage: 1,
+            perPage: 3
+        },
+        // Busqueda
+        filtro: '',
+        // Campos Tareas
+        tareasFields: [
+            {
+                label: 'Nombre',
+                key: 'tarenombre',
+                sortable: true
+            },
+            {
+                label: 'Tipo',
+                key: 'taretipo',
+                sortable: true
+            },
+            {
+                label: 'Cantidad',
+                key: 'tarerestriccant',
+                sortable: true
+            },
+            {
+                label: 'Instrumento',
+                key: 'instrnombre'
+            },
+            {
+                label: 'Proyecto',
+                key: 'proynombre'
+            },
+            {
+                label: '',
+                key: 'acciones'
+            }
+        ]
     },
     methods: {
         listadoTareas(){
@@ -522,5 +559,20 @@ let tarea = new Vue({
                 return "Cartografia";
             }
         }
+    },
+    computed: {
+        filteredTasks: function(){
+
+          var filtro = this.filtro && this.filtro.toLowerCase()
+          var tareas = this.tareas;
+          if (filtro) {
+            tareas = tareas.filter(function (row) {
+              return Object.keys(row).some(function (key) {
+                return String(row[key]).toLowerCase().indexOf(filtro) > -1
+              });
+            });
+          }
+          return tareas;
+        }
     }
-})
+});

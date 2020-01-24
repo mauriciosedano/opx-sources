@@ -15,6 +15,13 @@
               <h4 class="card-title ">Proyectos</h4>
               <p class="card-category"> Gestión de Proyectos </p>
             </div>
+            <div class="card-header">
+              <form action="">
+                <div class="form-group">
+                  <input class="form-control" placeholder="Busqueda ..." type="text" v-model="filterKey">
+                </div>
+              </form>
+            </div>
             <div class="card-body">
               <div class="table-responsive">
                 <!--<table class="table">
@@ -63,9 +70,17 @@
                     </tr>
                   </tbody>
                 </table>-->
-                <b-table :fields="proyectosFields" :items="filteredProjects" responsive="sm" id="my-table" :current-page="pagination.currentPage">
+                <b-table
+                        :fields="proyectosFields"
+                        :items="filteredProjects"
+                        :current-page="pagination.currentPage"
+                        :per-page="pagination.perPage"
+                >
                   <template v-slot:cell(estado)="data">
                     [[ data.item.proyestado | estado-entidad ]]
+                  </template>
+                  <template v-slot:cell(proyfechacreacion)="data">
+                    [[ data.item.proyfechacreacion | fechas ]]
                   </template>
                   <template v-slot:cell(acciones)="data">
                     <div class="dropdown">
@@ -84,9 +99,8 @@
 
                 <b-pagination
                   v-model="pagination.currentPage"
-                  :total-rows="pagination.totalRows"
+                  :total-rows="filteredProjects.length"
                   :per-page="pagination.perPage"
-                  aria-controls="my-table"
                 ></b-pagination>
 
               </div>

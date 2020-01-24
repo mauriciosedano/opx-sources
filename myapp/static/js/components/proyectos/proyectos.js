@@ -29,11 +29,13 @@ proyecto = new Vue({
             },
             {
                 key: 'proydescripcion',
-                label: 'Descripción'
+                label: 'Descripción',
+                sortable: true
             },
             {
                 key: 'proyfechacreacion',
-                label: 'Creación'
+                label: 'Creación',
+                sortable: true
             },
             {
                 key: 'acciones',
@@ -42,8 +44,7 @@ proyecto = new Vue({
         ],
         pagination: {
             currentPage: 1,
-            totalRows: 2,
-            perPage: 1
+            perPage: 3
         },
         tiposProyecto: [],
         contextos: [],
