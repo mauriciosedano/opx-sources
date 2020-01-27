@@ -58,10 +58,10 @@
 
       <div class="sidebar-wrapper">
         <div class="logo">
-        <a href="/proyectos/" class="simple-text logo-normal">
-          <img src="{% static 'img/app/logo-dashboard.png' %}" alt="">
-        </a>
-      </div>
+          <a href="/proyectos/" class="simple-text logo-normal">
+            <img src="{% static 'img/app/logo-dashboard.png' %}" alt="">
+          </a>
+        </div>
         <ul class="nav">
           {% if '0ff17033-7e9a-4f6d-a66b-b80b69860ec0' in request.session.permisos %}
             <li class="nav-item">
@@ -82,6 +82,14 @@
                       <a class="nav-link" href="/proyectos/gestion/">
                         <i class="material-icons">dashboard</i>
                         <p>Gestión de Cambios</p>
+                      </a>
+                    </li>
+                  {% endif %}
+                  {%if '088f2967-a3fd-4074-b103-80e6c9dfe7e2' in request.session.permisos %}
+                    <li class="nav-item  ">
+                      <a class="nav-link" href="/tipos-proyecto/">
+                        <i class="material-icons">dashboard</i>
+                        <p>Tipos de Proyecto</p>
                       </a>
                     </li>
                   {% endif %}

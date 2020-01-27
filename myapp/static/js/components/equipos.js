@@ -6,6 +6,49 @@ let equipo = new Vue({
         usuariosDisponibles: [],
         proyectoID: '',
         loading: false,
+        // Campos Equipo
+        teamFields: [
+            {
+                label: 'Nombre',
+                key: 'userfullname'
+            },
+            {
+                label: 'Equipo(s)',
+                key: 'equipos'
+            },
+            {
+                label: '',
+                key: 'acciones'
+            }
+        ],
+        // Paginación Equipo
+        paginationTeam: {
+            currentPage: 1,
+            perPage: 3
+        },
+        // Búsqueda Equipo
+        filterTeam: '',
+        // Campos usuarios Disponibles
+        availableUserFields: [
+            {
+                label: 'Nombre',
+                key: 'userfullname'
+            },
+            {
+                label: 'Equipo(s)',
+                key: 'equipos'
+            },
+            {
+                label: '',
+                key: 'acciones'
+            }
+        ],
+        paginationAvailableUsers: {
+            currentPage: 1,
+            perPage: 3
+        },
+        // Busqueda usuarios disponibles
+        filterAvailableUsers: ''
     },
     created(){
 
@@ -98,6 +141,44 @@ let equipo = new Vue({
         loader(status){
 
             this.loading = status;
+        }
+    },
+    computed: {
+        filteredTeam(){
+
+            var filter = this.filterTeam && this.filterTeam.toLowerCase();
+            var equipo = this.equipo;
+
+            if(filter){
+
+                equipo = equipo.filter((row) => {
+
+                    return Object.keys(row).some((key) => {
+
+                        return String(row[key]).toLowerCase().indexOf(filter) > -1;
+                    });
+                });
+            }
+
+            return equipo;
+        },
+        filteredAvailableUsers(){
+
+            var filter = this.filterAvailableUsers && this.filterAvailableUsers.toLowerCase();
+            var usuariosDisponibles = this.usuariosDisponibles;
+
+            if(filter){
+
+                usuariosDisponibles = usuariosDisponibles.filter((row) => {
+
+                    return Object.keys(row).some((key) => {
+
+                        return String(row[key]).toLowerCase().indexOf(filter) > -1;
+                    });
+                });
+            }
+
+            return usuariosDisponibles;
         }
     }
 })

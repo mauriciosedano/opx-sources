@@ -4,7 +4,25 @@ let gestionPlantilla = new Vue({
     data: {
         almacenamientoPlantilla: {},
         plantillas: [],
-        plantillaEdicion: {}
+        plantillaEdicion: {},
+        // Paginación
+        pagination: {
+            currentPage: 1,
+            perPage: 2
+        },
+        // Búsqueda
+        filter: '',
+        // Campos Equipo
+        teamFields: [
+            {
+                label: 'Nombre',
+                key: 'descripcion'
+            },
+            {
+                label: '',
+                key: 'acciones'
+            }
+        ]
     },
     created(){
 
@@ -127,6 +145,24 @@ let gestionPlantilla = new Vue({
                     });
                 }
             })
+        }
+    },
+    computed: {
+        filteredTeams(){
+
+            var filter = this.filter && this.filter.toLowerCase();
+            var plantillas = this.plantillas;
+
+            if(filter){
+
+                var plantillas = plantillas.filter((row) => {
+                    return Object.keys(row).some((key) => {
+                        return String(row[key]).toLowerCase().indexOf(filter) > -1;
+                    });
+                });
+            }
+
+            return plantillas;
         }
     }
 })

@@ -9,15 +9,22 @@
       <div class="row">
 
         <!-- Equipo del proyecto -->
-        <div class="col-md-8">
+        <div class="col-md-7">
           <div class="card">
             <div class="card-header card-header-primary">
               <h4 class="card-title ">Equipo de proyecto</h4>
               <p class="card-category"> Equipo de Proyecto </p>
             </div>
+            <div class="card-header">
+              <form action="">
+                <div class="form-group">
+                  <input class="form-control" placeholder="Busqueda ..." type="text" v-model="filterTeam">
+                </div>
+              </form>
+            </div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table">
+                <!--<table class="table">
                   <thead class=" text-primary">
                     <th>
                       Nombre
@@ -47,21 +54,52 @@
                       </td>
                     </tr>
                   </tbody>
-                </table>
+                </table>-->
+
+                <b-table
+                  :current-page="paginationTeam.currentPage"
+                  :fields="teamFields"
+                  :items="filteredTeam"
+                  :per-page="paginationTeam.perPage"
+                >
+                  <template v-slot:cell(acciones)="data">
+                    <div class="dropdown">
+                      <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a @click.prevent="eliminarIntegrante(data.item.equid)" class="dropdown-item" href="#"> Eliminación </a>
+                      </div>
+                    </div>
+                  </template>
+                </b-table>
+
+                <b-pagination
+                  v-model="paginationTeam.currentPage"
+                  :per-page="paginationTeam.perPage"
+                  :total-rows="filteredTeam.length"
+                ></b-pagination>
               </div>
             </div>
           </div>
         </div>
         <!-- Usuarios Disponibles -->
-        <div class="col-md-4">
+        <div class="col-md-5">
           <div class="card">
             <div class="card-header card-header-primary">
               <h4 class="card-title "> Usuarios Disponibles </h4>
               <p class="card-category"> Usuarios Disponibles </p>
             </div>
+            <div class="card-header">
+              <form action="">
+                <div class="form-group">
+                  <input class="form-control" placeholder="Busqueda ..." type="text" v-model="filterAvailableUsers">
+                </div>
+              </form>
+            </div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table">
+                <!--<table class="table">
                   <thead class=" text-primary">
                     <th>
                       Nombre
@@ -91,7 +129,31 @@
                       </td>
                     </tr>
                   </tbody>
-                </table>
+                </table>-->
+
+                <b-table
+                  :current-page="paginationAvailableUsers.currentPage"
+                  :fields="availableUserFields"
+                  :items="filteredAvailableUsers"
+                  :per-page="paginationAvailableUsers.perPage"
+                >
+                  <template v-slot:cell(acciones)="data">
+                    <div class="dropdown">
+                      <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a @click.prevent="addIntegrante(data.item.userid)" class="dropdown-item" href="#"> Agregar </a>
+                      </div>
+                    </div>
+                  </template>
+                </b-table>
+
+                <b-pagination
+                  v-model="paginationAvailableUsers.currentPage"
+                  :per-page="paginationAvailableUsers.perPage"
+                  :total-rows="filteredAvailableUsers.length"
+                ></b-pagination>
               </div>
             </div>
           </div>
