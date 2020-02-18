@@ -1,4 +1,4 @@
-/*
+    /*
 =========================================================
  Material Dashboard - v2.1.1
 =========================================================
@@ -3407,7 +3407,7 @@ tbody.collapse.show {
   z-index: 1000;
   display: none;
   float: left;
-  min-width: 10rem;
+  min-width: 15rem;
   padding: 0.5rem 0;
   margin: 0.125rem 0 0;
   font-size: 1rem;
@@ -4834,6 +4834,7 @@ tbody.collapse.show {
   padding-left: 0;
   list-style: none;
   border-radius: 0.25rem;
+  justify-content: center;
 }
 
 .page-link {
@@ -4870,7 +4871,7 @@ tbody.collapse.show {
   border-bottom-left-radius: 0.25rem;
 }
 
-.page-item:last-child .page-link {
+.page-item:last-child .page-link {1
   border-top-right-radius: 0.25rem;
   border-bottom-right-radius: 0.25rem;
 }
@@ -4878,8 +4879,9 @@ tbody.collapse.show {
 .page-item.active .page-link {
   z-index: 1;
   color: #ffffff;
-  background-color: #2196f3;
-  border-color: #2196f3;
+  background-color: #0CBAEF;
+  border-color: #0CBAEF;
+  border-radius: 3px;
 }
 
 .page-item.disabled .page-link {
@@ -14884,7 +14886,7 @@ fieldset[disabled] .form-group.is-focused .togglebutton label {
 }
 
 .main-panel>.content {
-  margin-top: 70px;
+  margin-top: 30px;
   padding: 30px 15px;
   min-height: calc(100vh - 123px);
 }

@@ -24,7 +24,7 @@ let usuario = new Vue({
         // Paginación
         pagination: {
             currentPage: 1,
-            perPage: 5
+            perPage: 10
         },
         // Búsqueda
         filter: '',

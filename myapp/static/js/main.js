@@ -20,7 +20,6 @@ window.getUser = function(){
 
     if(userInfo != null && typeof userInfo == 'object' && userInfo.hasOwnProperty('user')){
 
-
         return userInfo.user;
 
     } else{
@@ -167,6 +166,9 @@ require('./components/plantillas/plantillasEquipo').gestionPlantilla;
 
 // Gestión de Miembros de plantillas de equipo
 require('./components/plantillas/miembrosPlantilla').miembrosPlantilla;
+
+// Perfil
+require('./components/perfil/informacion').informacionPerfil;
 
 // Estilos
 import './../scss/app/app.scss';

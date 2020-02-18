@@ -1,7 +1,7 @@
 opc/settings.py
-myapp/__pycache__/
-myapp/view/__pycache__/
 opc/__pycache__/
-node_modules/
-myapp/migrations/__pycache__/
+myapp/__pycache__/
 myapp/middleware/__pycache__/
+myapp/migrations/__pycache__/
+myapp/view/__pycache__/
+node_modules/

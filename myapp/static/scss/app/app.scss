@@ -148,3 +148,52 @@ span.iniciales-usuario{
 
     padding-left: 25px;
 }
+
+// ==========================  Menú ==========================
+.sidebar-wrapper #menu{
+
+    height: calc(100% - 250px);
+    overflow-y: scroll;
+    .subtitulo-menu{
+        background: #0CBAEF;
+        padding: 5px 0px;
+        padding-left: 34px;
+        p{
+            color: #FFFFFF;
+            text-transform: uppercase;
+        }
+    }
+}
+
+// Perfil
+
+#informacion-perfil #profile{
+    p{
+        font-size: 14pt;
+        text-align: center;
+    }
+    #image{
+        background: #F4B821;
+        border-radius: 50%;
+        height: 70px;
+        margin: 0 auto;
+        width: 70px;
+        p{
+            color: #FFF;
+            font-size: 14pt;
+            font-weight: bold;
+            padding: 22px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+    }
+    p#usuario span#rol{
+        display: block;
+        font-size: 10pt;
+        text-transform: uppercase;
+    }
+    #botones span.subtitulo{
+        margin-left: 28px;
+    }
+}
+
