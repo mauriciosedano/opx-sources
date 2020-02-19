@@ -1,4 +1,6 @@
 .proyecto-durante{
+    cursor: pointer;
+    transition: 1s;
     span.espacio{
         margin-right: 10px;
     }
@@ -16,4 +18,24 @@
         font-weight: bold;
         font-size: 12pt;
     }
+     &:hover{
+        background: $tarjetasReportesHover;
+        transition: 1s;
+        *{
+            color: #FFF;
+        }
+        span.valor{
+            color: #FFF;
+        }
+        div.iniciales-usuario{
+            background: #F4B821;
+        }
+        #progress-bar #curprogress{
+            background: #FFF;
+        }
+     }
+}
+
+#reportes-durante .card-header a.nav-link{
+    color: #FFF !important;
 }

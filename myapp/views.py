@@ -1627,7 +1627,7 @@ def verificarImplementaciónFormulario(request, id):
 def almacenarProyectoTM(nombre, areaInteres):
 
     headers = {
-        'Authorization': 'Token T1RNM09UQTJOUS5FTXNVb1EuWEJlaVdJeFFmc1JWc3ZVQjNjMDZsVG5rYTJN',
+        'Authorization': 'Token T1RNM09UQTJOUS5FUzhCYWcucUFObkpEZWh0b250dkp0ZDRCOWxwRkpOZkxB',
         'Accept-Language': 'en',
         'Content-Type': 'application/json; charset=UTF-8'
     }
@@ -1653,7 +1653,7 @@ def almacenarProyectoTM(nombre, areaInteres):
 
 def informacionProyectoTM(id):
     headers = {
-        'Authorization': 'Token T1RNM09UQTJOUS5FTXNVb1EuWEJlaVdJeFFmc1JWc3ZVQjNjMDZsVG5rYTJN'
+        'Authorization': 'Token T1RNM09UQTJOUS5FUzhCYWcucUFObkpEZWh0b250dkp0ZDRCOWxwRkpOZkxB'
     }
 
     client = http.client.HTTPConnection('oim-opc.pre', 30802, timeout = 10)

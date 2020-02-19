@@ -3,6 +3,7 @@
 @import "instrumentos.scss";
 @import "proyectos.scss";
 @import "tareas.scss";
+@import "reportes/antes.scss";
 @import "reportes/durante.scss";
 
 .loading{
@@ -111,11 +112,16 @@ table thead tr th{
     color: $menuItemsColor !important;
 }
 
-span.iniciales-usuario{
+div.iniciales-usuario{
     background: #0CBAEF;
     border-radius: 50%;
-    color: #FFFFFF;
-    padding: 5px;
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    span{
+        color: #FFF;
+        padding-left: 9px;
+    }
 }
 
 #progress-bar{
@@ -170,6 +176,7 @@ span.iniciales-usuario{
 #informacion-perfil #profile{
     p{
         font-size: 14pt;
+        margin-bottom: 0px;
         text-align: center;
     }
     #image{
@@ -177,6 +184,7 @@ span.iniciales-usuario{
         border-radius: 50%;
         height: 70px;
         margin: 0 auto;
+        margin-top: 10px;
         width: 70px;
         p{
             color: #FFF;
@@ -187,13 +195,38 @@ span.iniciales-usuario{
             text-transform: uppercase;
         }
     }
-    p#usuario span#rol{
-        display: block;
-        font-size: 10pt;
-        text-transform: uppercase;
+    p#usuario{
+        margin-top: 10px;
+        span#rol{
+            display: block;
+            font-size: 10pt;
+            text-transform: uppercase;
+        }
     }
     #botones span.subtitulo{
+        font-weight: bold;
         margin-left: 28px;
     }
 }
 
+// =========================== Scrollbar ============================
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: $scrollbar;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: $scrollbar;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: $scrollbar;
+}
