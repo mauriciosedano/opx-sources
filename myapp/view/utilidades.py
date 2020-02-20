@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.http.response import JsonResponse
+from django.shortcuts import render
 
 from myapp import models
 
@@ -84,3 +85,9 @@ def obtenerParametroSistema(parametro):
         response = None
 
     return response
+
+def notFoundPage(request, exception=None):
+    return render(request, "404.html")
+
+def serverErrorPage(request, exception=None):
+    return render(request, "500.html")

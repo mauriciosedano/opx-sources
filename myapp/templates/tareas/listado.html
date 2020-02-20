@@ -135,6 +135,7 @@
                         <div class="form-group">
                           <label class="bmd-label-floating">Tipo</label>
                           <select v-model="almacenamientoTarea.taretipo" @change="listadoInstrumentos(almacenamientoTarea.taretipo); restablecerMapa()" class="form-control">
+                            <option value="">Seleccione un tipo</option>
                             <option value="1">Encuesta</option>
                             <option value="2">Cartografia</option>
                           </select>
@@ -217,6 +218,7 @@
                         <div class="form-group">
                           <label class="bmd-label-floating">Tipo</label>
                           <select @change="listadoInstrumentos(edicionTarea.taretipo)" v-model="edicionTarea.taretipo" class="form-control">
+                            <option value="">Seleccione un tipo</option>
                             <option value="1">Encuesta</option>
                             <option value="2">Cartografia</option>
                           </select>

@@ -1229,7 +1229,7 @@ def creacionEncuestaView(request):
 @permission_classes((IsAuthenticated,))
 def listadoRoles(request):
 
-    roles = models.Rol.objects.all().values()
+    roles = models.Rol.objects.filter(rolestado__exact=1).values()
 
     data = {
         'code': 200,

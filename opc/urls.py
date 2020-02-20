@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import handler404, handler500
 
 from myapp import views
 from myapp.view import (
@@ -197,3 +198,6 @@ urlpatterns = [
     path('reportes/despues/', estadisticas.estadisticasDespuesView),
     path('reportes/<str:proyid>/detalle/', estadisticas.estadisticasDetalleView)
 ]
+
+handler404 = utilidades.notFoundPage
+handler500 = utilidades.serverErrorPage
