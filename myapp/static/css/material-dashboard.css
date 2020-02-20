@@ -5593,7 +5593,7 @@ button.close {
 .modal-body {
   position: relative;
   flex: 1 1 auto;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
 }
 
 .modal-footer {
@@ -11159,7 +11159,7 @@ fieldset[disabled] .form-group.is-focused .form-check .form-check-label {
 }
 
 form {
-  margin-bottom: 1.125rem;
+  margin-bottom: 0;
 }
 
 .card form {
