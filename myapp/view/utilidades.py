@@ -87,7 +87,7 @@ def obtenerParametroSistema(parametro):
     return response
 
 def notFoundPage(request, exception=None):
-    return render(request, "404.html")
+    return render(request, "error/404.html")
 
 def serverErrorPage(request, exception=None):
-    return render(request, "500.html")
+    return render(request, "error/500.html")

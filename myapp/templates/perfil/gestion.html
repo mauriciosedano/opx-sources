@@ -1,0 +1,70 @@
+{% extends "layouts/main.html" %}
+
+{% block content %}
+
+<div class="container-fluid" id="gestion-perfil">
+    <div class="row">
+        <div class="col-md-3" id="left">
+            <div id="iniciales">
+                <p> [[ iniciales ]] </p>
+            </div>
+            <div id="info">
+                <p>
+                    [[ informacionUsuario.userfullname ]]
+                    <span> [[ informacionUsuario.rolname ]] </span>
+                </p>
+            </div>
+            <ul id="acciones">
+                <li> Cerrar Sesión </li>
+                <li class="subtitulo" ACERCA DE </li>
+                <li> Ayuda </li>
+                <li> Privacidad </li>
+                <li> Condiciones del Servicio </li>
+            </ul>
+        </div>
+        <div class="col-md-9" id="right">
+            <h1> Información personal </h1>
+
+            <!-- Formulario -->
+             <form action="">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="bmd-label-floating">Nombre</label>
+                      <input v-model="informacionUsuario.userfullname" type="text" class="form-control">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <div class="form-group">
+                       <label class="bmd-label-floating">Correo electrónico</label>
+                       <input type="email" v-model="informacionUsuario.useremail" class="form-control"/>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="" class="bmd-label-floating">Teléfono</label>
+                      <input type="text" v-model="informacionUsuario.telefono"/>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <h2>Nueva contraseña</h2>
+                    <div class="form-group">
+                      <label for="" class="bmd-label-floating">Tipo</label>
+                      <input type="password" v-model="informacionUsuario.password"/>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="" class="bmd-label-floating">Confirmar contraseña</label>
+                      <input type="password" v-model="informacionUsuario.passwordConfirm"/>
+                    </div>
+                  </div>
+                </div>
+             </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

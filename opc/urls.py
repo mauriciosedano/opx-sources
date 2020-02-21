@@ -196,7 +196,10 @@ urlpatterns = [
     path('reportes/antes/', estadisticas.estadisticasView),
     path('reportes/durante/', estadisticas.estadisticasDuranteView),
     path('reportes/despues/', estadisticas.estadisticasDespuesView),
-    path('reportes/<str:proyid>/detalle/', estadisticas.estadisticasDetalleView)
+    path('reportes/<str:proyid>/detalle/', estadisticas.estadisticasDetalleView),
+
+    # =========================== Perfil ===============================================
+    path('mi-perfil/', views.perfilView)
 ]
 
 handler404 = utilidades.notFoundPage

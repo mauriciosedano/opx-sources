@@ -143,17 +143,25 @@ def detalleUsuario(request, userid):
 
     try:
         #usuario = models.Usuario.objects.get(pk=userid)
+        usuario = {}
+
         with connection.cursor() as cursor:
             query = "SELECT u.*, r.rolname from v1.usuarios u INNER JOIN v1.roles r ON r.rolid = u.rolid " \
                     "WHERE u.userid = '{}'".format(userid)
             cursor.execute(query)
-            usuarios = dictfetchall(cursor)
+            queryResult = dictfetchall(cursor)
 
-        if(len(usuarios) > 0):
+        if(len(queryResult) > 0):
+
+            usuario = queryResult[0]
+
+            # Remover la información que no se desea mostrar
+            del usuario['password']
+            del usuario['usertoken']
 
             data = {
                 'code': 200,
-                'usuario': usuarios[0],
+                'usuario': usuario,
                 'status': 'success'
             }
 
@@ -1669,3 +1677,7 @@ def informacionProyectoTM(id):
         data =  json.loads(response.read())
 
     return data
+
+# ==================== Perfil ================
+def perfilView(request):
+    return render(request, "perfil/gestion.html")
