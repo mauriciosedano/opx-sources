@@ -3,7 +3,12 @@ let informacionPerfil = new Vue({
     delimiters: ['[[', ']]'],
     mounted(){
 
-        this.getData();
+        let path = window.location.pathname;
+
+        if(path != "/" && path != "/auth/password-reset/"){
+
+            this.getData();
+        }
     },
     data: {
         iniciales: '',

@@ -169,6 +169,7 @@ require('./components/plantillas/miembrosPlantilla').miembrosPlantilla;
 
 // Perfil
 require('./components/perfil/informacion').informacionPerfil;
+require('./components/perfil/gestion').gestionPerfil;
 
 // Estilos
 import './../scss/app/app.scss';

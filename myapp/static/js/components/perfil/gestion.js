@@ -5,6 +5,15 @@ gestionPerfil = new Vue({
         informacionUsuario: {},
         iniciales: ''
     },
+    mounted(){
+
+        let path = window.location.pathname;
+
+        if(path == "/mi-perfil/"){
+
+            this.obtenerInformacion();
+        }
+    },
     methods: {
         obtenerInformacion(){
 
@@ -21,42 +30,78 @@ gestionPerfil = new Vue({
 
                     this.informacionUsuario = response.data.usuario;
 
-                    if(this.infoUsuario.hasOwnProperty('userfullname') && this.infoUsuario.userfullname != null){
+                    if(this.informacionUsuario.hasOwnProperty('userfullname') && this.informacionUsuario.userfullname != null){
 
-                        this.getIniciales(this.infoUsuario.userfullname);
+                        this.getIniciales(this.informacionUsuario.userfullname);
                     }
                 }
             })
         },
+        verificacionPassword(){
+
+            response = false;
+
+            if((!this.informacionUsuario.hasOwnProperty('password') || this.informacionUsuario.password == "" ) && (!this.informacionUsuario.hasOwnProperty('passwordConfirm') || this.informacionUsuario.passwordConfirm == "" )){
+
+                response = true;
+
+            } else if((this.informacionUsuario.hasOwnProperty('password') && this.informacionUsuario.password != "" ) && (this.informacionUsuario.hasOwnProperty('passwordConfirm') && this.informacionUsuario.passwordConfirm != "" )){
+
+                if(this.informacionUsuario.password == this.informacionUsuario.passwordConfirm){
+
+                    response = true;
+                }
+            }
+
+            return response;
+        },
         actualizarInformacion(){
 
-            axios({
-                headers: {
-                    Authorization: getToken(),
-                },
-                data: informacionUsuario,
-                method: 'POST',
-                url: '/usuarios/' + getUser().userid
-            })
-            .then(response => {
+             if(this.verificacionPassword()){
 
-                if(response.data.code == 200 && response.data.status = 'success'){
+                let data = Object.keys(this.informacionUsuario).map(key => {
+
+                    return key + "=" + this.informacionUsuario[key];
+                })
+                .join('&');
+
+                axios({
+                    headers: {
+                        Authorization: getToken(),
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    data: data,
+                    method: 'POST',
+                    url: '/usuarios/' + getUser().userid
+                })
+                .then(response => {
+
+                    if(response.data.code == 200 && response.data.status == 'success'){
+
+                        Swal.fire({
+                            title: 'Exito',
+                            text: 'Su información fue actualizada correctamente',
+                            type: 'success'
+                        });
+                    }
+                })
+                .catch(error => {
 
                     Swal.fire({
-                        title: 'Exito',
-                        text: 'Su información fue actualizada correctamente',
-                        type: 'success'
+                        title: 'Error',
+                        text: 'Ocurrio un error. Por favor intenta de nuevo.',
+                        type: 'error'
                     });
-                }
-            })
-            .catch(error => {
+                });
+
+             } else{
 
                 Swal.fire({
                     title: 'Error',
-                    text: 'Ocurrio un error. Por favor intenta de nuevo.',
+                    text: 'Por favor diligencia la contraseña adecuadamente',
                     type: 'error'
                 });
-            });
+             }
         },
         getIniciales(nombre){
 
@@ -68,4 +113,4 @@ gestionPerfil = new Vue({
 
         }
     }
-})
+});
