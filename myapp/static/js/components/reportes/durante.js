@@ -43,7 +43,7 @@ estadisticas = new Vue({
             })
             .then(response => {
 
-                if(response.data.code == 200 && response.data.status == 'success'){
+                if(response.data.code == 200 && response.data.status == 'success' && response.data.data.length > 0){
 
                     new Gantt('#proyectos-gantt', response.data.data, {
                         on_click: (task) => {

@@ -121,7 +121,10 @@ div.iniciales-usuario{
     width: 30px;
     span{
         color: #FFF;
-        padding-left: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3px;
     }
 }
 
