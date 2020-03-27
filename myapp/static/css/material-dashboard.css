@@ -14908,11 +14908,11 @@ fieldset[disabled] .form-group.is-focused .togglebutton label {
   margin-bottom: 10px;
 }
 
-.perfect-scrollbar-on .sidebar,
+/*.perfect-scrollbar-on .sidebar,
 .perfect-scrollbar-on .main-panel {
   height: 100%;
   max-height: 100%;
-}
+}*/
 
 .sidebar,
 .main-panel,
