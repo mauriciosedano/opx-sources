@@ -22,7 +22,9 @@ import json
 # import json.decoder.jso
 import xml.etree.ElementTree as ET
 
-osmRestApiUrl = 'master.apis.dev.openstreetmap.org'
+from opc.opc_settings import settings
+
+osmRestApiUrl = settings['osm-api-url']
 
 def osmHeaders():
 

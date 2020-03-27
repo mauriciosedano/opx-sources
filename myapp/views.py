@@ -30,6 +30,8 @@ from rest_framework.permissions import (
 from myapp.view.utilidades import dictfetchall, usuarioAutenticado
 from myapp.view.osm import detalleCartografia
 
+from opc.opc_settings import settings
+
 # from rest_framework.response import Response
 # from rest_framework.status import (
 #     HTTP_400_BAD_REQUEST,
@@ -1330,9 +1332,9 @@ def permisosRolView(request, rolid):
 
 def informacionFormularioKoboToolbox(id):
 
-    headers = {'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d'}
+    headers = {'Authorization': settings['kobo-token']}
 
-    client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout = 10)
+    client = http.client.HTTPConnection(settings['kobo-kpi'], int(settings['kobo-puerto']), timeout = int(settings['timeout-request']))
 
     client.request('GET', '/assets/' + id + '/submissions/', '{}', headers)
 
@@ -1367,9 +1369,9 @@ def informacionFormularioKoboToolbox(id):
 
 def detalleFormularioKoboToolbox(id):
 
-    headers = {'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d'}
+    headers = {'Authorization': settings['kobo-token']}
 
-    client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout=10)
+    client = http.client.HTTPConnection(settings['kobo-kpi'], int(settings['kobo-puerto']), timeout=int(settings['timeout-request']))
     client.request('GET', '/assets/' + str(id) + '/?format=json', '', headers)
     response = client.getresponse()
 
@@ -1386,7 +1388,7 @@ def detalleFormularioKoboToolbox(id):
 @permission_classes((IsAuthenticated,))
 def enlaceFormularioKoboToolbox(request, tareid):
 
-    headers = {'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d'}
+    headers = {'Authorization': settings['kobo-token']}
 
     try:
         tarea = models.Tarea.objects.get(pk = tareid)
@@ -1478,13 +1480,13 @@ def implementarFormularioKoboToolbox(request, id):
         instrumento = models.Instrumento.objects.get(pk = id)
 
         headers = {
-            'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d',
+            'Authorization': settings['kobo-token'],
             'Content-Type': 'application/json'
         }
 
         payload = {'active': True}
 
-        client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout = 10)
+        client = http.client.HTTPConnection(settings['kobo-kpi'], int(settings['kobo-puerto']), timeout = int(settings['timeout-request']))
 
         client.request('POST', '/assets/' + instrumento.instridexterno + '/deployment/', json.dumps(payload), headers)
 
@@ -1527,11 +1529,11 @@ def listadoFormulariosKoboToolbox(request):
     try:
 
         headers = {
-            'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d',
+            'Authorization': settings['kobo-token'],
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36'
         }
 
-        client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout=10)
+        client = http.client.HTTPConnection(settings['kobo-kpi'], int(settings['kobo-puerto']), timeout=int(settings['timeout-request']))
         client.request('GET', '/assets/?format=json', '', headers)
         response = client.getresponse()
 
@@ -1566,11 +1568,11 @@ def verificarImplementaciónFormulario(request, id):
         instrumento = models.Instrumento.objects.get(pk = id)
 
         headers = {
-            'Authorization': 'Token 9e65dbdf164fbcee05f739d5e2d269e908760d8d',
+            'Authorization': settings['kobo-token'],
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36'
         }
 
-        client = http.client.HTTPConnection("kf.oim-opc.pre", 80, timeout=10)
+        client = http.client.HTTPConnection(settings['kobo-kpi'], int(settings['kobo-puerto']), timeout=int(settings['timeout-request']))
         client.request('GET', '/assets/?format=json', '', headers)
         response = client.getresponse()
 
@@ -1635,7 +1637,7 @@ def verificarImplementaciónFormulario(request, id):
 def almacenarProyectoTM(nombre, areaInteres):
 
     headers = {
-        'Authorization': 'Token T1RNM09UQTJOUS5FUzhCYWcucUFObkpEZWh0b250dkp0ZDRCOWxwRkpOZkxB',
+        'Authorization': settings['tm-token'],
         'Accept-Language': 'en',
         'Content-Type': 'application/json; charset=UTF-8'
     }
@@ -1649,7 +1651,7 @@ def almacenarProyectoTM(nombre, areaInteres):
         "arbitraryTasks": True
     }
 
-    client = http.client.HTTPConnection('oim-opc.pre', 30802, timeout = 10)
+    client = http.client.HTTPConnection(settings['tm'], int(settings['tm-puerto']), timeout = int(settings['timeout-request']))
     client.request('PUT', '/api/v1/admin/project', json.dumps(info), headers)
     response = client.getresponse()
 
@@ -1661,10 +1663,10 @@ def almacenarProyectoTM(nombre, areaInteres):
 
 def informacionProyectoTM(id):
     headers = {
-        'Authorization': 'Token T1RNM09UQTJOUS5FUzhCYWcucUFObkpEZWh0b250dkp0ZDRCOWxwRkpOZkxB'
+        'Authorization': settings['tm-token']
     }
 
-    client = http.client.HTTPConnection('oim-opc.pre', 30802, timeout = 10)
+    client = http.client.HTTPConnection(settings['tm'], int(settings['tm-puerto']), timeout = int(settings['timeout-request']))
     client.request('GET', '/api/v1/project/' + id, {}, headers)
     response = client.getresponse()
 

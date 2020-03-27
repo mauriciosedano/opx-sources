@@ -42,7 +42,8 @@ let instrumento = new Vue({
                 key: 'instrdescripcion',
                 sortable: true
             }
-        ]
+        ],
+        kpiUrl: kpiUrl
     },
     methods: {
         listadoInstrumentos(){

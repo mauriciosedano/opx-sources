@@ -1,3 +1,5 @@
+window.kpiUrl = "http://kf.oim-opc.pre/#/forms";
+
 window.getToken = function(){
 
     let userInfo = JSON.parse(sessionStorage.getItem('userinfo'));
