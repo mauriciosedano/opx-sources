@@ -21,7 +21,7 @@ let instrumento = new Vue({
         // Paginación
         pagination: {
             currentPage: 1,
-            perPage: 1
+            perPage: 5
         },
         // Busqueda
         filter: '',
