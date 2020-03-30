@@ -1412,7 +1412,7 @@ def enlaceFormularioKoboToolbox(request, tareid):
 
                     if detalleFormulario['deployment__submission_count'] < tarea.tarerestriccant:
 
-                        enlace = detalleFormulario['deployment__links']['single_url']
+                        enlace = detalleFormulario['deployment__links']['offline_url']
 
                         data = {
                             'code': 200,

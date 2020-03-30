@@ -30,7 +30,9 @@ gestionProyecto = new Vue({
         equipoProyecto: [],
         usuariosDisponiblesProyecto: [],
         // Ubicación Equipo
-        equipoProyectoMapa: []
+        equipoProyectoMapa: [],
+        // Loader
+        loading: false
     },
     created(){
 
@@ -382,6 +384,12 @@ gestionProyecto = new Vue({
         },
         edicionObjetivoTarea(){
 
+            // Mostrar loader
+            this.loader(true);
+
+            // Añadir Metadato en la petición para notificar Cambio de objetivo
+            this.tareaGestion['gestionCambio'] = true
+
             queryString = Object.keys(this.tareaGestion).map(key => {
 
                 return key + '=' + this.tareaGestion[key];
@@ -400,6 +408,9 @@ gestionProyecto = new Vue({
             .then(response => {
 
                 if(response.data.code == 200 && response.data.status == 'success'){
+
+                    // Ocultar Loader
+                    this.loader(false);
 
                     $("#gestion-objetivo-tarea").modal('hide');
 
@@ -449,6 +460,12 @@ gestionProyecto = new Vue({
         },
         edicionTiempoProyecto(){
 
+            // Mostrar loader
+            this.loader(true);
+
+            // Añadir Metadato en la petición para notificar Cambio de objetivo
+            this.proyectoGestion['gestionCambio'] = true;
+
             queryString = Object.keys(this.proyectoGestion).map(key => {
 
                     return key + '=' + this.proyectoGestion[key];
@@ -465,6 +482,9 @@ gestionProyecto = new Vue({
                 }
             })
             .then(response => {
+
+                // Ocultar Loader
+                this.loader(false);
 
                 $("#gestion-proyecto").modal('hide');
 
@@ -524,6 +544,9 @@ gestionProyecto = new Vue({
         },
         edicionTerritorioProyecto(){
 
+            // Mostrar loader
+            this.loader(true);
+
             let tareas = this.datosCambioTerritorial.tareas;
             let cantidadTareas = tareas.length;
             tareasNoRedimensionadas = 0;
@@ -549,6 +572,9 @@ gestionProyecto = new Vue({
                         }
                     })
                     .then(response => {
+
+                        // Ocultar Loader
+                        this.loader(false);
 
                         if(response.data.code == 200 && response.data.status == 'success'){
 
@@ -700,7 +726,13 @@ gestionProyecto = new Vue({
         },
         agregarIntegranteEquipo(userid){
 
+            // Mostrar loader
+            this.loader(true);
+
             let data = 'userid=' + userid + "&proyid=" +  this.capaEdicion.id;
+
+            // Añadir Metadato en la petición para notificar Cambio de objetivo
+            data += "&gestionCambio=true";
 
             axios({
                 data: data,
@@ -713,6 +745,9 @@ gestionProyecto = new Vue({
             })
             .then(response => {
 
+                // Ocultar Loader
+                this.loader(false);
+
                 if(response.data.code == 201 && response.data.status == 'success'){
 
                     this.obtenerEquipoProyecto(this.capaEdicion.id);
@@ -722,14 +757,25 @@ gestionProyecto = new Vue({
         },
         eliminarIntegranteEquipo(equid){
 
+            // Mostrar loader
+            this.loader(true);
+
+            // Añadir Metadato en la petición para notificar Cambio de objetivo
+            data = "gestionCambio=true";
+
             axios({
+                data: data,
                 headers: {
-                    Authorization: getToken()
+                    Authorization: getToken(),
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 method: 'DELETE',
                 url: '/equipos/delete/' + equid
             })
             .then(response => {
+
+                // Ocultar Loader
+                this.loader(false);
 
                 if(response.data.code == 200 && response.data.status == 'success'){
 
@@ -833,6 +879,10 @@ gestionProyecto = new Vue({
 
                 setTimeout(() => this.ubicacionEquipoProyecto(), 5000);
             }
+        },
+        loader(status){
+
+            this.loading = status;
         }
     }
 });

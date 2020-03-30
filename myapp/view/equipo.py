@@ -10,7 +10,7 @@ from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import connection
 from django.db.utils import IntegrityError
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, QueryDict
 from django.http.response import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -22,7 +22,8 @@ from rest_framework.permissions import (
     IsAuthenticated
 )
 
-from myapp.view.utilidades import dictfetchall, usuarioAutenticado
+from myapp.view.utilidades import dictfetchall, usuarioAutenticado, obtenerEmailUsuario
+from myapp.view.notificaciones import gestionCambios
 
 # ========================== Equipos ==============================
 
@@ -107,6 +108,21 @@ def almacenamientoEquipo(request):
 
         equipo.save()
 
+        # Verificando que el recurso haya sido llamado desde Gestión de Cambios
+        if request.POST.get('gestionCambio', None) is not None:
+
+            # Obtener los usuarios que hacen parte del proyecto
+            usuario = obtenerEmailUsuario(equipo.userid)
+
+            #obtener la información del proyecto intervenido
+            proyecto = models.Proyecto.objects.get(pk = equipo.proyid)
+
+            # Detalle del cambio
+            detalle = "Has sido agregado al proyecto"
+
+            # Enviar Notificaciones
+            gestionCambios(usuario, 'proyecto', proyecto.proynombre, 3, detalle)
+
         data = {
             'code': 201,
             'integrante': serializers.serialize('python', [equipo])[0],
@@ -140,6 +156,24 @@ def eliminarEquipo(request, equid):
         equipo = models.Equipo.objects.get(pk = equid)
 
         equipo.delete()
+
+        # Convertiendo a diccionario información recibida
+        requestData = QueryDict(request.body)
+
+        # Verificando que el recurso haya sido llamado desde Gestión de Cambios
+        if requestData.get('gestionCambio', None) is not None:
+
+            # Obtener los usuarios que hacen parte del proyecto
+            usuario = obtenerEmailUsuario(equipo.userid)
+
+            # obtener la información del proyecto intervenido
+            proyecto = models.Proyecto.objects.get(pk=equipo.proyid)
+
+            # Detalle del cambio
+            detalle = "Has sido eliminado del proyecto"
+
+            # Enviar Notificaciones
+            gestionCambios(usuario, 'proyecto', proyecto.proynombre, 3, detalle)
 
         data = {
             'code': 200,

@@ -30,7 +30,8 @@ from rest_framework.permissions import (
 )
 
 from myapp.views import detalleFormularioKoboToolbox
-from myapp.view.utilidades import dictfetchall, obtenerParametroSistema
+from myapp.view.utilidades import dictfetchall, obtenerParametroSistema, obtenerEmailsEquipo
+from myapp.view.notificaciones import gestionCambios
 
 # =========================== Tareas ==============================
 
@@ -287,6 +288,18 @@ def actualizarTarea(request, tareid):
 
             tarea.tareestado = estado
             tarea.save()
+
+        # Verificando que el recurso haya sido llamado desde Gestión de Cambios
+        if request.POST.get('gestionCambio', None) is not None:
+
+            # Obtener los usuarios que hacen del proyecto
+            usuarios = obtenerEmailsEquipo(tarea.proyid)
+
+            # Detalle del Cambio
+            detalle = "Encuestas Objetivo: {}".format(tarea.tarerestriccant)
+
+            # Enviar Notificaciones
+            gestionCambios(usuarios, 'tarea', tarea.tarenombre, 1, detalle)
 
         response = {
             'code': 200,

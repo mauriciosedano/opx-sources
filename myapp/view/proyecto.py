@@ -28,8 +28,9 @@ from rest_framework.permissions import (
 )
 
 from myapp import models
-from myapp.view.utilidades import dictfetchall
+from myapp.view.utilidades import dictfetchall, obtenerEmailsEquipo
 from myapp.views import detalleFormularioKoboToolbox
+from myapp.view.notificaciones import gestionCambios
 
 # ============================= Proyectos ========================
 
@@ -403,6 +404,20 @@ def actualizarProyecto(request, proyid):
                     contextoProyecto = models.ContextoProyecto(proyid = proyecto.proyid, contextoid = contexto)
                     contextoProyecto.save()
 
+        # ================== Notificación de Gestion de cambios ========================
+        if request.POST.get('gestionCambio', None) is not None:
+
+            #obtener usuarios que hacen parte del proyecto:
+            usuarios = obtenerEmailsEquipo(proyid)
+
+            # Detalle del Cambio
+            detalle = "<b> Fecha Inicio: </b> {} <br />" \
+                      "<b> Fecha Fin </b> {}" \
+                      .format(proyecto.proyfechainicio, proyecto.proyfechacierre)
+
+            #Enviar notificaciones
+            gestionCambios(usuarios, 'proyecto', proyecto.proynombre, 2, detalle)
+
         return JsonResponse(serializers.serialize('python', [proyecto]), safe=False)
 
     except ObjectDoesNotExist:
@@ -548,6 +563,15 @@ def cambioTerritorio(request, dimensionid):
 
             else:
                 raise ValidationError("JSON Inválido")
+
+        # =============== Notificación de Gestión de Cambios ======================
+        usuarios = obtenerEmailsEquipo(dimensionTerritorialNew.proyid)
+
+        # Obteneniendo información del proyecto
+        proyecto = models.Proyecto.objects.get(pk = dimensionTerritorialNew.proyid)
+
+        # Envío de Notificaciones
+        gestionCambios(usuarios, 'proyecto', proyecto.proynombre, 4)
 
     except ObjectDoesNotExist:
         response = {

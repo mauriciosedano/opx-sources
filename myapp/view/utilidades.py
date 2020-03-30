@@ -86,6 +86,25 @@ def obtenerParametroSistema(parametro):
 
     return response
 
+def obtenerEmailsEquipo(proyid):
+
+    usuarios = models.Equipo.objects.filter(proyid__exact = proyid)
+    emails = []
+
+    for u in usuarios:
+        email = models.Usuario.objects.get(pk = u.userid).useremail
+        emails.append(email)
+
+    return emails
+
+def obtenerEmailUsuario(userid):
+
+    usuario = models.Usuario.objects.get(pk = userid)
+
+    email = [usuario.useremail]
+
+    return email
+
 def notFoundPage(request, exception=None):
     return render(request, "error/404.html")
 
