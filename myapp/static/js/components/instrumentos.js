@@ -41,6 +41,10 @@ let instrumento = new Vue({
                 label: 'Descripción',
                 key: 'instrdescripcion',
                 sortable: true
+            },
+            {
+                label: '',
+                key: 'acciones'
             }
         ],
         kpiUrl: kpiUrl

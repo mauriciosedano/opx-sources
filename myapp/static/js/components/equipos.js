@@ -24,7 +24,7 @@ let equipo = new Vue({
         // Paginación Equipo
         paginationTeam: {
             currentPage: 1,
-            perPage: 3
+            perPage: 10
         },
         // Búsqueda Equipo
         filterTeam: '',
