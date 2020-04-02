@@ -175,13 +175,23 @@
                           <div class="col-md-6">
                             <div class="form-group">
                               <label for="" class="bmd-label-floating">Fecha Inicio</label>
-                              <input class="form-control" type="date" v-model="almacenamientoProyecto.proyfechainicio" />
+                              <!--<input class="form-control" type="date" v-model="almacenamientoProyecto.proyfechainicio" />-->
+                              <datepicker
+                                      @selected="formateoFechaInicio"
+                                      bootstrap-styling
+                                      placeholder="Fecha de Inicio">
+                              </datepicker>
                             </div>
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
                               <label for="" class="bmd-label-floating">Fecha Cierre</label>
-                              <input class="form-control" type="date" v-model="almacenamientoProyecto.proyfechacierre" />
+                              <!--<input class="form-control" type="date" v-model="almacenamientoProyecto.proyfechacierre" />-->
+                              <datepicker
+                                      @selected="formateoFechaFin"
+                                      bootstrap-styling
+                                      placeholder="Fecha de Fin">
+                              </datepicker>
                             </div>
                           </div>
                         </div>

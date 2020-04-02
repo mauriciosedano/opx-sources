@@ -512,6 +512,12 @@ proyecto = new Vue({
                     this.plantillas = response.data.data;
                 }
             })
+        },
+        formateoFechaInicio(date){
+            this.almacenamientoProyecto.proyfechainicio = moment(date).format('YYYY-MM-DD');
+        },
+        formateoFechaFin(date){
+            this.almacenamientoProyecto.proyfechacierre = moment(date).format('YYYY-MM-DD');
         }
     },
     computed: {

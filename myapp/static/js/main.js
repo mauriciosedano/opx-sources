@@ -1,4 +1,5 @@
-window.kpiUrl = "http://kf.oim-opc.pre/#/forms";
+// window.kpiUrl = "http://kf.oim-opc.pre/#/forms";
+window.kpiUrl = "https://kobo.humanitarianresponse.info/#/forms/";
 
 window.getToken = function(){
 
@@ -43,6 +44,9 @@ window.Vue = require('vue');
 // Axios
 window.axios = require('axios');
 
+// Moment.js
+window.moment = require('moment');
+
 // Sweet Alert 2
 import Swal from 'sweetalert2';
 
@@ -52,8 +56,17 @@ import Multiselect from 'vue-multiselect';
 // Bootstrap Vue
 import BootstrapVue from 'bootstrap-vue';
 
+// Vue DatePicker
+import Datepicker from 'vuejs-datepicker';
+
+// Agregando el componente Multiselect
 Vue.component('multiselect', Multiselect);
+
+// Agregando Bootstrap Vue
 Vue.use(BootstrapVue);
+
+// Agregando Componente Datepicker
+Vue.component('datepicker', Datepicker);
 
 // Leaflet
 require('./plugins/leaflet/leaflet.js');
