@@ -98,10 +98,11 @@ def login(request):
                 data = {
                     'token': str(refresh.access_token),
                     'user': {
-                        'userid': user.userid,
+                        'userid':       user.userid,
                         'userfullname': user.userfullname,
-                        'useremail': user.useremail,
-                        'rol': rol.rolname
+                        'useremail':    user.useremail,
+                        'rol':          rol.rolname,
+                        'puntaje':      user.puntaje
                     },
                     'code': 200
                 }
