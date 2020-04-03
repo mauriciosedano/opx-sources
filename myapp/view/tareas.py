@@ -30,7 +30,7 @@ from rest_framework.permissions import (
 )
 
 from myapp.views import detalleFormularioKoboToolbox
-from myapp.view.utilidades import dictfetchall, obtenerParametroSistema, obtenerEmailsEquipo
+from myapp.view.utilidades import dictfetchall, obtenerParametroSistema, obtenerEmailsEquipo, usuarioAutenticado
 from myapp.view.notificaciones import gestionCambios
 
 # =========================== Tareas ==============================
@@ -41,7 +41,24 @@ def listadoTareas(request):
 
     try:
 
-        # Obtener página validación de la misma
+        # Obtener usuario autenticado
+        usuario = usuarioAutenticado(request)
+
+        # Superadministrador
+        if str(usuario.rolid) == '8945979e-8ca5-481e-92a2-219dd42ae9fc':
+            proyectosUsuario = []
+
+        # Consulta de proyectos para un usuario proyectista
+        elif str(usuario.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a':
+            proyectosUsuario = list(models.Proyecto.objects.filter(proypropietario=usuario.userid).values('proyid'))
+
+        # Consulta de proyectos para un usuario voluntario o validador
+        elif str(usuario.rolid) == '0be58d4e-6735-481a-8740-739a73c3be86' or str(usuario.rolid) == '53ad3141-56bb-4ee2-adcf-5664ba03ad65':
+            proyectosUsuario = list(models.Equipo.objects.filter(userid = usuario.userid).values('proyid'))
+
+        print(proyectosUsuario)
+
+        # ================ Obtener página validación de la misma ========================
         page = request.GET.get('page')
 
         if (page is None):
@@ -52,11 +69,35 @@ def listadoTareas(request):
         # Obtener Búsqueda y validación de la misma
         search = request.GET.get('search')
 
-        query = "select v1.tareas.*, v1.instrumentos.instrnombre, v1.proyectos.proynombre from v1.tareas inner join v1.proyectos on v1.tareas.proyid = v1.proyectos.proyid inner join v1.instrumentos on v1.tareas.instrid = v1.instrumentos.instrid"
+        query = "select t.*, i.instrnombre, p.proynombre from v1.tareas as t " \
+                "inner join v1.proyectos as p on t.proyid = p.proyid " \
+                "inner join v1.instrumentos  as i on t.instrid = i.instrid"
 
-        if search is not  None:
-            query += " where v1.tareas.tarenombre ~* '" + search + "'"
+        if len(proyectosUsuario) > 0 or search is not None:
 
+            query += " where "
+
+            #   Busqueda de tareas por proyecto
+            if len(proyectosUsuario) > 0:
+                firstItemQuery = True
+                for p in proyectosUsuario[:-1]:
+
+                    if firstItemQuery:
+                        query += "("
+                        firstItemQuery = False
+
+                    query += "t.proyid = '" + str(p['proyid']) + "' or "
+
+                query += "t.proyid = '" + str(proyectosUsuario[-1]['proyid']) + "')"
+
+            # Busqueda por Nombre
+            if search is not  None:
+                if len(proyectosUsuario) > 0:
+                    query += " and"
+
+                query += " (t.tarenombre ~* '" + search + "');"
+
+        print(query)
 
         with connection.cursor() as cursor:
             cursor.execute(query)
@@ -117,7 +158,6 @@ def listadoTareas(request):
         }
 
     return JsonResponse(data, safe = False, status = data['code'])
-
 
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))

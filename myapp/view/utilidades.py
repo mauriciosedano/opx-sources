@@ -110,3 +110,33 @@ def notFoundPage(request, exception=None):
 
 def serverErrorPage(request, exception=None):
     return render(request, "error/500.html")
+
+def reporteEstadoProyecto(proyid):
+    progresoProyecto = 0
+    tareas = models.Tarea.objects.filter(proyid__exact = proyid)
+    tareasValidadas = 0
+
+    for tarea in tareas:
+
+        if tarea.taretipo == 1:
+            encuestas = models.Encuesta.objects.filter(tareid__exact=tarea.tareid)
+            progreso = (len(encuestas) * 100) / tarea.tarerestriccant
+
+            progresoProyecto = progresoProyecto + progreso
+
+        if tarea.tareestado == 2:
+            tareasValidadas += 1
+
+    if progresoProyecto > 0:
+        progresoProyecto = (progresoProyecto * 100) / (len(tareas) * 100)
+
+    if (len(tareas) > 0):
+        estadoValidacion = (tareasValidadas * 100) / len(tareas)
+    else:
+        estadoValidacion = 0
+
+    return {
+        'progreso-proyecto':    progresoProyecto,
+        'estado-validacion':    estadoValidacion,
+        'cantidad-integrantes': len(models.Equipo.objects.filter(proyid__exact=proyid))
+    }

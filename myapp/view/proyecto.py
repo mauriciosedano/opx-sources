@@ -28,7 +28,7 @@ from rest_framework.permissions import (
 )
 
 from myapp import models
-from myapp.view.utilidades import dictfetchall, obtenerEmailsEquipo
+from myapp.view.utilidades import dictfetchall, obtenerEmailsEquipo, usuarioAutenticado, reporteEstadoProyecto
 from myapp.views import detalleFormularioKoboToolbox
 from myapp.view.notificaciones import gestionCambios
 
@@ -46,12 +46,13 @@ def listadoProyectos(request):
 
         if request.META['HTTP_AUTHORIZATION'] != 'null':
 
-            # Decodificando el access token
-            tokenBackend = TokenBackend(settings.SIMPLE_JWT['ALGORITHM'], settings.SIMPLE_JWT['SIGNING_KEY'],
-                                        settings.SIMPLE_JWT['VERIFYING_KEY'])
-            tokenDecoded = tokenBackend.decode(request.META['HTTP_AUTHORIZATION'].split()[1], verify=True)
-            #consultando el usuario
-            user = models.Usuario.objects.get(pk = tokenDecoded['user_id'])
+            # # Decodificando el access token
+            # tokenBackend = TokenBackend(settings.SIMPLE_JWT['ALGORITHM'], settings.SIMPLE_JWT['SIGNING_KEY'],
+            #                             settings.SIMPLE_JWT['VERIFYING_KEY'])
+            # tokenDecoded = tokenBackend.decode(request.META['HTTP_AUTHORIZATION'].split()[1], verify=True)
+            # #consultando el usuario
+            # user = models.Usuario.objects.get(pk = tokenDecoded['user_id'])
+            user = usuarioAutenticado(request)
 
             # ============================ Consultando proyectos ====================================
 
@@ -63,8 +64,8 @@ def listadoProyectos(request):
             elif str(user.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a':
                 proyectos = models.Proyecto.objects.filter(proypropietario__exact = user.userid)
 
-            # Consulta de proyectos para voluntarios
-            elif str(user.rolid) == '0be58d4e-6735-481a-8740-739a73c3be86':
+            # Consulta de proyectos para voluntarios o validadores
+            elif str(user.rolid) == '0be58d4e-6735-481a-8740-739a73c3be86' or str(user.rolid) == '53ad3141-56bb-4ee2-adcf-5664ba03ad65':
 
                 proyectosAsignados = models.Equipo.objects.filter(userid__exact = user.userid)
                 proyectosAsignadosID = []
@@ -116,6 +117,9 @@ def listadoProyectos(request):
                     dim['tareas'] = tareas
 
                     p['dimensiones_territoriales'].append(dim)
+
+            # Reportes
+            p['reportes'] = reporteEstadoProyecto(p['proyid'])
 
             listadoProyectos.append(p)
 

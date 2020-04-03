@@ -11,7 +11,7 @@ from rest_framework.permissions import (
 )
 
 from myapp.models import Proyecto, Rol, Usuario, Tarea, Instrumento, Encuesta, NivelEducativo, Barrio, Equipo, ContextoProyecto, DecisionProyecto
-from myapp.view.utilidades import dictfetchall
+from myapp.view.utilidades import dictfetchall, reporteEstadoProyecto
 from myapp.views import detalleFormularioKoboToolbox
 
 import csv
@@ -340,44 +340,21 @@ def estadoActualProyectos(request):
         cursor.execute(query)
 
         proyectos = dictfetchall(cursor)
-        progresoProyecto = 0
         data = []
 
     for p in proyectos:
 
-        progresoProyecto = 0
-        tareas = Tarea.objects.filter(proyid__exact=p['proyid'])
-        tareasValidadas = 0
-
-        for tarea in tareas:
-
-            if tarea.taretipo == 1:
-
-                encuestas = Encuesta.objects.filter(tareid__exact=tarea.tareid)
-                progreso = (len(encuestas) * 100) / tarea.tarerestriccant
-
-                progresoProyecto = progresoProyecto + progreso
-
-            if tarea.tareestado == 2:
-                tareasValidadas += 1
-
-        if progresoProyecto > 0:
-            progresoProyecto = (progresoProyecto * 100) / (len(tareas) * 100)
-
-        if(len(tareas) > 0):
-            estadoValidacion = (tareasValidadas * 100) / len(tareas)
-        else:
-            estadoValidacion = 0
+        estadoProyecto = reporteEstadoProyecto(p['proyid'])
 
         proyecto = {
-            'id': p['proyid'],
-            'nombre': p['proynombre'],
-            'descripcion': p['proydescripcion'],
-            'fecha': p['proyfechacreacion'],
-            'encargado': p['userfullname'],
-            'integrantes': len(Equipo.objects.filter(proyid__exact=p['proyid'])),
-            'progreso': progresoProyecto,
-            'validacion': estadoValidacion
+            'id':           p['proyid'],
+            'nombre':       p['proynombre'],
+            'descripcion':  p['proydescripcion'],
+            'fecha':        p['proyfechacreacion'],
+            'encargado':    p['userfullname'],
+            'integrantes':  estadoProyecto['cantidad-integrantes'],
+            'progreso':     estadoProyecto['progreso-proyecto'],
+            'validacion':   estadoProyecto['estado-validacion']
         }
 
         data.append(proyecto)
@@ -489,30 +466,7 @@ def estadoActualProyectosVencidos(request):
         data = []
 
     for p in proyectos:
-
-        progresoProyecto = 0
-        tareas = Tarea.objects.filter(proyid__exact=p['proyid'])
-        tareasValidadas = 0
-
-        for tarea in tareas:
-
-            if tarea.taretipo == 1:
-
-                encuestas = Encuesta.objects.filter(tareid__exact=tarea.tareid)
-                progreso = (len(encuestas) * 100) / tarea.tarerestriccant
-
-                progresoProyecto = progresoProyecto + progreso
-
-            if tarea.tareestado == 2:
-                tareasValidadas += 1
-
-        if progresoProyecto > 0:
-            progresoProyecto = (progresoProyecto * 100) / (len(tareas) * 100)
-
-        if(len(tareas) > 0):
-            estadoValidacion = (tareasValidadas * 100) / len(tareas)
-        else:
-            estadoValidacion = 0
+        estadoProyecto = reporteEstadoProyecto(p['proyid'])
 
         proyecto = {
             'id': p['proyid'],
@@ -520,9 +474,9 @@ def estadoActualProyectosVencidos(request):
             'descripcion': p['proydescripcion'],
             'fecha': p['proyfechacreacion'],
             'encargado': p['userfullname'],
-            'integrantes': len(Equipo.objects.filter(proyid__exact=p['proyid'])),
-            'progreso': progresoProyecto,
-            'validacion': estadoValidacion
+            'integrantes': estadoProyecto['cantidad-integrantes'],
+            'progreso': estadoProyecto['progreso-proyecto'],
+            'validacion': estadoProyecto['estado-validacion']
         }
 
         data.append(proyecto)
