@@ -173,6 +173,21 @@ def detalleUsuario(request, userid):
 
             usuario = queryResult[0]
 
+            # Puntaje esperado para llegar a rol proximo
+            # Voluntario
+            if str(usuario['rolid']) == '0be58d4e-6735-481a-8740-739a73c3be86':
+                usuario['promocion'] = {
+                    'rol': "Validador",
+                    'puntaje': int(settings['umbral-validador'])
+                }
+
+            # Proyectista
+            elif str(usuario['rolid']) == '53ad3141-56bb-4ee2-adcf-5664ba03ad65':
+                usuario['promocion'] = {
+                    'rol': "Proyectista",
+                    'puntaje': int(settings['umbral-proyectista'])
+                }
+
             # Remover la información que no se desea mostrar
             del usuario['password']
             del usuario['usertoken']
