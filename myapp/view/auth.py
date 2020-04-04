@@ -25,10 +25,20 @@ from rest_framework.permissions import (
     IsAuthenticated
 )
 
+##
+# @brief Plantilla de solicitud de Recuperación de Contraseña
+# @param request Instancia HttpRequest
+# @return plantilla HTML
+#
 def passwordReset(request):
 
     return render(request, "auth/password-reset.html")
 
+##
+# @brief Envio de Notificación de Correo para recuperación de contraseña
+# @param request instancia HttpRequest
+# @return Diccionario
+#
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def passwordResetVerification(request):
@@ -88,6 +98,12 @@ def passwordResetVerification(request):
 
     return JsonResponse(data, status = data['code'])
 
+##
+# @brief Plantilla de Cambio de Contraseña
+# @param request instancia HttpRequest
+# @param token Token de Cambio de Contraseña
+# @return plantilla HTML
+#
 def passwordResetConfirmation(request, token):
 
     try:
@@ -106,6 +122,11 @@ def passwordResetConfirmation(request, token):
 
     return render(request, "auth/password-reset-confirmation.html", context = data)
 
+##
+# @brief Plantilla para cambio de contraseña
+# @param request instancia HttpRequest
+# @return Diccionario
+#
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def passwordResetDone(request):

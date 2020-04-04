@@ -17,6 +17,11 @@ from rest_framework_simplejwt.exceptions import TokenBackendError
 from myapp.models import Contextualizacion, Conflictividad, Usuario
 from myapp.view.utilidades import dictfetchall
 
+##
+# @brief Indicadores de Conflictivades Por Categorias
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((AllowAny,))
 def categorizacion(request):
@@ -140,6 +145,11 @@ def categorizacion(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Indicadores de conflictividades por Año
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((AllowAny,))
 def todo(request):
@@ -302,6 +312,11 @@ def todo(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Indicadores de conflictividades por Mes
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((AllowAny,))
 def mensual(request):
@@ -512,6 +527,11 @@ def mensual(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Indicadores de conflictividades por Semana
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((AllowAny,))
 def semanal(request):
@@ -692,6 +712,11 @@ def semanal(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Indicadores de conflictividades por dia
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 def dia(request):
 
     try:
@@ -868,11 +893,23 @@ def dia(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Calculo de edad en base a una fecha de nacimiento
+# @param born fecha de nacimiento del usuario
+# @return numero entero con la edad del usuario
+#
 def calculoEdad(born):
 
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
+##
+# @brief Cantidad de dias del mes o del año dependiendo de si es año bisiesto o no
+# @param ano Año de referencia
+# @param anio parametro opcional para activar verificacion del año
+# @param mes parametro opcional para activar verificación del mes
+# @return numero entero correspondiente a la cantidad de dias
+#
 def bisiesto(ano, anio=True, mes=False):
 
     if ano % 4 == 0  and  (ano % 100 != 0  or  ano % 400 == 0):
@@ -888,6 +925,11 @@ def bisiesto(ano, anio=True, mes=False):
 
     return data
 
+##
+# @brief filtro final para proveer la cantidad de conflictividades
+# @param cantidad resultado de la consulta asociado a la cantidad de conflictividades
+# @return numero entero correspondiente a la cantidad de conflictividades
+#
 def verificacionExistenciaConflictividades(cantidad):
 
     if cantidad is None:

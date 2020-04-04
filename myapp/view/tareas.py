@@ -56,8 +56,6 @@ def listadoTareas(request):
         elif str(usuario.rolid) == '0be58d4e-6735-481a-8740-739a73c3be86' or str(usuario.rolid) == '53ad3141-56bb-4ee2-adcf-5664ba03ad65':
             proyectosUsuario = list(models.Equipo.objects.filter(userid = usuario.userid).values('proyid'))
 
-        print(proyectosUsuario)
-
         # ================ Obtener página validación de la misma ========================
         page = request.GET.get('page')
 

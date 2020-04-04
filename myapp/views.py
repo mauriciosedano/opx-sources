@@ -41,10 +41,20 @@ from opc.opc_settings import settings
 
 # ================================ Login ================================
 
+##
+# Vista de Autenticación Dashboard
+# @param request Instancia HttpRequest
+# @return Plantilla Html
+#
 def loginView(request):
 
     return render(request, "auth/login.html")
 
+##
+# @brief Recurso de Autenticación de Usuarios
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((AllowAny,))
@@ -142,6 +152,11 @@ def login(request):
 
 # ======================= usuarios ================================= 
 
+##
+# @brief Recurso de listado de usuarios
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def listadoUsuarios(request):
@@ -155,6 +170,11 @@ def listadoUsuarios(request):
 
         return JsonResponse(columns, safe=False)
 
+##
+# @brief Recurso que provee el detalle de un usuario registrado
+# @param userid identificación del usuario
+# @return Cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def detalleUsuario(request, userid):
@@ -224,7 +244,11 @@ def detalleUsuario(request, userid):
 
     return JsonResponse(data, status=data['code'])
 
-
+##
+# @brief Recurso de almacenamiento de usuarios
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((AllowAny,))
@@ -282,6 +306,12 @@ def almacenarUsuario(request):
 
     return JsonResponse(data, safe = False, status=data['code'])
 
+##
+# @brief Recurso de eliminación de usuarios
+# @param request Instancia HttpRequest
+# @param userid Identificación de usuario autenticado
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["DELETE"])
 @permission_classes((IsAuthenticated,))
@@ -300,6 +330,12 @@ def eliminarUsuario(request, userid):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
+##
+# @brief Recurso de Actualización de usuarios
+# @param request Instancia HttpRequest
+# @param userid Identificación de usuario autenticado
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -375,12 +411,22 @@ def actualizarUsuario(request, userid):
 
     return JsonResponse(data, status=data['code'], safe=False)
 
+##
+# @brief plantilla de listado de usuarios
+# @param request Instancia HttpRequest
+# @return plantilla HTML
+#
 def listadoUsuariosView(request):
 
     return render(request, "usuarios/listado.html")
 
 # ======================== Contextos ===============================
 
+##
+# @brief Recurso de listado de contextos
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def listadoContextos(request):
@@ -389,6 +435,11 @@ def listadoContextos(request):
 
     return JsonResponse(list(contextos), safe = False)
 
+##
+# @brief Recurso de almacenamiento de contextos
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
 def almacenamientoContexto(request):
@@ -416,6 +467,12 @@ def almacenamientoContexto(request):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
+##
+# @brief Recurso de eliminación de contextos
+# @param request Instancia HttpRequest
+# @param contextoid Identificación del contexto
+# @return cadena JSON
+#
 @api_view(["DELETE"])
 @permission_classes((IsAuthenticated,))
 def eliminarContexto(request, contextoid):
@@ -447,6 +504,12 @@ def eliminarContexto(request, contextoid):
 
     return JsonResponse(data, status = data['code'])
 
+##
+# @brief Recurso de actualización de contextos
+# @param request Instancia HttpRequest
+# @param contextoid Identificación del Contexto
+# @return cadena JSON
+#
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
 def actualizarContexto(request, contextoid):
@@ -485,12 +548,22 @@ def actualizarContexto(request, contextoid):
 
     return JsonResponse(data, status = data['code'])
 
+##
+# @brief Plantilla HTML de contextos
+# @param request Instancia HttpRequest
+# @return plantilla HTML
+#
 def listadoContextosView(request):
 
     return render(request, "contextos/listado.html")
 
 # ======================== Datos de Contexto =======================
 
+##
+# @brief Convierte feature de Mapa a GeoJSON
+# @param geometry Feature de Mapa - Puede ser Punto o Poligono
+# @return GeoJSON
+#
 def geopandaGeojson(geometry):
 
     try:
@@ -528,6 +601,11 @@ def geopandaGeojson(geometry):
     return geojson
 
 
+##
+# @brief Recurso de listado de datos de contexto
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((AllowAny,))
 def listadoDatosContextoCompleto(request):
@@ -558,7 +636,12 @@ def listadoDatosContextoCompleto(request):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
-
+##
+# @brief Recurso de listado de datos de contexto por contexto
+# @param request Instancia HttpRequest
+# @param contextoid Identificación del Contexto
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def listadoDatosContexto(request, contextoid):
@@ -573,6 +656,11 @@ def listadoDatosContexto(request, contextoid):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
+##
+# @brief Recurso de almacenamiento de datos de contexto
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -676,6 +764,12 @@ def almacenarDatoContexto(request):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
+##
+# @brief Recurso de eliminación de datos de contexto
+# @param request Instancia HttpRequest
+# @param dataid Identificación de dato de contexto
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["DELETE"])
 @permission_classes((IsAuthenticated,))
@@ -696,6 +790,12 @@ def eliminarDatoContexto(request, dataid):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
+##
+# @brief Recurso de actualización de datos de contexto
+# @param request Instancia HttpRequest
+# @param dataid Identificación de dato de contexto
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -753,6 +853,12 @@ def actualizarDatoContexto(request, dataid):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
+##
+# @brief Plantilla de datos de contexto
+# @param request Instancia HttpRequest
+# @param contextoid Identificación del contexto
+# @return Plantilla HTML
+#
 def listadoDatosContextoView(request, contextoid):
 
     try:
@@ -768,10 +874,13 @@ def listadoDatosContextoView(request, contextoid):
 
     return HttpResponse("", status = code)
 
-
-
 # ======================== Decisiones =============================
 
+##
+# @brief Recurso de listado de decisiones
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def listadoDecisiones(request):
@@ -787,6 +896,11 @@ def listadoDecisiones(request):
 
         return JsonResponse(columns, safe = False)
 
+##
+# @brief Recurso de almacenamiento de decisiones
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -807,6 +921,12 @@ def almacenarDecision(request):
     except ValidationError as e:
         return JsonResponse(dict(e), safe = True, status = 400)
 
+##
+# @brief Recurso de eliminación de decisiones
+# @param request Instancia HttpRequest
+# @param desiid Identificación de la decisión
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["DELETE"])
 @permission_classes((IsAuthenticated,))
@@ -825,6 +945,12 @@ def eliminarDecision(request, desiid):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
+##
+# @brief Recurso de actualización de decisiones
+# @param request Instancia HttpRequest
+# param desiid Identificación de la decisión
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -847,6 +973,11 @@ def actualizarDecision(request, desiid):
     except ValidationError as e:
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
+##
+# @brief Plantilla de decisiones
+# @param request Instancia HttpRequest
+# @return plantilla HTML
+#
 def listadoDecisionesView(request):
 
     return render(request, "decisiones/listado.html")
@@ -854,6 +985,11 @@ def listadoDecisionesView(request):
 
 # ========================== Decisiones Proyecto ==================
 
+##
+# @brief Recurso de listado de decisiones Proyecto
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def listadoDecisionesProyecto(request):
@@ -862,6 +998,12 @@ def listadoDecisionesProyecto(request):
 
     return JsonResponse(list(decisionesProyecto), safe = False)
 
+##
+# @brief Recurso de eliminación de decisiones Proyecto
+# @param request Instancia HttpRequest
+# @param desproid Identificación de Decision Proyecto
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["DELETE"])
 @permission_classes((IsAuthenticated,))
@@ -880,6 +1022,12 @@ def eliminarDecisionProyecto(request, desproid):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
+##
+# @brief Recurso de actualización de decisiones Proyecto
+# @param request Instancia HttpRequest
+# @param desproid Identificación de Decisión Proyecto
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -904,6 +1052,11 @@ def actualizarDecisionProyecto(request, desproid):
 
 # ========================= Funciones Rol =========================
 
+##
+# @brief Recurso de listado de Funciones del Sistema
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def listadoAcciones(request):
@@ -912,6 +1065,12 @@ def listadoAcciones(request):
 
     return JsonResponse(list(acciones), safe = False)
 
+##
+# @brief Recurso de listado de Funciones del Sistema para un rol
+# @param request Instancia HttpRequest
+# @param rolid Identificación del rol de usuario
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def listadoFuncionesRol(request, rolid):
@@ -923,6 +1082,11 @@ def listadoFuncionesRol(request, rolid):
 
         return JsonResponse(columns, safe = False)
 
+##
+# @brief Recurso para añadir Funciones del Sistema a un rol
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -945,6 +1109,12 @@ def almacenamientoFuncionRol(request):
     except ValidationError as e:
         return JsonResponse(dict(e), safe = True, status = 400)
 
+##
+# @brief Recurso para eliminar Funciones del Sistema a un Rol
+# @param request Instancia HttpRequest
+# @param funcrolid Identificación de asignación de funcion del sistema a un rol
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["DELETE"])
 @permission_classes((IsAuthenticated,))
@@ -963,6 +1133,12 @@ def eliminarFuncionRol(request, funcrolid):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
+##
+# @brief Recurso de actualización de Funcion del Sistema a un rol
+# @param request Instancia HttpRequest
+# @param funcrolid Identificación de asignación de funcion del sistema a un rol
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -991,6 +1167,11 @@ def actualizarFuncionRol(request, funcrolid):
 
 # =============================== Instrumentos ===================
 
+##
+# @brief Recurso de listado de instrumentos
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def listadoInstrumentos(request):
@@ -1009,6 +1190,11 @@ def listadoInstrumentos(request):
 
     return response
 
+##
+# @brief Recurso de almacenamiento de Instrumento
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -1052,7 +1238,12 @@ def almacenamientoInstrumento(request):
     except ValidationError as e:
         return JsonResponse(dict(e), safe = True, status = 400)
 
-
+##
+# @brief Recurso para eliminación de instrumentos
+# @param request Instancia HttpRequest
+# @param instrid Identificación del Instrumento
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["DELETE"])
 @permission_classes((IsAuthenticated,))
@@ -1071,6 +1262,12 @@ def eliminarInstrumento(request, instrid):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
+##
+# @brief Recurso de actualización de Instrumentos
+# @param request Instancia HttpRequest
+# @param instrid Identificación del Instrumento
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -1097,6 +1294,15 @@ def actualizarInstrumento(request, instrid):
 
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
+# ============================ Encuestas ==========================
+##
+# @brief Recurso de almacenamiento de encuestas
+# @param instrumento Instancia modelo Instrumento
+# @param informacion dataset de encuestas a almacenar
+# @param userid Identificación del usuario
+# @param tareid Identificación de la tarea
+# @return Diccionario
+#
 def almacenarEncuestas(instrumento, informacion, userid, tareid):
 
     try:
@@ -1120,6 +1326,12 @@ def almacenarEncuestas(instrumento, informacion, userid, tareid):
             'status': 'error'
         }
 
+##
+# @brief Revisión del estado de una encuesta
+# @param request Instancia HttpRequest
+# @param encuestaid Identificación de la encuesta
+# @return cadena JSON
+#
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
 def revisarEncuesta(request, encuestaid):
@@ -1154,6 +1366,12 @@ def revisarEncuesta(request, encuestaid):
 
     return JsonResponse(response, status=response['code'], safe=False)
 
+##
+# @brief Recurso para obtener información de instrumentos
+# @param request Instancia HttpRequest
+# @param id Indentificación del instrumento
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def informacionInstrumento(request, id):
@@ -1243,10 +1461,21 @@ def informacionInstrumento(request, id):
 
     return JsonResponse(data, status = data['code'])
 
+##
+# @brief Plantilla de Instrumentos
+# @param request Instancia HttpRequest
+# @return Plantilla HTML
+#
 def listadoInstrumentosView(request):
 
     return render(request, "instrumentos/listado.html")
 
+##
+# @brief Plantilla para información de Instrumento
+# @param request Instancia HttpRequest
+# @param id Identificación del instrumento
+# @return Plantilla HTML
+#
 def informacionInstrumentoView(request, id):
 
     try:
@@ -1260,12 +1489,22 @@ def informacionInstrumentoView(request, id):
     except ValidationError:
         return HttpResponse("", 400)
 
+##
+# @brief Plantilla de creación de Encuesta
+# @param request Instancia HttpRequest
+# @return Plantilla HTML
+#
 def creacionEncuestaView(request):
 
     return render(request, "instrumentos/creacion-encuesta.html")
 
 # ============================ Roles =============================
 
+##
+# @brief Recurso de Listao de Roles
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def listadoRoles(request):
@@ -1280,6 +1519,11 @@ def listadoRoles(request):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
+##
+# @brief Recurso de almacenamiento de Roles
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -1301,6 +1545,12 @@ def almacenamientoRol(request):
     except ValidationError as e:
         return JsonResponse(dict(e), safe = True, status = 400)
 
+##
+# @brief Recurso de eliminación de Roles
+# @param request Instancia HttpRequest
+# @param rolid Identificación del Rol
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["DELETE"])
 @permission_classes((IsAuthenticated,))
@@ -1319,6 +1569,12 @@ def eliminarRol(request, rolid):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
+##
+# @brief Recurso de actualización de Roles
+# @param request Instancia HttpRequest
+# @param rolid Identificación del Rol
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -1342,10 +1598,21 @@ def actualizarRol(request, rolid):
     except ValidationError as e:
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
+##
+# @brief Plantilla de Roles
+# @param request Instancia HttpRequest
+# @return plantilla HTML
+#
 def listadoRolesView(request):
 
     return render(request, "roles/listado.html")
 
+##
+# @brief Plantilla de Funcionalidades del sistema para un rol
+# @param request Instancia HttpRequest
+# @param rolid Identificación del rol
+# @return cadena JSON
+#
 def permisosRolView(request, rolid):
 
     try:
@@ -1361,6 +1628,11 @@ def permisosRolView(request, rolid):
 
 # ================= Kobo Toolbox ========================
 
+##
+# @brief Obtenención de encuestas de un formulario KoboToolbox
+# @param id Identificación del Formulario KoboToolbox
+# @return Diccionario
+#
 def informacionFormularioKoboToolbox(id):
 
     headers = {'Authorization': settings['kobo-token']}
@@ -1398,6 +1670,11 @@ def informacionFormularioKoboToolbox(id):
 
     return data
 
+##
+# @brief Obtención de información de detalle de un formulario de KoboToolbox
+# @param id Identificación del Formulario KoboToolbox
+# @return Diccionario
+#
 def detalleFormularioKoboToolbox(id):
 
     headers = {'Authorization': settings['kobo-token']}
@@ -1415,6 +1692,11 @@ def detalleFormularioKoboToolbox(id):
 
     return data
 
+##
+# @brief Obtención de enlace de diligenciamiento de un formulario de KoboToolbox
+# @param id tareid Identificación de la tarea Tipo Encuesta
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def enlaceFormularioKoboToolbox(request, tareid):
@@ -1503,6 +1785,11 @@ def enlaceFormularioKoboToolbox(request, tareid):
 
     return JsonResponse(data, status=data['code'], safe=False)
 
+##
+# @brief Implementación/Despliegue de un formulario de KoboToolbox
+# @param id Identificación del Formulario KoboToolbox
+# @return cadena JSON
+#
 @csrf_exempt
 def implementarFormularioKoboToolbox(request, id):
 
@@ -1553,6 +1840,11 @@ def implementarFormularioKoboToolbox(request, id):
 
     return JsonResponse(data, status = data['code'])
 
+##
+# @brief Listado de formularios de KoboToolbox
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def listadoFormulariosKoboToolbox(request):
@@ -1593,6 +1885,12 @@ def listadoFormulariosKoboToolbox(request):
 
     return JsonResponse(data, status = data['code'], safe = False)
 
+##
+# @brief Verificación de Implementación/Despliegue de un formulario de KoboToolbox
+# @param request Instancia HttpRequest
+# @param id Identificación del Formulario KoboToolbox
+# @return cadena JSON
+#
 def verificarImplementaciónFormulario(request, id):
 
     try:
@@ -1665,6 +1963,12 @@ def verificarImplementaciónFormulario(request, id):
 
 # ==================== Tasking Manager ==================
 
+##
+# @brief Almacenamiento de Proyecto de Mapeo en Tasking Manager
+# @param nombre nombre del Proyecto
+# areaInteres geoJSON que describe el área de trabajo de un proyecto de Mapeo
+# @return Diccionario
+#
 def almacenarProyectoTM(nombre, areaInteres):
 
     headers = {
@@ -1692,6 +1996,11 @@ def almacenarProyectoTM(nombre, areaInteres):
     else:
         return False
 
+##
+# @brief Obtención de información de detalle de un Proyecto de Mapeo de Tasking Manager
+# @param id Identificación del proyecto de Mapeo Tasking Manager
+# @return Diccionario
+#
 def informacionProyectoTM(id):
     headers = {
         'Authorization': settings['tm-token']
@@ -1712,5 +2021,11 @@ def informacionProyectoTM(id):
     return data
 
 # ==================== Perfil ================
+
+##
+# @brief Plantilla de Perfil de Usuario
+# @param request instancia HttpRequest
+# @return plantilla HTML
+#
 def perfilView(request):
     return render(request, "perfil/gestion.html")
