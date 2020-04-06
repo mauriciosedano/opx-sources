@@ -81,7 +81,10 @@ def listadoTareas(request):
             query += " where "
 
             #   Busqueda de tareas por proyecto
-            if len(proyectosUsuario) > 0:
+            if len(proyectosUsuario) == 1:
+                query += "t.proyid = '" + str(proyectosUsuario[0]['proyid']) + "'"
+
+            if len(proyectosUsuario) > 1:
                 firstItemQuery = True
                 for p in proyectosUsuario[:-1]:
 
