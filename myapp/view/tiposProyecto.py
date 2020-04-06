@@ -11,6 +11,11 @@ from rest_framework.permissions import (
 
 from myapp.models import TipoProyecto
 
+##
+# @brief Recurso que provee el listado de Tipos de proyecto disponibles
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def listadoTiposProyecto(request):
@@ -25,6 +30,11 @@ def listadoTiposProyecto(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso de almacenamiento de Tipos de proyecto
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 def almacenamientoTiposProyecto(request):
@@ -52,6 +62,12 @@ def almacenamientoTiposProyecto(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso de actualización de Tipos de proyecto
+# @param request Instancia HttpRequest
+# @param tiproid Identificación del tipo de proyecto
+# @return cadena JSON
+#
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 def edicionTipoProyecto(request, tiproid):
@@ -92,7 +108,12 @@ def edicionTipoProyecto(request, tiproid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
-
+##
+# @brief Recurso de eliminación de Tipos de proyecto
+# @param request Instancia HttpRequest
+# @param tiproid Identificación del tipo de proyecto
+# @return cadena JSON
+#
 @api_view(['DELETE'])
 @permission_classes((IsAuthenticated,))
 def eliminarTipoProyecto(request, tiproid):
@@ -115,6 +136,11 @@ def eliminarTipoProyecto(request, tiproid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Función que provee una plantilla HTML para gestión de Tipos de proyecto
+# @param request Instancia HttpRequest
+# @return plantilla HTML
+#
 def tiposProyectoView(request):
 
     return render(request, "proyectos/tipos-proyecto.html")

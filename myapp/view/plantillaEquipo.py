@@ -14,6 +14,11 @@ from myapp.view.utilidades import usuarioAutenticado, dictfetchall
 
 # ============================== Plantillas de Equipo ================================
 
+##
+# @brief Recurso de listado de plantillas de equipo
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def listadoPlantillas(request):
@@ -40,6 +45,12 @@ def listadoPlantillas(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso de eliminación de plantilla de equipo
+# @param request Instancia HttpRequest
+# @param planid Identificación de Plantilla de Equipo
+# @return cadena JSON
+#
 @api_view(['DELETE'])
 @permission_classes((IsAuthenticated,))
 def eliminarPlantilla(request, planid):
@@ -68,6 +79,11 @@ def eliminarPlantilla(request, planid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso de creación de plantilla de equipo
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 def crearPlantilla(request):
@@ -98,6 +114,12 @@ def crearPlantilla(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso de edición de plantilla de equipo
+# @param request Instancia HttpRequest
+# @param planid Identificación de plantilla de Equipo
+# @return cadena JSON
+#
 @api_view(['PUT'])
 @permission_classes((IsAuthenticated,))
 def edicionPlantilla(request, planid):
@@ -134,6 +156,12 @@ def edicionPlantilla(request, planid):
 
 # ============================ Miembros de plantilla =====================================
 
+##
+# @brief Recurso de listado de integrantes de una plantilla de equipo
+# @param request Instancia HttpRequest
+# @param planid Identificación de plantilla de equipo
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def miembrosPlantilla(request, planid):
@@ -164,6 +192,12 @@ def miembrosPlantilla(request, planid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso de Inserción de usuario a una plantilla de equipo
+# @param request Instancia HttpRequest
+# @param planid Identificación de plantilla de equipo
+# @return cadena JSON
+#
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 def agregarMiembro(request, planid):
@@ -217,6 +251,12 @@ def agregarMiembro(request, planid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso de eliminación de usuario de una plantilla de equipo
+# @param request Instancia HttpRequest
+# @param miplid Identificación de asignación de usuario a plantilla de equipo
+# @return cadena JSON
+#
 @api_view(['DELETE'])
 @permission_classes((IsAuthenticated,))
 def eliminarMiembro(request, miplid):
@@ -247,6 +287,12 @@ def eliminarMiembro(request, miplid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee el listado de usuarios que se pueden agregar a una plantilla de equipo
+# @param request Instancia HttpRequest
+# @param planid Identificación de plantilla de equipo
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def miembrosDisponibles(request, planid):
@@ -292,10 +338,21 @@ def miembrosDisponibles(request, planid):
 
     return JsonResponse(response, safe = False, status = response['code'])
 
+##
+# @brief Función que provee plantilla HTML para gestión de plantillas de equipo
+# @param request Instancia HttpRequest
+# @return plantilla HTML
+#
 def plantillasView(request):
 
     return render(request, "proyectos/gestion-plantillas.html")
 
+##
+# @brief Función que provee plantilla HTML para gestión de integrantes de plantillas de equipo
+# @param request Instancia HttpRequest
+# @param planid Identificación de plantilla de equipo
+# @return plantilla HTML
+#
 def miembrosPlantillaView(request, planid):
 
     try:

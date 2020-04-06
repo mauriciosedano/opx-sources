@@ -27,6 +27,12 @@ from myapp.view.notificaciones import gestionCambios
 
 # ========================== Equipos ==============================
 
+##
+# @brief Recurso que provee los integrantes de un proyecto
+# @param request Instancia HttpRequest
+# @param proyid Identificacion del proyecto
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def equipoProyecto(request, proyid):
@@ -91,6 +97,11 @@ def equipoProyecto(request, proyid):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
+##
+# @brief Recurso que asigna un voluntario/validador a un proyecto
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -147,6 +158,12 @@ def almacenamientoEquipo(request):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
+##
+# @brief Recurso que elimina un integrante de equipo
+# @param request instancia HttpRequest
+# @param equid Identificación de asignación de integrante a equipo
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["DELETE"])
 @permission_classes((IsAuthenticated,))
@@ -199,6 +216,12 @@ def eliminarEquipo(request, equid):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
+##
+# @brief Recurso que actualiza el integrante de un equipo
+# @param request instancia HttpRequest
+# @param equid Identificación de asignación de integrante a equipo
+# @return cadena JSON
+#
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
 def actualizarEquipo(request, equid):
@@ -250,6 +273,12 @@ def actualizarEquipo(request, equid):
 
     return JsonResponse(response, status=response['code'])
 
+##
+# @brief Recurso que provee los usuarios disponibles para un proyecto
+# @param request instancia HttpRequest
+# @param proyid Identificación de un proyecto
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def usuariosDisponiblesProyecto(request, proyid):
@@ -319,6 +348,12 @@ def usuariosDisponiblesProyecto(request, proyid):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
+##
+# @brief Plantilla para la gestión del equipo de un proyecto
+# @param request instancia HttpRequest
+# @param proyid Identificación de un proyecto
+# @return cadena JSON
+#
 def equipoProyectoView(request, proyid):
 
     try:

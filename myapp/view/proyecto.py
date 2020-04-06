@@ -34,6 +34,11 @@ from myapp.view.notificaciones import gestionCambios
 
 # ============================= Proyectos ========================
 
+##
+# @brief Recurso de listado de proyectos
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((AllowAny,))
 def listadoProyectos(request):
@@ -178,6 +183,11 @@ def listadoProyectos(request):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
+##
+# @brief Recurso de almacenamiento de proyectos
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -256,6 +266,12 @@ def almacenamientoProyecto(request):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
+##
+# @brief Funcion que asigna decision(es) a un proyecto especifico
+# @param proyecto instancia del modelo proyecto
+# @param decisiones listado de identificadores de decisiones
+# @return booleano
+#
 def almacenarDecisionProyecto(proyecto, decisiones):
 
     try:
@@ -272,6 +288,12 @@ def almacenarDecisionProyecto(proyecto, decisiones):
     except ValidationError as e:
         return False
 
+##
+# @brief Funcion que asigna contexto(s) a un proyecto especifico
+# @param proyecto instancia del modelo proyecto
+# @param contextos listado de identificadores de contextos
+# @return booleano
+#
 def almacenarContextosProyecto(proyecto, contextos):
 
     try:
@@ -288,6 +310,12 @@ def almacenarContextosProyecto(proyecto, contextos):
     except ValidationError as e:
         return False
 
+##
+# @brief Funcion que almacena las dimensiones geograficas de un proyecto especifico
+# @param proyecto instancia del modelo proyecto
+# @param delimitacionesGeograficas delimitaciones geograficas generadas por el mapa
+# @return Diccionario
+#
 def almacenarDelimitacionesGeograficas(proyecto, delimitacionesGeograficas):
 
     try:
@@ -318,6 +346,11 @@ def almacenarDelimitacionesGeograficas(proyecto, delimitacionesGeograficas):
 
     return data
 
+##
+# @brief Funcion que asigna integrantes a un proyecto en base a los integrantes de una plantilla de equipo
+# @param proyecto instancia del modelo proyecto
+# @param equipos lista de identificadores de plantillas de equipo
+#
 def asignarEquipos(proyecto, equipos):
 
     with transaction.atomic():
@@ -333,6 +366,12 @@ def asignarEquipos(proyecto, equipos):
                 integrante = models.Equipo(userid=usuario.userid, proyid=proyecto.proyid)
                 integrante.save()
 
+##
+# @brief recurso de eliminación de proyectos
+# @param request Instancia HttpRequest
+# @param proyid Identificación del proyecto
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["DELETE"])
 @permission_classes((IsAuthenticated,))
@@ -351,6 +390,12 @@ def eliminarProyecto(request, proyid):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
+##
+# @brief recurso de actualización de proyectos
+# @param request Instancia HttpRequest
+# @param proyid Identificación del proyecto
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -431,6 +476,12 @@ def actualizarProyecto(request, proyid):
 
         return JsonResponse({'status': 'error', 'errors': dict(e)}, status=400)
 
+##
+# @brief recurso que provee el detalle de un proyecto
+# @param request Instancia HttpRequest
+# @param proyid Identificación del proyecto
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((AllowAny,))
 def detalleProyecto(request, proyid):
@@ -492,6 +543,12 @@ def detalleProyecto(request, proyid):
 
     return JsonResponse(data, status = data['code'], safe = False)
 
+##
+# @brief recurso que provee las dimensiones geograficas de un proyecto
+# @param request Instancia HttpRequest
+# @param proyid Identificación del proyecto
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def dimensionesTerritoriales(request, proyid):
@@ -526,6 +583,12 @@ def dimensionesTerritoriales(request, proyid):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
+##
+# @brief recurso de cambio de territorio de dimensiones geograficas y tareas de un proyecto
+# @param request Instancia HttpRequest
+# @param dimensionid Identificación de la dimensión geografica de un proyecto
+# @return cadena JSON
+#
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 def cambioTerritorio(request, dimensionid):
@@ -592,14 +655,30 @@ def cambioTerritorio(request, dimensionid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Función que provee una plantilla HTML para la gestión de proyectos
+# @param request Instancia HttpRequest
+# @return plantilla HTML
+#
 def listadoProyectosView(request):
 
     return render(request, 'proyectos/listado.html')
 
+##
+# @brief Función que provee una plantilla HTML para la gestión de cambios de un proyecto
+# @param request Instancia HttpRequest
+# @return plantilla HTML
+#
 def gestionProyectosView(request):
 
     return render(request, "proyectos/gestion-proyectos-mapa.html")
 
+##
+# @brief Función que provee una plantilla HTML para la gestión de tareas de un proyecto especifico
+# @param request Instancia HttpRequest
+# @param proyid Identificación de un proyecto
+# @return plantilla HTML
+#
 def tareasProyectoView(request, proyid):
 
     try:

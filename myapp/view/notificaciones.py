@@ -1,6 +1,15 @@
 from django.conf import settings
 from django.core.mail import send_mail
 
+##
+# @brief Envio de notifificaciones correspondiente a la gestión de cambios de un proyecto especifico
+# @param usuarios lista de correos electrónicos destinatarios de la notificación
+# @param tipoReceptor define el tipo de entidad que sufrio cambios (proyecto o tarea)
+# @param nombreReceptor define el nombre del proyecto/tarea que sufrio cambios
+# @param tipoCambio Define el tipo de cambio que sufrio el proyecto/tarea.
+# @param detalle información adicional del cambio efectuado
+# @return cadena JSON
+#
 def gestionCambios(usuarios, tipoReceptor, nombreReceptor, tipoCambio, detalle = ""):
 
     # Definición de tipos de cambio

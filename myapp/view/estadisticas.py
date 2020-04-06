@@ -20,6 +20,11 @@ import os
 
 # ==================== Antes ===================
 
+##
+# @brief Recurso que provee estadisticas generales del sistema
+# @param request instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def datosGenerales(request):
@@ -60,6 +65,11 @@ def datosGenerales(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee la cantidad de usuarios Por Rol del Sistema
+# @param request instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def usuariosXRol(request):
@@ -89,6 +99,11 @@ def usuariosXRol(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee la cantidad de usuarios Por Sexo del Sistema
+# @param request instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def usuariosXGenero(request):
@@ -129,6 +144,11 @@ def usuariosXGenero(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee la cantidad de usuarios Por Nivel Educativo del Sistema
+# @param request instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def usuariosXNivelEducativo(request):
@@ -158,6 +178,11 @@ def usuariosXNivelEducativo(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee la cantidad de usuarios Por Barrio del Sistema
+# @param request instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def usuariosXBarrio(request):
@@ -191,6 +216,11 @@ def usuariosXBarrio(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee la cantidad de tareas Por Tipo del Sistema
+# @param request instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def tareasXTipo(request):
@@ -231,6 +261,11 @@ def tareasXTipo(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee el ranking de usuarios del sistema
+# @param request instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def ranking(request):
@@ -247,6 +282,12 @@ def ranking(request):
 
 # ==================== Durante ============================
 
+##
+# @brief Recurso que provee los proyectos y tareas del sistema que se encuentran en ejecucion
+# con el fin de mostrarlos en un diagrama de Gantt
+# @param request instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def proyectosTareas(request):
@@ -323,6 +364,15 @@ def proyectosTareas(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee informacion correspondiente al estado actual de los proyectos que se encuentran en
+# ejecución. Provee datos como:
+# avance de ejecución
+# avance de validacion
+# cantidad de integrantes
+# @param request instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def estadoActualProyectos(request):
@@ -369,6 +419,12 @@ def estadoActualProyectos(request):
 
 # ===================== Después ===========================
 
+##
+# @brief Recurso que provee los proyectos y tareas del sistema que se encuentran terminados
+# con el fin de mostrarlos en un diagrama de Gantt
+# @param request instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def proyectosTareasVencidos(request):
@@ -445,6 +501,15 @@ def proyectosTareasVencidos(request):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee informacion correspondiente al estado actual de los proyectos que se encuentran
+# terminados. Provee datos como:
+# avance de ejecución
+# avance de validacion
+# cantidad de integrantes
+# @param request instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def estadoActualProyectosVencidos(request):
@@ -491,6 +556,12 @@ def estadoActualProyectosVencidos(request):
 
 # ==================== Detalle Proyecto =======================
 
+##
+# @brief Recurso que provee la cantidad de tareas por tipo de un proyecto especifico
+# @param request instancia HttpRequest
+# @param proyid Identificación del Proyecto
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def tareasXTipoProyecto(request, proyid):
@@ -547,6 +618,12 @@ def tareasXTipoProyecto(request, proyid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee la cantidad de tareas por estado de un proyecto especifico
+# @param request instancia HttpRequest
+# @param proyid Identificación del Proyecto
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def tareasXEstadoProyecto(request, proyid):
@@ -607,6 +684,12 @@ def tareasXEstadoProyecto(request, proyid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee la cantidad de usuarios por rol de un proyecto especifico
+# @param request instancia HttpRequest
+# @param proyid Identificación del Proyecto
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def usuariosXRolProyecto(request, proyid):
@@ -659,6 +742,12 @@ def usuariosXRolProyecto(request, proyid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee la cantidad de usuarios por barrio de un proyecto especifico
+# @param request instancia HttpRequest
+# @param proyid Identificación del Proyecto
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def usuariosXBarrioProyecto(request, proyid):
@@ -711,6 +800,12 @@ def usuariosXBarrioProyecto(request, proyid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee la cantidad de usuarios por sexo de un proyecto especifico
+# @param request instancia HttpRequest
+# @param proyid Identificación del Proyecto
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def usuariosXGeneroProyecto(request, proyid):
@@ -770,6 +865,12 @@ def usuariosXGeneroProyecto(request, proyid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee la cantidad de usuarios por nivel educativo de un proyecto especifico
+# @param request instancia HttpRequest
+# @param proyid Identificación del Proyecto
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def usuariosXNivelEducativoProyecto(request, proyid):
@@ -818,6 +919,16 @@ def usuariosXNivelEducativoProyecto(request, proyid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee datos especificos de un proyecto. Tales como:
+# Cantidad de decisiones
+# Cantidad de Contexto
+# Cantidad de Campañas
+# Su convocatoria
+# @param request instancia HttpRequest
+# @param proyid Identificación del Proyecto
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def datosGeneralesProyecto(request, proyid):
@@ -855,6 +966,12 @@ def datosGeneralesProyecto(request, proyid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que provee un archivo que contiene las encuestas realizadas en un proyecto
+# @param request instancia HttpRequest
+# @param proyid Identificación del Proyecto
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((AllowAny,))
 def exportarDatos(request, proyid):
@@ -897,6 +1014,12 @@ def exportarDatos(request, proyid):
 
     return response
 
+##
+# @brief Script de ejemplo  que tiene la capacidad de darle formato un archivo de encuestas generado por el sistema
+# @param request instancia HttpRequest
+# @param proyid Identificación del Proyecto
+# @return cadena JSON
+#
 def limpiezaDatos(request, proyid):
 
     camposDescarte = [
@@ -973,18 +1096,40 @@ def limpiezaDatos(request, proyid):
     print(csvFile.getValue())
 
 # ================ Vistas ===============
+
+##
+# @brief Plantilla de estadisticas generales del sistema
+# @param request instancia HttpRequest
+# @return plantilla HTML
+#
 def estadisticasView(request):
 
     return render(request, "reportes/antes.html")
 
+##
+# @brief Plantilla de estadisticas correspondiente a los proyectos que se encuentran en ejecución
+# @param request instancia HttpRequest
+# @return plantilla HTML
+#
 def estadisticasDuranteView(request):
 
     return render(request, "reportes/durante.html")
 
+##
+# @brief Plantilla de estadisticas correspondiente a los proyectos que se encuentran terminados
+# @param request instancia HttpRequest
+# @return plantilla HTML
+#
 def estadisticasDespuesView(request):
 
     return render(request, "reportes/despues.html")
 
+##
+# @brief Plantilla de estadisticas correspondiente a un proyecto especifico
+# @param request instancia HttpRequest
+# @param proyid Identificación de un proyecto
+# @return plantilla HTML
+#
 def estadisticasDetalleView(request, proyid):
 
     try:

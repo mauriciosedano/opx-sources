@@ -35,6 +35,11 @@ from myapp.view.notificaciones import gestionCambios
 
 # =========================== Tareas ==============================
 
+##
+# @brief recurso que provee el listado de tareas
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def listadoTareas(request):
@@ -157,6 +162,11 @@ def listadoTareas(request):
 
     return JsonResponse(data, safe = False, status = data['code'])
 
+##
+# @brief recurso que provee las tareas asociadas a las dimensiónes geograficas del sistema
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def listadoTareasMapa(request):
@@ -202,6 +212,12 @@ def listadoTareasMapa(request):
 
     return JsonResponse(data, status=data['code'], safe=False)
 
+##
+# @brief recurso que provee el detalle de una tarea
+# @param request Instancia HttpRequest
+# @param tareid Identificación de una tarea
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def detalleTarea(request, tareid):
@@ -247,6 +263,11 @@ def detalleTarea(request, tareid):
 
     return JsonResponse(data, status = data['code'], safe = False)
 
+##
+# @brief recurso de almacenamiento de Tareas
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -275,6 +296,12 @@ def almacenamientoTarea(request):
     except ValidationError as e:
         return JsonResponse(dict(e), safe = True, status = 400)
 
+##
+# @brief recurso de eliminación de tareas
+# @param request Instancia HttpRequest
+# @param tareid Identificación de una tarea
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["DELETE"])
 @permission_classes((IsAuthenticated,))
@@ -293,6 +320,12 @@ def eliminarTarea(request, tareid):
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'Información inválida'}, safe = True, status = 400)
 
+##
+# @brief recurso de actualización de tareas
+# @param request Instancia HttpRequest
+# @param tareid Identificación de una tarea
+# @return cadena JSON
+#
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -374,6 +407,11 @@ def actualizarTarea(request, tareid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Función que se encarga de validar una tarea especifica
+# @param tarea Instancia del modelo Tarea
+# @return Booleano
+#
 def validarTarea(tarea):
 
     if ((tarea.tareestado == 1 and tarea.taretipo == 1) or (tarea.tareestado != 2 and tarea.taretipo == 2)):
@@ -442,6 +480,12 @@ def validarTarea(tarea):
 
     return response
 
+##
+# @brief Funcion que se encarga de aumentar el puntaje actual de un usuario
+# @param userid Identificación del usuario
+# @param tareid Identificación de una tarea
+# @param puntaje puntaje a sumar o restar para un usuario
+#
 def asignacionPuntaje(userid, tareid, puntaje):
 
     # Almacenar historial de asignación
@@ -455,6 +499,10 @@ def asignacionPuntaje(userid, tareid, puntaje):
 
     promoverUsuario(usuario)
 
+##
+# @brief Función que promueve un usuario de rol en caso tal cumpla con el puntaje requerido
+# @param user Instancia del modelo Usuario
+#
 def promoverUsuario(user):
 
     puntajeValidador = int(obtenerParametroSistema('umbral-validador'))
@@ -474,7 +522,11 @@ def promoverUsuario(user):
 
         notificacionPromocionUsuario(user, 'Proyectista')
 
-
+##
+# @brief Función que envía una notificación via correo a un usuario cuando es promovido de Rol
+# @param user Instancia del modelo Usuario
+# @param rol Nombre del nuevo rol del usuario
+#
 def notificacionPromocionUsuario(user, rol):
 
     subject = "Notificación OPC"
@@ -490,6 +542,11 @@ def notificacionPromocionUsuario(user, rol):
         html_message=message
     )
 
+##
+# @brief Recurso que provee las tareas que hacen parte de una dimensión geográfica
+# @param request Instancia HttpRequest
+# @param dimensionid Identificación de la dimensión geográfica
+#
 def tareasXDimensionTerritorial(request, dimensionid):
 
     try:
@@ -517,6 +574,11 @@ def tareasXDimensionTerritorial(request, dimensionid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Función que provee la plantilla HTML para la gestión de tareas
+# @param request Instancia HttpRequest
+# @return plantilla HTML
+#
 def listadoTareasView(request):
 
     return render(request, 'tareas/listado.html')

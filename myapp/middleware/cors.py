@@ -1,6 +1,9 @@
 from django import http
 
-
+##
+# @brief Middleware que se encarga de agregar las cabeceras CORS con el fin de permitir que el API REST sea consumida
+# desde cualquier fuente
+#
 class CorsMiddleware(object):
 
     def __init__(self, get_response):

@@ -24,8 +24,13 @@ import xml.etree.ElementTree as ET
 
 from opc.opc_settings import settings
 
+#@brief url de API REST Open Street Maps
 osmRestApiUrl = settings['osm-api-url']
 
+##
+# @brief Función que provee las cabeceras que requiere el API REST de Open Street Maps
+# @return Diccionario
+#
 def osmHeaders():
 
     credentials = 'inge4neuromedia@gmail.com:;K7c8`EQ+82eyHKd'.encode('utf-8')
@@ -38,6 +43,10 @@ def osmHeaders():
 
     return headers
 
+##
+# @brief Función que agrega un nuevo changeset en Open Street Maps
+# @return Respuesta de API de Open Street Maps
+#
 def agregarChangeset():
 
     try:
@@ -65,6 +74,11 @@ def agregarChangeset():
     except:
         raise TypeError("Error Al intentar Crear Changeset OSM " + str(response.read(), 'utf-8'))
 
+##
+# @brief Funcion que cierre Changeset en Open Street Maps
+# @param changeset abierto de Open Street Maps
+# @return Respuesta de API de Open Street Maps
+#
 def cerrarChangeset(changeset):
 
     client = http.client.HTTPSConnection(osmRestApiUrl)
@@ -72,6 +86,12 @@ def cerrarChangeset(changeset):
 
     response = client.getresponse()
 
+##
+# @brief Recurso que agrega elemento en Open Street Maps
+# @param request Instancia HttpRequest
+# @param tareid Identificación de la tarea
+# @return Cadena JSON
+#
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
 def AgregarElemento(request, tareid):
@@ -214,6 +234,15 @@ def AgregarElemento(request, tareid):
 
     return JsonResponse(response, status=response['code'])
 
+##
+# @brief Funcion que asocia la cartografia realizada en Open Street Maps al sistema
+# @param instrid Identificación del Instrumento
+# @param wayid Identificación del elemento agregado en Open Street Maps
+# @param elemosmid Identificación de tipo de elemento de Open Street Maps
+# @param userid Identificación del usuario que realizo la cartografia
+# @param tareid Identificación de la tarea
+# @return Diccionario con la información de la cartografia realizada
+#
 def almacenarCartografia(instrid, wayid, elemosmid, userid, tareid):
 
     cartografia = models.Cartografia(instrid=instrid, osmid=wayid, elemosmid=elemosmid, userid=userid, tareid=tareid)
@@ -221,6 +250,11 @@ def almacenarCartografia(instrid, wayid, elemosmid, userid, tareid):
 
     return serializers.serialize('python', [cartografia])[0]
 
+##
+# @brief Recurso que provee los tipos de elementos de Open Street Maps Disponibles
+# @param request instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def elementosOsm(request):
@@ -235,6 +269,11 @@ def elementosOsm(request):
 
     return JsonResponse(response, status=response['code'], safe=False)
 
+##
+# @brief Funcion que provee en formato GeoJSON las cartografias realizadas en una tarea
+# @param tareid Identificación de la tarea
+# @return Diccionario
+#
 def detalleCartografia(tareid):
 
     try:
@@ -358,7 +397,12 @@ def detalleCartografia(tareid):
 
     return response
 
-
+##
+# @brief Recurso que provee las cartografias realizadas en una tarea
+# @param request Instancia HttpRequest
+# @param tareid Identificación de la tarea
+# @return cadena JSON
+#
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def cartografiasInstrumento(request, tareid):
@@ -367,6 +411,12 @@ def cartografiasInstrumento(request, tareid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+##
+# @brief Recurso que elimina un aporte cartográfico del sistema
+# @param request Instancia HttpRequest
+# @param cartografiaid Identificación de la cartografia
+# @return cadena JSON
+#
 @api_view(["DELETE"])
 @permission_classes((IsAuthenticated,))
 def eliminarCartografia(request, cartografiaid):

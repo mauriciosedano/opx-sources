@@ -6,6 +6,9 @@ import uuid
 class MyUserManager(BaseUserManager):
     use_in_migrations = True
 
+##
+# @brief Modelo de usuario
+#
 class Usuario(AbstractBaseUser):
     userid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     useremail = models.EmailField(max_length = 255, unique=True)
@@ -32,6 +35,9 @@ class Usuario(AbstractBaseUser):
     class Meta:
         db_table = '"v1"."usuarios"'
 
+##
+# @brief Modelo de Contextos
+#
 class Contexto(models.Model):
 
     contextoid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
@@ -40,6 +46,9 @@ class Contexto(models.Model):
     class Meta:
         db_table = '"v1"."contextos"'
 
+##
+# @brief Modelo de Datos de Contexto
+#
 class DatosContexto(models.Model):
 
     dataid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
@@ -55,7 +64,9 @@ class DatosContexto(models.Model):
     class Meta:
         db_table = '"v1"."datos_contexto"'
 
-
+##
+# @brief Modelo de Contextos Proyecto
+#
 class ContextoProyecto(models.Model):
 
     contproyid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
@@ -65,7 +76,9 @@ class ContextoProyecto(models.Model):
     class Meta:
         db_table = '"v1"."contextos_proyecto"'
 
-
+##
+# @brief Modelo de Decisiones
+#
 class Decision(models.Model):
     desiid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     desidescripcion = models.CharField(max_length = 1000)
@@ -74,7 +87,9 @@ class Decision(models.Model):
     class Meta:
         db_table = '"v1"."decisiones"'
 
-
+##
+# @brief Modelo de Decisiones Proyecto
+#
 class DecisionProyecto(models.Model):
     desproid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     proyid = models.UUIDField()
@@ -83,7 +98,9 @@ class DecisionProyecto(models.Model):
     class Meta:
         db_table = '"v1"."decisiones_proyecto"'
 
-
+##
+# @brief Modelo de Equipos
+#
 class Equipo(models.Model):
     equid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     userid = models.UUIDField()
@@ -93,6 +110,9 @@ class Equipo(models.Model):
     class Meta:
         db_table = '"v1"."equipos"'
 
+##
+# @brief Modelo de Permisos del Sistema
+#
 class Accion(models.Model):
     accionid = models.UUIDField(primary_key= True, default = uuid.uuid4(), editable = False)
     nombre = models.CharField(max_length = 255)
@@ -101,6 +121,9 @@ class Accion(models.Model):
     class Meta:
         db_table = '"v1"."acciones"'
 
+##
+# @brief Modelo de permisos para los roles
+#
 class FuncionRol(models.Model):
     funcrolid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     rolid = models.UUIDField()
@@ -111,7 +134,9 @@ class FuncionRol(models.Model):
     class Meta:
         db_table = '"v1"."funciones_rol"'
 
-
+##
+# @brief Modelo de instrumentos
+#
 class Instrumento(models.Model):
     instrid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     instridexterno = models.CharField(max_length = 255)
@@ -123,7 +148,9 @@ class Instrumento(models.Model):
     class Meta:
         db_table = '"v1"."instrumentos"'
 
-
+##
+# @brief Modelo de Proyectos
+#
 class Proyecto(models.Model):
     proyid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     proynombre = models.CharField(max_length = 255)
@@ -139,7 +166,9 @@ class Proyecto(models.Model):
     class Meta:
         db_table = '"v1"."proyectos"'
 
-
+##
+# @brief Modelo de Roles del sistema
+#
 class Rol(models.Model):
     rolid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     rolname = models.CharField(max_length=50)
@@ -149,7 +178,9 @@ class Rol(models.Model):
     class Meta:
         db_table = '"v1"."roles"'
 
-
+##
+# @brief Modelo de Tareas
+#
 class Tarea(models.Model):
 
     tareid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
@@ -170,6 +201,9 @@ class Tarea(models.Model):
     class Meta:
         db_table = '"v1"."tareas"'
 
+##
+# @brief Modelo de Dimensiones Geográficas
+#
 class DelimitacionGeografica(models.Model):
 
     dimensionid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -181,6 +215,9 @@ class DelimitacionGeografica(models.Model):
     class Meta:
         db_table = '"v1"."dimensiones_territoriales"'
 
+##
+# @brief Modelo de Generos
+#
 class Genero(models.Model):
 
     generoid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -189,6 +226,9 @@ class Genero(models.Model):
     class Meta:
         db_table = '"v1"."generos"'
 
+##
+# @brief Modelo de Niveles educativos
+#
 class NivelEducativo(models.Model):
 
     nivelid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -197,6 +237,9 @@ class NivelEducativo(models.Model):
     class Meta:
         db_table = '"v1"."niveles_educativos"'
 
+##
+# @brief Modelo de barrios
+#
 class Barrio(models.Model):
 
     barrioid = models.IntegerField(editable=False, primary_key=True)
@@ -205,6 +248,9 @@ class Barrio(models.Model):
     class Meta:
         db_table = '"v1"."barrios"'
 
+##
+# @brief Modelo de cartografias
+#
 class Cartografia(models.Model):
 
     cartografiaid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
@@ -218,6 +264,9 @@ class Cartografia(models.Model):
     class Meta:
         db_table = '"v1"."cartografias"'
 
+##
+# @brief Modelo de elementos de Open Street Maps
+#
 class ElementoOsm(models.Model):
 
     elemosmid = models.UUIDField(editable=False, primary_key=True)
@@ -229,6 +278,9 @@ class ElementoOsm(models.Model):
     class Meta:
         db_table = '"v1"."elementos_osm"'
 
+##
+# @brief Modelo de Encuestas
+#
 class Encuesta(models.Model):
     
     encuestaid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
@@ -243,6 +295,9 @@ class Encuesta(models.Model):
     class Meta:
         db_table = '"v1"."encuestas"'
 
+##
+# @brief Modelo de Conflictividades
+#
 class Conflictividad(models.Model):
 
     confid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
@@ -251,6 +306,9 @@ class Conflictividad(models.Model):
     class Meta:
         db_table = '"v1"."conflictividades"'
 
+##
+# @brief Modelo de los hechos asociados a las conflictividades
+#
 class Contextualizacion(models.Model):
 
     contxtid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
@@ -268,6 +326,9 @@ class Contextualizacion(models.Model):
     class Meta:
         db_table = '"v1"."contextualizaciones"'
 
+##
+# @brief Modelo de parámetros del sistema
+#
 class  Parametro(models.Model):
 
     paramid = models.CharField(max_length=1000, primary_key=True)
@@ -277,6 +338,9 @@ class  Parametro(models.Model):
     class Meta:
         db_table = '"v1"."parametros"'
 
+##
+# @brief Modelo de historial de asignaciones de puntaje
+#
 class AsignacionPuntaje(models.Model):
 
     asigid = models.UUIDField(default = uuid.uuid4, primary_key=True)
@@ -287,6 +351,9 @@ class AsignacionPuntaje(models.Model):
     class Meta:
         db_table = '"v1"."asignaciones_puntajes"'
 
+##
+# @brief Modelo de plantillas de equipo
+#
 class PlantillaEquipo(models.Model):
 
     planid = models.UUIDField(default=uuid.uuid4, primary_key=True)
@@ -296,7 +363,9 @@ class PlantillaEquipo(models.Model):
     class Meta:
         db_table = '"v1"."plantillas_equipo"'
 
-
+##
+# @brief Modelo de miembros de plantilla
+#
 class MiembroPlantilla(models.Model):
 
     miplid = models.UUIDField(default=uuid.uuid4, primary_key=True)
@@ -307,7 +376,9 @@ class MiembroPlantilla(models.Model):
     class Meta:
         db_table = '"v1"."miembros_plantilla"'
 
-
+##
+# @brief Modelo de Tipos de Proyecto
+#
 class TipoProyecto(models.Model):
 
     tiproid = models.UUIDField(default = uuid.uuid4, primary_key=True)

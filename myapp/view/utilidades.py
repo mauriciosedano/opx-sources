@@ -14,6 +14,11 @@ from rest_framework_simplejwt.backends import TokenBackend
 
 #========================== Utilidades =============================
 
+##
+# @brief Función que formatea el resultado de una consulta de base de datos
+# @param cursor Cursor que contiene el resultado de la consulta
+# @return lista de diccionarios
+#
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
     columns = [col[0] for col in cursor.description]
@@ -22,6 +27,11 @@ def dictfetchall(cursor):
         for row in cursor.fetchall()
     ]
 
+##
+# @brief Recurso que provee el listado de los géneros del sistema
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((AllowAny,))
 def listadoGeneros(request):
@@ -36,6 +46,11 @@ def listadoGeneros(request):
 
     return JsonResponse(data, status=data['code'], safe=False)
 
+##
+# @brief Recurso que provee el listado de niveles educativos del sistema
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((AllowAny,))
 def listadoNivelesEducativos(request):
@@ -50,6 +65,11 @@ def listadoNivelesEducativos(request):
 
     return JsonResponse(data, status=data['code'], safe=False)
 
+##
+# @brief Recurso que provee el listado de barrios de Santiago de Cali
+# @param request Instancia HttpRequest
+# @return cadena JSON
+#
 @api_view(['GET'])
 @permission_classes((AllowAny,))
 def listadoBarrios(request):
@@ -64,6 +84,11 @@ def listadoBarrios(request):
 
     return JsonResponse(data, status=data['code'], safe=False)
 
+##
+# @brief Función que provee la instancia del modelo usuario en base al Token de sesión
+# @param request Instancia HttpRequest
+# @return instancia del modelo Usuario
+#
 def usuarioAutenticado(request):
 
     # Decodificando el access token
@@ -75,6 +100,11 @@ def usuarioAutenticado(request):
 
     return user
 
+##
+# @brief Función que provee un parametro del sistema
+# @param parametro Identificación del parametro
+# @return cadena con el valor de parámetro del sistema
+#
 def obtenerParametroSistema(parametro):
 
     parametro = models.Parametro.objects.get(pk=parametro)
@@ -86,6 +116,11 @@ def obtenerParametroSistema(parametro):
 
     return response
 
+##
+# @brief Función que provee el listado de correos electrónicos de los integrantes de un proyecto
+# @param proyid Identificación de un proyecto
+# @return Lista
+#
 def obtenerEmailsEquipo(proyid):
 
     usuarios = models.Equipo.objects.filter(proyid__exact = proyid)
@@ -97,6 +132,11 @@ def obtenerEmailsEquipo(proyid):
 
     return emails
 
+##
+# @brief Recurso que provee el correo electrónico de un usuario
+# @param userid Identificación de un usuario
+# @return cadena que contiene el correo electrónico del usuario
+#
 def obtenerEmailUsuario(userid):
 
     usuario = models.Usuario.objects.get(pk = userid)
@@ -105,12 +145,32 @@ def obtenerEmailUsuario(userid):
 
     return email
 
+##
+# @brief Función que retorna una plantilla HTML cuando no se encuentra un recurso en el sistema
+# @param request Instancia HttpRequest
+# @param exception excepción opcional
+# @return plantilla HTML
+#
 def notFoundPage(request, exception=None):
     return render(request, "error/404.html")
 
+##
+# @brief Función que retorna una plantilla HTML cuando ocurre un error en el sistema
+# @param request Instancia HttpRequest
+# @param exception excepcion opcional
+# @return plantilla HTML
+#
 def serverErrorPage(request, exception=None):
     return render(request, "error/500.html")
 
+##
+# @brief Función que calcula el estado actual de un proyecto. provee datos como:
+# Avance de la ejecución
+# Avance de la validación
+# Cantidad de integrantes
+# @param proyid Identificación del proyecto
+# @return Diccionario
+#
 def reporteEstadoProyecto(proyid):
     progresoProyecto = 0
     tareas = models.Tarea.objects.filter(proyid__exact = proyid)
