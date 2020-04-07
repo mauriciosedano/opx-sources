@@ -53,6 +53,7 @@ def equipoProyecto(request, proyid):
 
             user = usuarioAutenticado(request)
 
+            # Superadministrador o Proyectista
             if (str(user.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a' or str(user.rolid) == '8945979e-8ca5-481e-92a2-219dd42ae9fc'):
 
                 query = "select distinct on(u.userid) \
@@ -288,6 +289,7 @@ def usuariosDisponiblesProyecto(request, proyid):
         proyecto = models.Proyecto.objects.get(pk = proyid)
         user = usuarioAutenticado(request)
 
+        # Superadministrador o Proyectista
         if (str(user.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a' or str(user.rolid) == '8945979e-8ca5-481e-92a2-219dd42ae9fc'):
 
             # Busqueda de Usuarios
