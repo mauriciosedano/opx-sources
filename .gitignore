@@ -4,5 +4,6 @@ myapp/__pycache__/
 myapp/middleware/__pycache__/
 myapp/migrations/__pycache__/
 myapp/view/__pycache__/
+myapp/tests/__pycache__/
 venv/
 node_modules/

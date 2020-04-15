@@ -25,7 +25,8 @@ import xml.etree.ElementTree as ET
 from opc.opc_settings import settings
 
 #@brief url de API REST Open Street Maps
-osmRestApiUrl = settings['osm-api-url']
+if 'osm-api-url' in settings.keys():
+    osmRestApiUrl = settings['osm-api-url']
 
 ##
 # @brief Función que provee las cabeceras que requiere el API REST de Open Street Maps
@@ -76,7 +77,7 @@ def agregarChangeset():
 
 ##
 # @brief Funcion que cierre Changeset en Open Street Maps
-# @param changeset abierto de Open Street Maps
+# @param changeset changeset abierto de Open Street Maps
 # @return Respuesta de API de Open Street Maps
 #
 def cerrarChangeset(changeset):

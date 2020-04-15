@@ -49,7 +49,7 @@ def listadoProyectos(request):
 
     try:
 
-        if request.META['HTTP_AUTHORIZATION'] != 'null':
+        if 'HTTP_AUTHORIZATION' in request.META.keys() and request.META['HTTP_AUTHORIZATION'] != 'null':
 
             # # Decodificando el access token
             # tokenBackend = TokenBackend(settings.SIMPLE_JWT['ALGORITHM'], settings.SIMPLE_JWT['SIGNING_KEY'],
@@ -205,9 +205,9 @@ def almacenamientoProyecto(request):
     proyfechainicio = request.POST.get('proyfechainicio')
     proyFechaCierre = request.POST.get('proyfechacierre')
     proyEstado = 1
-    decisiones = json.loads(request.POST.get('decisiones'))
-    contextos = json.loads(request.POST.get('contextos'))
-    equipos = json.loads(request.POST.get('plantillas'))
+    decisiones = request.POST.get('decisiones')
+    contextos = request.POST.get('contextos')
+    equipos = request.POST.get('plantillas')
     propietario = tokenDecoded['user_id']
     delimitacionGeograficas = request.POST.get('delimitacionesGeograficas')
 
@@ -223,10 +223,20 @@ def almacenamientoProyecto(request):
 
         proyecto.save()
 
-        almacenarDecisionProyecto(proyecto, decisiones)
-        almacenarContextosProyecto(proyecto, contextos)
+        if decisiones is not None:
+            decisiones = json.loads(decisiones)
+            almacenarDecisionProyecto(proyecto, decisiones)
+
+        if contextos is not None:
+            contextos = json.loads(contextos)
+            almacenarContextosProyecto(proyecto, contextos)
+
+
         almacenarDelimitacionesGeograficas(proyecto, delimitacionGeograficas)
-        asignarEquipos(proyecto, equipos)
+
+        if equipos is not None:
+            equipos = json.loads(equipos)
+            asignarEquipos(proyecto, equipos)
 
         data = serializers.serialize('python', [proyecto])[0]
 

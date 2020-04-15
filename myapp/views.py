@@ -907,7 +907,7 @@ def listadoDecisiones(request):
 def almacenarDecision(request):
 
     desidescripcion = request.POST.get('desidescripcion')
-    userid = request.POST.get('userid')    
+    userid = usuarioAutenticado(request).userid
 
     decision = models.Decision(desidescripcion = desidescripcion, userid = userid)
 
