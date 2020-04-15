@@ -57,23 +57,26 @@ def equipoProyecto(request, proyid):
             if (str(user.rolid) == '628acd70-f86f-4449-af06-ab36144d9d6a' or str(user.rolid) == '8945979e-8ca5-481e-92a2-219dd42ae9fc'):
 
                 query = "select distinct on(u.userid) \
-                    e.equid, u.userfullname, u.latitud, u.longitud, u.horaubicacion, \
-                    (select string_agg(pe.descripcion, ', ') \
-                    from v1.miembros_plantilla as mp \
-                    inner join v1.plantillas_equipo as pe on pe.planid = mp.planid \
-                    where mp.userid = u.userid) as equipos \
-                    from v1.equipos as e \
-                    inner join v1.usuarios as u on u.userid = e.userid \
-                    inner join v1.miembros_plantilla as mp on mp.userid = u.userid \
-                    inner join v1.plantillas_equipo as pe on pe.planid = mp.planid \
-                    where pe.userid = '{}' \
-                    and e.proyid = '{}'" \
-                    .format(user.userid, proyid)
+                        u.userid, e.equid, u.userfullname, u.latitud, u.longitud, u.horaubicacion \
+                        from v1.equipos as e \
+                        inner join v1.usuarios as u on u.userid = e.userid \
+                        and e.proyid = '{}'" \
+                        .format(proyid)
 
                 with connection.cursor() as cursor:
                     cursor.execute(query)
 
                     equipo = dictfetchall(cursor)
+
+                for eq in equipo:
+                    eq['equipos'] = ''
+                    equiposUsuario = models.MiembroPlantilla.objects.filter(userid = eq['userid'])
+
+                    for equs in equiposUsuario:
+                        team =  models.PlantillaEquipo.objects.get(pk=equs.planid)
+
+                        if team.userid == user.userid:
+                            eq['equipos'] += str(team.descripcion) + ', '
 
                 data = {
                     'code': 200,
@@ -298,11 +301,7 @@ def usuariosDisponiblesProyecto(request, proyid):
             # query = "select u.userid, u.userfullname from v1.usuarios u where (u.rolid = '0be58d4e-6735-481a-8740-739a73c3be86' or u.rolid = '53ad3141-56bb-4ee2-adcf-5664ba03ad65') and u.userid not in (select e.userid from v1.equipos e where e.proyid = '" + proyid + "')"
 
             query = "select distinct on(u.userid) \
-                    u.userid, u.userfullname, \
-                    (select string_agg(pe.descripcion, ', ') \
-                    from v1.miembros_plantilla as mp \
-                    inner join v1.plantillas_equipo as pe on pe.planid = mp.planid \
-                    where mp.userid = u.userid) as equipos \
+                    u.userid, u.userfullname \
                     from v1.miembros_plantilla as mp \
                     inner join v1.usuarios as u on u.userid = mp.userid \
                     inner join v1.plantillas_equipo as pe on pe.planid = mp.planid \
@@ -318,6 +317,16 @@ def usuariosDisponiblesProyecto(request, proyid):
                 cursor.execute(query)
 
                 usuarios = dictfetchall(cursor)
+
+            for u in usuarios:
+                u['equipos'] = ''
+                equiposUsuario = models.MiembroPlantilla.objects.filter(userid=u['userid'])
+
+                for equs in equiposUsuario:
+                    team = models.PlantillaEquipo.objects.get(pk=equs.planid)
+
+                    if team.userid == user.userid:
+                        u['equipos'] += str(team.descripcion) + ', '
 
             data = {
                 'code': 200,
