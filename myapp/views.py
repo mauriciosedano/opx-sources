@@ -1584,7 +1584,7 @@ def actualizarRol(request, rolid):
 
         rol.rolname = request.POST.get('rolname')
         rol.roldescripcion = request.POST.get('roldescripcion')        
-        rol.rolestado = request.POST.get('rolestado')
+        # rol.rolestado = request.POST.get('rolestado')
 
         rol.full_clean()
 

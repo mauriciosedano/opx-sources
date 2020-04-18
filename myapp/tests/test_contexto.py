@@ -1,12 +1,12 @@
 from django.db import connection
 from django.test import Client
-from myapp.models import Decision
+from myapp.models import Contexto
 from unittest import TestCase
 from urllib.parse import urlencode
 from .test_login import LoginTest
 import json
 
-class DecisionTest(TestCase):
+class ContextoTest(TestCase):
 
     # Autenticación
     loginObj = LoginTest()
@@ -17,16 +17,16 @@ class DecisionTest(TestCase):
         'HTTP_AUTHORIZATION': 'Bearer ' + token
     }
 
-    c = Client(**headers)
+    client = Client(**headers)
 
     # Listado
     def list(self, cantidad):
 
-        response = self.c.get('/decisiones/list/')
+        response = self.client.get('/contextos/list/')
 
-        cantidadProyectos = len(json.loads(response.content))
+        cantidadContextos = len(json.loads(response.content))
 
-        self.assertEqual(cantidadProyectos, cantidad)
+        self.assertEqual(cantidadContextos, cantidad)
 
         if cantidad > 0:
             self.update()
@@ -35,7 +35,7 @@ class DecisionTest(TestCase):
     def clean(self):
 
         with connection.cursor() as cursor:
-            cursor.execute('DELETE FROM v1.decisiones;')
+            cursor.execute('DELETE FROM v1.contextos;')
 
             self.store()
 
@@ -43,12 +43,12 @@ class DecisionTest(TestCase):
     def store(self):
 
             data = {
-                'desidescripcion': 'Test',
+                'descripcion': 'Test',
             }
 
-            response = self.c.post('/decisiones/store/',
-                                   urlencode(data),
-                                   content_type='application/x-www-form-urlencoded')
+            response = self.client.post('/contextos/store/',
+                                        urlencode(data),
+                                        content_type='application/x-www-form-urlencoded')
 
             self.assertEqual(response.status_code, 201)
 
@@ -58,15 +58,15 @@ class DecisionTest(TestCase):
     def update(self):
 
         # Obtener la decisión almacenada anteriormente
-        decision = Decision.objects.get(desidescripcion='Test')
+        contexto = Contexto.objects.get(descripcion='Test')
 
         data = {
-            'desidescripcion': 'Test a',
+            'descripcion': 'Test a',
         }
 
-        response = self.c.post('/decisiones/' + str(decision.desiid),
-                               urlencode(data),
-                               content_type='application/x-www-form-urlencoded')
+        response = self.client.post('/contextos/' + str(contexto.contextoid),
+                                    urlencode(data),
+                                    content_type='application/x-www-form-urlencoded')
 
         self.assertEqual(response.status_code, 200)
 
@@ -75,9 +75,9 @@ class DecisionTest(TestCase):
     # Eliminación
     def delete(self):
         # Obtener el proyecto modificado anteriormente
-        decision = Decision.objects.get(desidescripcion='Test a')
+        contexto = Contexto.objects.get(descripcion='Test a')
 
-        response = self.c.delete('/decisiones/delete/' + str(decision.desiid) + '/')
+        response = self.client.delete('/contextos/delete/' + str(contexto.contextoid))
 
         self.assertEqual(response.status_code, 200)
 
