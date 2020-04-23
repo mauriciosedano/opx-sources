@@ -3,7 +3,13 @@ estadisticas = new Vue({
     delimiters: ['[[', ']]'],
     data: {
         proyectoID: '',
-        datosGenerales: []
+        datosGenerales: [],
+        ranking: [],
+        dimensionesProyecto: [],
+        tareasDimension: [],
+        equipoProyecto: [],
+        contextosProyecto: [],
+        decisionesProyecto: []
     },
     created(){
 
@@ -17,6 +23,7 @@ estadisticas = new Vue({
                 this.usuariosXNivelEducativo();
                 this.usuariosXRol();
                 this.usuariosXGenero();
+                this.getRanking();
             }, 1000);
         }
     },
@@ -222,6 +229,119 @@ estadisticas = new Vue({
                     this.datosGenerales = response.data.data;
                 }
             });
+        },
+        getRanking(){
+
+            axios({
+                url: '/estadisticas/' + this.proyectoID + '/ranking/',
+                method: 'GET',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.ranking = response.data.data;
+                }
+            });
+        },
+        getDimensionesProyecto(){
+
+            axios({
+                url: '/estadisticas/' + this.proyectoID + '/campanas/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.dimensionesProyecto = response.data.dimensiones;
+                }
+            });
+        },
+        getTareasDimension(dimensionid){
+
+            axios({
+                url: '/estadisticas/' + dimensionid + '/tareas-campana/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.tareasDimension = response.data.tareas;
+                }
+            });
+        },
+        getEquipoProyecto(){
+
+            axios({
+                url: '/equipos/list/' + this.proyectoID,
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                this.equipoProyecto = response.data.equipo;
+            })
+        },
+        getContextosProyecto(){
+
+            axios({
+                url: '/contextos/' + this.proyectoID + '/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.contextosProyecto = response.data.contextos;
+                }
+            });
+        },
+        getDecisionesProyecto(){
+
+            axios({
+                url: '/decisiones/' + this.proyectoID + '/list/',
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    this.decisionesProyecto = response.data.decisiones;
+                }
+            });
+        },
+        getModalCampanas(){
+
+            this.getDimensionesProyecto();
+            $("#dimensionesProyecto").modal('show');
+        },
+        getModalEquipo(){
+
+            $("#equipoProyecto").modal('show');
+            this.getEquipoProyecto();
+        },
+        getModalContextos(){
+
+            this.getContextosProyecto();
+            $("#contextosProyecto").modal('show');
+        },
+        getModalDecisiones(){
+
+            this.getDecisionesProyecto();
+            $("#decisionesProyecto").modal('show');
         }
     }
 })

@@ -200,3 +200,11 @@ def reporteEstadoProyecto(proyid):
         'estado-validacion':    estadoValidacion,
         'cantidad-integrantes': len(models.Equipo.objects.filter(proyid__exact=proyid))
     }
+
+def reporteEstadoTarea(tarea):
+
+    if tarea['taretipo'] == 1:
+        encuestas = models.Encuesta.objects.filter(tareid__exact=tarea['tareid'])
+        progreso = (len(encuestas) * 100) / tarea['tarerestriccant']
+
+    return progreso

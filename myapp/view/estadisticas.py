@@ -10,8 +10,8 @@ from rest_framework.permissions import (
     IsAuthenticated
 )
 
-from myapp.models import Proyecto, Rol, Usuario, Tarea, Instrumento, Encuesta, NivelEducativo, Barrio, Equipo, ContextoProyecto, DecisionProyecto
-from myapp.view.utilidades import dictfetchall, reporteEstadoProyecto
+from myapp.models import Proyecto, Rol, Usuario, Tarea, Instrumento, Encuesta, NivelEducativo, Barrio, Equipo, ContextoProyecto, DecisionProyecto, DelimitacionGeografica
+from myapp.view.utilidades import dictfetchall, reporteEstadoProyecto, reporteEstadoTarea
 from myapp.views import detalleFormularioKoboToolbox
 
 import csv
@@ -270,7 +270,9 @@ def tareasXTipo(request):
 @permission_classes((IsAuthenticated,))
 def ranking(request):
 
-    usuarios = Usuario.objects.order_by('-puntaje').values()
+    usuarios = Usuario.objects \
+               .order_by('-puntaje') \
+               .values('userfullname', 'puntaje')
 
     response = {
         'code': 200,
@@ -944,9 +946,9 @@ def datosGeneralesProyecto(request, proyid):
         response = {
             'code': 200,
             'data': {
-                'contextos': contextos,
-                'decisiones': decisiones,
-                'campana': campanas,
+                'contextos':    contextos,
+                'decisiones':   decisiones,
+                'campana':      campanas,
                 'convocatoria': convocatoria
             },
             'status': 'success'
@@ -1013,6 +1015,204 @@ def exportarDatos(request, proyid):
         response = HttpResponse("", status=400)
 
     return response
+
+@api_view(['GET'])
+@permission_classes((AllowAny,))
+def exportarDatosProyecto(request, proyid):
+    try:
+        proyecto = Proyecto.objects.get(pk=proyid)
+
+        contextos = len(ContextoProyecto.objects.filter(proyid__exact=proyid))
+        decisiones = len(DecisionProyecto.objects.filter(proyid__exact=proyid))
+        campanas = len(Tarea.objects.filter(proyid__exact=proyid))
+        convocatoria = len(Equipo.objects.filter(proyid__exact=proyid))
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="informacion.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow(['Campo', 'Valor'])
+        writer.writerow(['Nombre Proyecto', proyecto.proynombre])
+        writer.writerow(['Fecha de Inicio', proyecto.proyfechainicio])
+        writer.writerow(['Fecha de Cierre', proyecto.proyfechacierre])
+        writer.writerow(['Contextos', contextos])
+        writer.writerow(['decisiones', decisiones])
+        writer.writerow(['Campañas', campanas])
+        writer.writerow(['Convocatoria', convocatoria])
+
+    except ObjectDoesNotExist:
+        response = HttpResponse("", status=404)
+
+    except ValidationError:
+        response = HttpResponse("", status=400)
+
+    return response
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def rankingPorProyecto(request, proyid):
+
+    try:
+        # Verificación de existencia de proyecto
+        Proyecto.objects.get(pk = proyid)
+
+        # Lista que recibe IDS de usuarios
+        equipo = []
+
+        # Consulta de equipo de proyecto
+        queryEquipo = Equipo.objects.filter(proyid = proyid)
+
+        # Inserción de los identificadores en la lista equipo
+        for q in queryEquipo:
+            equipo.append(q.userid)
+
+        # Consulta de usuarios que hacen parte del equipo
+        usuarios = Usuario.objects \
+                   .filter(pk__in = equipo) \
+                   .order_by('-puntaje') \
+                   .values('userfullname', 'puntaje')
+
+        response = {
+            'code': 200,
+            'data': list(usuarios)[0:3],
+            'status': 'success'
+        }
+
+    except ObjectDoesNotExist:
+        response = {
+            'code':     404,
+            'message':  'Proyecto inexistente'
+        }
+
+    except ValidationError:
+        response = {
+            'code':     400,
+            'message':  'Proyecto inexistente'
+        }
+
+    return JsonResponse(response, safe=False, status=response['code'])
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def dimensionesProyecto(request, proyid):
+
+    try:
+        # Validación de Existencia de proyecto
+        Proyecto.objects.get(pk = proyid)
+
+        # Consulta de las dimensiones del proyecto
+        dimensiones = DelimitacionGeografica \
+                      .objects \
+                      .filter(proyid = proyid) \
+                      .values('dimensionid', 'nombre')
+
+        response = {
+            'code':         200,
+            'dimensiones':  list(dimensiones),
+            'status':       'success'
+        }
+
+    except ObjectDoesNotExist:
+        response = {
+            'code':     404,
+            'status':   'error'
+        }
+
+    except ValidationError:
+        response = {
+            'code':     400,
+            'status':   'error'
+        }
+
+    return JsonResponse(response, safe = False, status = response['code'])
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def tareasDimensionProyecto(request, dimensionid):
+
+    try:
+        DelimitacionGeografica.objects.get(pk = dimensionid)
+
+        tareas = Tarea \
+                 .objects \
+                 .filter(dimensionid=dimensionid) \
+                 .values('tareid', 'tarenombre', 'taretipo', 'tarerestriccant')
+
+        for tarea in tareas:
+            tarea['progreso'] = reporteEstadoTarea(tarea)
+
+        response = {
+            'code':     200,
+            'tareas':   list(tareas),
+            'status':   'success'
+        }
+
+    except ObjectDoesNotExist:
+        response = {
+            'code':     404,
+            'status':   'error'
+        }
+
+    except ValidationError:
+        response = {
+            'code':     400,
+            'status':   'error'
+        }
+
+    return JsonResponse(response, safe=False, status=response['code'])
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def instrumentosProyecto(request, proyid):
+
+    try:
+        Proyecto.objects.get(pk=proyid)
+
+        with connection.cursor() as cursor:
+
+            query = "SELECT DISTINCT ON (t.instrid) \
+                    t.instrid, i.instrnombre, i.instrtipo \
+                    FROM v1.tareas as t \
+                    INNER JOIN v1.instrumentos as i ON i.instrid = t.instrid"
+
+            cursor.execute(query)
+
+            # Formato de resultado de consulta
+            instrumentos = dictfetchall(cursor)
+
+        # Cantidad de Encuestas
+        encuestas = 0
+
+        # Cantidad de Cartografias
+        cartografias = 0
+
+        for instr in instrumentos:
+            if instr['instrtipo'] == 1:
+                encuestas = encuestas + 1
+            elif instr['instrtipo'] == 2:
+                cartografias = cartografias + 1
+
+        response = {
+            'code':         200,
+            'stats': {
+                'tipos':    ['encuesta', 'cartografia'],
+                'cantidad': [encuestas, cartografias]
+            },
+            'status':   'success'
+        }
+    except ObjectDoesNotExist:
+        response = {
+            'code':     404,
+            'status':   'error'
+        }
+
+    except ValidationError:
+        response = {
+            'code':     400,
+            'status':   'error'
+        }
+
+    return JsonResponse(response, safe=False, status=response['code'])
 
 ##
 # @brief Script de ejemplo  que tiene la capacidad de darle formato un archivo de encuestas generado por el sistema

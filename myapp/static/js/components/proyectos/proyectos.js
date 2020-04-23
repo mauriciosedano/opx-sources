@@ -1,5 +1,5 @@
 proyecto = new Vue({
-     el: '#gestion-proyectos',
+    el: '#gestion-proyectos',
     delimiters: ['[[', ']]'],
     created: function(){
 

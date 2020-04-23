@@ -51,6 +51,7 @@ urlpatterns = [
 
     path('contextos/', views.listadoContextosView),
     path('contextos/list/', views.listadoContextos),
+    path('contextos/<str:proyid>/list/', views.listadoContextosProyecto),
     path('contextos/store/', views.almacenamientoContexto),
     path('contextos/delete/<str:contextoid>', views.eliminarContexto),
     path('contextos/<str:contextoid>', views.actualizarContexto),
@@ -64,6 +65,7 @@ urlpatterns = [
 
     path('decisiones/', views.listadoDecisionesView),
     path('decisiones/list/', views.listadoDecisiones),
+    path('decisiones/<str:proyid>/list/', views.listDecisionesProyecto),
     path('decisiones/store/', views.almacenarDecision),
     path('decisiones/delete/<str:desiid>/', views.eliminarDecision),
     path('decisiones/<str:desiid>', views.actualizarDecision),
@@ -189,7 +191,12 @@ urlpatterns = [
     path('estadisticas/<str:proyid>/usuarios-x-genero/', estadisticas.usuariosXGeneroProyecto),
     path('estadisticas/<str:proyid>/usuarios-x-nivel-educativo/', estadisticas.usuariosXNivelEducativoProyecto),
     path('estadisticas/<str:proyid>/datos-generales/', estadisticas.datosGeneralesProyecto),
-    path('estadisticas/exportar/<str:proyid>', estadisticas.exportarDatos),
+    path('estadisticas/<str:proyid>/exportar-encuestas/', estadisticas.exportarDatos),
+    path('estadisticas/<str:proyid>/exportar-proyecto/', estadisticas.exportarDatosProyecto),
+    path('estadisticas/<str:proyid>/ranking/', estadisticas.rankingPorProyecto),
+    path('estadisticas/<str:proyid>/campanas/', estadisticas.dimensionesProyecto),
+    path('estadisticas/<str:dimensionid>/tareas-campana/', estadisticas.tareasDimensionProyecto),
+    path('estadisticas/<str:proyid>/instrumentos/', estadisticas.instrumentosProyecto),
 
     # ========================= Vista Estadísticas =====================================
 

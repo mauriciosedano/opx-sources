@@ -81,6 +81,9 @@
                             :current-page="pagination.currentPage"
                             :per-page="pagination.perPage"
                     >
+                      <template v-slot:cell(taredescripcion)="data">
+                        <span v-html="data.item.taredescripcion"></span>
+                      </template>
                       <template v-slot:cell(taretipo)="data">
                         [[ data.item.taretipo | tipoTarea ]]
                       </template>
@@ -177,7 +180,19 @@
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Descripción</label>
-                          <textarea v-model="almacenamientoTarea.taredescripcion" rows="5" class="form-control"></textarea>
+                          <!--<textarea v-model="almacenamientoTarea.taredescripcion" rows="5" class="form-control"></textarea>-->
+                          <editor
+                             api-key="yppjpwidnfhsiwqjvltoxykexydqk3m1xk218rj4r1lvk85v"
+                             :init="{
+                               height: 300,
+                               menubar: false,
+                               toolbar:
+                                 'undo redo | formatselect | bold italic backcolor | \
+                                 alignleft aligncenter alignright alignjustify | \
+                                 bullist numlist outdent indent | removeformat | help'
+                             }"
+                             v-model="almacenamientoTarea.taredescripcion"
+                           />
                         </div>
                       </div>
                       <div class="col-md-12">
@@ -251,7 +266,19 @@
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Descripción</label>
-                          <textarea v-model="edicionTarea.taredescripcion" rows="5" class="form-control"></textarea>
+                          <!--<textarea v-model="edicionTarea.taredescripcion" rows="5" class="form-control"></textarea>-->
+                          <editor
+                             api-key="yppjpwidnfhsiwqjvltoxykexydqk3m1xk218rj4r1lvk85v"
+                             :init="{
+                               height: 300,
+                               menubar: false,
+                               toolbar:
+                                 'undo redo | formatselect | bold italic backcolor | \
+                                 alignleft aligncenter alignright alignjustify | \
+                                 bullist numlist outdent indent | removeformat | help'
+                             }"
+                             v-model="edicionTarea.taredescripcion"
+                           />
                         </div>
                       </div>
                       <div align="center" class="col-md-12">

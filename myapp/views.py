@@ -435,6 +435,47 @@ def listadoContextos(request):
 
     return JsonResponse(list(contextos), safe = False)
 
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def listadoContextosProyecto(request, proyid):
+
+    try:
+        models.Proyecto.objects.get(pk=proyid)
+
+        # Listado de IDS de contexto
+        contextos = []
+        contextosID = models \
+                    .ContextoProyecto \
+                    .objects \
+                    .filter(proyid=proyid)
+
+        # Inserción de IDs en lista para consulta posterior
+        for contexto in contextosID:
+            contextos.append(str(contexto.contextoid))
+
+        # Consulta de contextos
+        contextos = models.Contexto.objects.filter(pk__in=contextos).values()
+
+        response = {
+            'code':         200,
+            'contextos':    list(contextos),
+            'status':       'success'
+        }
+
+    except ObjectDoesNotExist:
+        response = {
+            'code':     404,
+            'status':   'error'
+        }
+
+    except ValidationError:
+        response = {
+            'code':     400,
+            'status':   'error'
+        }
+
+    return JsonResponse(response, safe=False, status=response['code'])
+
 ##
 # @brief Recurso de almacenamiento de contextos
 # @param request Instancia HttpRequest
@@ -997,6 +1038,51 @@ def listadoDecisionesProyecto(request):
     decisionesProyecto = models.DecisionProyecto.objects.all().values()
 
     return JsonResponse(list(decisionesProyecto), safe = False)
+
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def listDecisionesProyecto(request, proyid):
+
+    try:
+        # Verificación de existencia de proyecto
+        models.Proyecto.objects.get(pk=proyid)
+
+        # Listado de IDS de decisiones
+        decisiones = []
+        decisionesIDS = models \
+                        .DecisionProyecto \
+                        .objects \
+                        .filter(proyid=proyid)
+
+        for decision in decisionesIDS:
+            decisiones.append(decision.desiid)
+
+        # Consulta
+        decisiones = models \
+                    .Decision \
+                    .objects \
+                    .filter(pk__in=decisiones) \
+                    .values()
+
+        response = {
+            'code':         200,
+            'decisiones':   list(decisiones),
+            'status':       'success'
+        }
+
+    except ObjectDoesNotExist:
+        response = {
+            'code':     404,
+            'status':   'error'
+        }
+
+    except ValidationError:
+        response = {
+            'code':     400,
+            'status':   'error'
+        }
+
+    return JsonResponse(response, safe=False, status=response['code'])
 
 ##
 # @brief Recurso de eliminación de decisiones Proyecto

@@ -34,7 +34,7 @@
                           <span class="espacio"> [[ p.fecha | fechas ]] </span>
                       </p>
                       <h3>[[ p.nombre ]]</h3>
-                      <p> [[ p.descripcion ]] </p>
+                      <p v-html="p.descripcion"></p>
 
                       <!-- Barra de progreso -->
                       <div id="progress-bar">

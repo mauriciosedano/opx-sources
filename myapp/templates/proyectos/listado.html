@@ -76,6 +76,9 @@
                         :current-page="pagination.currentPage"
                         :per-page="pagination.perPage"
                 >
+                  <template v-slot:cell(proydescripcion)="data">
+                    <span v-html="data.item.proydescripcion"></span>
+                  </template>
                   <template v-slot:cell(estado)="data">
                     [[ data.item.proyestado | estado-entidad ]]
                   </template>
@@ -138,7 +141,19 @@
                           <div class="col-md-12">
                             <div class="form-group">
                               <label class="bmd-label-floating">Descripción</label>
-                              <textarea v-model="almacenamientoProyecto.proydescripcion" class="form-control"></textarea>
+                              <!--<textarea v-model="almacenamientoProyecto.proydescripcion" class="form-control"></textarea>-->
+                              <editor
+                                 api-key="yppjpwidnfhsiwqjvltoxykexydqk3m1xk218rj4r1lvk85v"
+                                 :init="{
+                                   height: 300,
+                                   menubar: false,
+                                   toolbar:
+                                     'undo redo | formatselect | bold italic backcolor | \
+                                     alignleft aligncenter alignright alignjustify | \
+                                     bullist numlist outdent indent | removeformat | help'
+                                 }"
+                                 v-model="almacenamientoProyecto.proydescripcion"
+                               />
                             </div>
                           </div>
                           <div class="col-md-6">
@@ -285,7 +300,19 @@
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Descripción</label>
-                          <textarea v-model="edicionProyecto.proydescripcion" class="form-control"></textarea>
+                          <!--<textarea v-model="edicionProyecto.proydescripcion" class="form-control"></textarea>-->
+                          <editor
+                             api-key="yppjpwidnfhsiwqjvltoxykexydqk3m1xk218rj4r1lvk85v"
+                             :init="{
+                               height: 300,
+                               menubar: false,
+                               toolbar:
+                                 'undo redo | formatselect | bold italic backcolor | \
+                                 alignleft aligncenter alignright alignjustify | \
+                                 bullist numlist outdent indent | removeformat | help'
+                             }"
+                             v-model="edicionProyecto.proydescripcion"
+                           />
                         </div>
                       </div>
                       <div class="col-md-12">

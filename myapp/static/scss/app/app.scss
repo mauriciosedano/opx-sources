@@ -7,6 +7,10 @@
 @import "reportes/durante.scss";
 @import "perfil.scss";
 
+.cursor-point{
+    cursor: point !important;
+}
+
 .loading{
     background-image: url(/static/img/app/loader.gif);
     background-repeat: no-repeat;

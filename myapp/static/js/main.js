@@ -59,6 +59,15 @@ import BootstrapVue from 'bootstrap-vue';
 // Vue DatePicker
 import Datepicker from 'vuejs-datepicker';
 
+// Leaflet
+require('./plugins/leaflet/leaflet.js');
+
+// Leaflet Draw
+require('leaflet-draw/dist/leaflet.draw.js');
+
+//TinyMCE
+import Editor from '@tinymce/tinymce-vue';
+
 // Agregando el componente Multiselect
 Vue.component('multiselect', Multiselect);
 
@@ -68,11 +77,8 @@ Vue.use(BootstrapVue);
 // Agregando Componente Datepicker
 Vue.component('datepicker', Datepicker);
 
-// Leaflet
-require('./plugins/leaflet/leaflet.js');
-
-// Leaflet Draw
-require('leaflet-draw/dist/leaflet.draw.js');
+// Agregando componente TinyMCE
+Vue.component('editor', Editor);
 
 // Filtro de estado de las entidades
 Vue.filter('estado-entidad', function(value){

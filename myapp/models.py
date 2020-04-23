@@ -154,7 +154,7 @@ class Instrumento(models.Model):
 class Proyecto(models.Model):
     proyid = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     proynombre = models.CharField(max_length = 255)
-    proydescripcion = models.CharField(max_length = 1000)
+    proydescripcion = models.TextField()
     proyidexterno = models.CharField(max_length = 255)
     proyfechacreacion = models.CharField(max_length=100)
     proyfechacierre = models.DateField(null=True, blank=True)
@@ -194,7 +194,7 @@ class Tarea(models.Model):
     dimensionid = models.UUIDField(null=True, blank=True)
     geojson_subconjunto = models.CharField(max_length=1000)
     tarefechacreacion = models.DateTimeField(null = True, blank = True, default=datetime.today())
-    taredescripcion = models.CharField(max_length=1000)
+    taredescripcion = models.TextField()
     tareestado = models.IntegerField(default=0)
     observaciones = models.TextField(blank = True, null = True)
 
