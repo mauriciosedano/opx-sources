@@ -226,12 +226,12 @@ las dudas que sean necesarias aclarar dado que no es un proceso sencillo.
 
 1.  **Información del Manual y control de cambios**
 
-| Título       | Manual de despliegue PRINX |
-|--------------|----------------------------|
-| Versión      | 1.0                        |
-| Autor        | Neuromedia                 |
-| Revisado por | Juan Camilo Salazar        |
-| Aprobado por | Carlos Duque               |
+| Título       | Manual de despliegue OPC/SPCC |
+|--------------|-------------------------------|
+| Versión      | 0.0.1                         |
+| Autor        | Neuromedia                    |
+| Revisado por | Juan Camilo Salazar           |
+| Aprobado por | Carlos Duque                  |
 
 **Registro de Cambios**
 
