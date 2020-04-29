@@ -103,8 +103,6 @@ def listadoTareas(request):
 
                 query += " (t.tarenombre ~* '" + search + "');"
 
-        print(query)
-
         with connection.cursor() as cursor:
             cursor.execute(query)
 
@@ -286,18 +284,41 @@ def almacenamientoTarea(request):
     dimensionid = request.POST.get('dimensionid')
     geojson_subconjunto = request.POST.get('geojsonsubconjunto')
     taredescripcion = request.POST.get('taredescripcion')
+    tareprioridad = request.POST.get('tareprioridad')
 
-    tarea = models.Tarea(tarenombre = tareNombre, taretipo = tareTipo, tarerestricgeo = tareRestricGeo, tarerestriccant = tareRestricCant, tarerestrictime = tareRestricTime, instrid = instrID, proyid = proyID, dimensionid = dimensionid, geojson_subconjunto = geojson_subconjunto, taredescripcion = taredescripcion)
+    tarea = models.Tarea(tarenombre = tareNombre, taretipo = tareTipo, tarerestricgeo = tareRestricGeo,
+                         tarerestriccant = tareRestricCant, tarerestrictime = tareRestricTime,
+                         instrid = instrID, proyid = proyID, dimensionid = dimensionid,
+                         geojson_subconjunto = geojson_subconjunto, taredescripcion = taredescripcion,
+                         tareprioridad=tareprioridad)
 
     try:
         tarea.full_clean()
 
         tarea.save()
         data = serializers.serialize('python', [tarea])
-        return JsonResponse(data, safe = False, status = 201)
+
+        response = {
+            'code':     201,
+            'tarea':    data,
+            'status':   'success'
+        }
 
     except ValidationError as e:
-        return JsonResponse(dict(e), safe = True, status = 400)
+        response = {
+            'code':     400,
+            'errors':   dict(e),
+            'status':   'error'
+        }
+
+    except IntegrityError as e:
+        response = {
+            'code':     400,
+            'message':  str(e),
+            'status':   'success'
+        }
+
+    return JsonResponse(response, safe=False, status=response['code'])
 
 ##
 # @brief recurso de eliminación de tareas
@@ -340,14 +361,10 @@ def actualizarTarea(request, tareid):
 
         tarea.tarenombre = request.POST.get('tarenombre')
         #tarea.taretipo = request.POST.get('taretipo')
-        # tarea.tarerestricgeo = "{}"
         tarea.tarerestriccant = request.POST.get('tarerestriccant')
-        # tarea.tarerestrictime = "{}"
-        #tarea.instrid = request.POST.get('instrid')
         tarea.proyid = request.POST.get('proyid')
         tarea.taredescripcion = request.POST.get('taredescripcion')
-        #tarea.geojson_subconjunto = request.POST.get('geojsonsubconjunto')
-        tarea.observaciones = request.POST.get('observaciones')
+        tarea.tareprioridad = request.POST.get('tareprioridad');
 
         tarea.full_clean()
 

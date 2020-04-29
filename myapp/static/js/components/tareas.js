@@ -38,7 +38,7 @@ let tarea = new Vue({
         // Datos de Paginación
         pagination: {
             currentPage: 1,
-            perPage: 3
+            perPage: 10
         },
         // Busqueda
         filtro: '',
@@ -66,6 +66,14 @@ let tarea = new Vue({
             {
                 label: 'Proyecto',
                 key: 'proynombre'
+            },
+            {
+                label: 'Prioridad',
+                key: 'tareprioridad'
+            },
+            {
+                label: 'Fecha de Creación',
+                key: 'tarefechacreacion'
             },
             {
                 label: '',
@@ -558,6 +566,23 @@ let tarea = new Vue({
 
                 return "Cartografia";
             }
+        },
+        prioridadTarea(value){
+
+            switch(value){
+
+                case 1:
+                    response = "Alta";
+                    break;
+                 case 2:
+                    response = "Media";
+                    break;
+                 case 3:
+                    response = "Baja";
+                    break;
+            }
+
+            return response;
         }
     },
     computed: {

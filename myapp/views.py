@@ -165,10 +165,16 @@ def listadoUsuarios(request):
     # json_res = serializers.serialize('python', users)
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT userid, userfullname, useremail, userestado, v1.usuarios.rolid, fecha_nacimiento, barrioid, generoid, nivel_educativo_id, telefono, v1.roles.rolname, latitud, longitud, horaubicacion FROM v1.usuarios INNER JOIN v1.roles ON v1.roles.rolid = v1.usuarios.rolid")
-        columns = dictfetchall(cursor)
+        query = "SELECT userid, userfullname, useremail, userestado, v1.usuarios.rolid, fecha_nacimiento, \
+                barrioid, generoid, nivel_educativo_id, telefono, v1.roles.rolname, latitud, longitud, \
+                horaubicacion, fecha_creacion \
+                FROM v1.usuarios \
+                INNER JOIN v1.roles ON v1.roles.rolid = v1.usuarios.rolid"
 
-        return JsonResponse(columns, safe=False)
+        cursor.execute(query)
+        users = dictfetchall(cursor)
+
+        return JsonResponse(users, safe=False)
 
 ##
 # @brief Recurso que provee el detalle de un usuario registrado
@@ -266,8 +272,13 @@ def almacenarUsuario(request):
     barrio = request.POST.get('barrioid')
     nivelEducativo = request.POST.get('nivel_educativo_id')
     telefono = request.POST.get('telefono')
+    fechaCreacion = datetime.today()
 
-    usuario = models.Usuario(useremail = useremail, usertoken = usertoken, userfullname = userfullname, password = password, rolid = rolid, userleveltype = userleveltype, userestado = userestado, fecha_nacimiento = fechaNacimiento, generoid = genero, barrioid = barrio, nivel_educativo_id = nivelEducativo, telefono = telefono)
+    usuario = models.Usuario(useremail = useremail, usertoken = usertoken, userfullname = userfullname,
+                             password = password, rolid = rolid, userleveltype = userleveltype,
+                             userestado = userestado, fecha_nacimiento = fechaNacimiento, generoid = genero,
+                             barrioid = barrio, nivel_educativo_id = nivelEducativo, telefono = telefono,
+                             fecha_creacion=fechaCreacion)
 
     try:
         usuario.full_clean()

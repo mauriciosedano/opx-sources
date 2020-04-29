@@ -27,6 +27,7 @@ class Usuario(AbstractBaseUser):
     longitud = models.CharField(blank=True, null=True, max_length=30)
     horaubicacion = models.CharField(blank=True, null=True, max_length=100)
     puntaje = models.IntegerField(null=True, blank=True, default=0)
+    fecha_creacion = models.DateTimeField(blank=True, null=True)
 
     objects = MyUserManager()
 
@@ -197,6 +198,7 @@ class Tarea(models.Model):
     taredescripcion = models.TextField()
     tareestado = models.IntegerField(default=0)
     observaciones = models.TextField(blank = True, null = True)
+    tareprioridad = models.IntegerField()
 
     class Meta:
         db_table = '"v1"."tareas"'

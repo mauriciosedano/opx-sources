@@ -34,7 +34,7 @@ proyecto = new Vue({
             },
             {
                 key: 'proyfechacreacion',
-                label: 'Creación',
+                label: 'Fecha de Creación',
                 sortable: true
             },
             {

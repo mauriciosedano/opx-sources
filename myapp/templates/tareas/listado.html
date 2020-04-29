@@ -87,6 +87,9 @@
                       <template v-slot:cell(taretipo)="data">
                         [[ data.item.taretipo | tipoTarea ]]
                       </template>
+                      <template v-slot:cell(tareprioridad)="data">
+                        [[ data.item.tareprioridad | prioridadTarea ]]
+                      </template>
                       <template v-slot:cell(acciones)="data">
                         <div class="dropdown">
                           <a class="actions-menu" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -179,6 +182,17 @@
                       </div>
                       <div class="col-md-12">
                         <div class="form-group">
+                          <label class="bmd-label-floating">Prioridad</label>
+                          <select v-model="almacenamientoTarea.tareprioridad" class="form-control">
+                            <option value="">Seleccione</option>
+                            <option value="1"> Alta </option>
+                            <option value="2"> Media </option>
+                            <option value="3"> Baja </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
                           <label class="bmd-label-floating">Descripción</label>
                           <!--<textarea v-model="almacenamientoTarea.taredescripcion" rows="5" class="form-control"></textarea>-->
                           <editor
@@ -256,13 +270,24 @@
                       </div>
                       <div class="col-md-12">
                         <div class="form-group">
+                          <label class="bmd-label-floating">Prioridad</label>
+                          <select v-model="edicionTarea.tareprioridad" class="form-control">
+                            <option value="">Seleccione</option>
+                            <option value="1"> Alta </option>
+                            <option value="2"> Media </option>
+                            <option value="3"> Baja </option>
+                          </select>
+                        </div>
+                      </div>
+                      <!--<div class="col-md-12">
+                        <div class="form-group">
                           <label class="bmd-label-floating">Instrumento</label>
                           <select v-model="edicionTarea.instrid" class="form-control">
                             <option value="">Seleccione</option>
                             <option v-for="instrumento in instrumentos" :value="instrumento.instrid"> [[ instrumento.instrnombre ]] </option>
                           </select>
                         </div>
-                      </div>
+                      </div>-->
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Descripción</label>

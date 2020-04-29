@@ -47,6 +47,10 @@ let usuario = new Vue({
                 key: 'rolname'
             },
             {
+                label: 'Fecha de Creación',
+                key: 'fecha_creacion'
+            },
+            {
                 label: '',
                 key: 'acciones'
             }
