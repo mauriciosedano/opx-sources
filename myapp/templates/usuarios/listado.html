@@ -184,6 +184,14 @@
                           <input v-model="almacenamientoUsuario.fecha_nacimiento" type="date" class="form-control">
                         </div>
                       </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">
+                            Empleado?
+                            <input v-model="almacenamientoUsuario.empleado" type="checkbox">
+                          </label>
+                        </div>
+                      </div>
                       <div align="center" class="col-md-12">
                         <div class="form-group">
                           <button :disabled="!almacenamientoUsuario.userfullname || !almacenamientoUsuario.useremail || !almacenamientoUsuario.password || !almacenamientoUsuario.rolid || !almacenamientoUsuario.fecha_nacimiento || !almacenamientoUsuario.generoid || !almacenamientoUsuario.barrioid || !almacenamientoUsuario.nivel_educativo_id || !almacenamientoUsuario.telefono" class="btn" @click="almacenarUsuario()" type="button">Guardar</button>
@@ -273,6 +281,14 @@
                         <div class="form-group">
                           <label class="bmd-label-floating">Fecha de Nacimiento</label>
                           <input v-model="edicionUsuario.fecha_nacimiento" type="date" class="form-control">
+                        </div>
+                      </div>
+                       <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">
+                            Empleado?
+                            <input v-model="edicionUsuario.empleado" type="checkbox">
+                          </label>
                         </div>
                       </div>
                       <div align="center" class="col-md-12">

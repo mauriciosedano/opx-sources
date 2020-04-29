@@ -1214,6 +1214,44 @@ def instrumentosProyecto(request, proyid):
 
     return JsonResponse(response, safe=False, status=response['code'])
 
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def usuariosXBarrioEspecifico(request, proyid, keyword):
+
+    try:
+
+        proyecto = Proyecto.objects.get(pk=proyid)
+
+        # Consulta del barrio en base al nombre proveido
+        barrio = Barrio.objects.get(nombre=keyword)
+
+        # Consulta de usuarios
+        with connection.cursor() as cursor:
+            query = "SELECT u.userfullname from v1.equipos as e " \
+                    "INNER JOIN v1.usuarios as u ON u.userid = e.userid " \
+                    "where u.barrioid = {} " \
+                    "AND e.proyid = '{}'" \
+                .format(barrio.barrioid, str(proyid))
+
+            cursor.execute(query)
+
+            usuarios = dictfetchall(cursor)
+
+        response = {
+            'code':     200,
+            'usuarios': usuarios,
+            'status':   'success'
+        }
+
+    except ObjectDoesNotExist:
+        response = {
+            'code':     404,
+            'status':   'error'
+        }
+
+    return JsonResponse(response, safe=False, status=response['code'])
+
 ##
 # @brief Script de ejemplo  que tiene la capacidad de darle formato un archivo de encuestas generado por el sistema
 # @param request instancia HttpRequest

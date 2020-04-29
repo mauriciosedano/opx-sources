@@ -9,7 +9,8 @@ estadisticas = new Vue({
         tareasDimension: [],
         equipoProyecto: [],
         contextosProyecto: [],
-        decisionesProyecto: []
+        decisionesProyecto: [],
+        usuariosBarrioEspecifico: []
     },
     created(){
 
@@ -77,10 +78,11 @@ estadisticas = new Vue({
 
                 if(response.data.code == 200 && response.data.status == 'success'){
 
-                    let ctx = document.getElementById('usuarios-barrio').getContext('2d');
+                    let canvas = document.getElementById('usuarios-barrio');
+                    let ctx = canvas.getContext('2d');
                     let data = response.data.data;
 
-                    new Chart(ctx, {
+                    var diagram = new Chart(ctx, {
                         type: 'pie',
                         data: {
                           labels: data.barrios,
@@ -99,6 +101,17 @@ estadisticas = new Vue({
                           }
                         }
                     });
+
+                    // Consulta de Información
+                    canvas.onclick = evt => {
+
+                        let keyword = getInfoChart(diagram, evt);
+
+                        if(keyword){
+
+                            this.getUsuariosBarrioEspecifico(keyword)
+                        }
+                    };
                 }
             })
         },
@@ -320,6 +333,26 @@ estadisticas = new Vue({
                 if(response.data.code == 200 && response.data.status == 'success'){
 
                     this.decisionesProyecto = response.data.decisiones;
+                }
+            });
+        },
+        getUsuariosBarrioEspecifico(keyword){
+
+            axios({
+                url: '/estadisticas/' + this.proyectoID + '/usuarios-x-barrio/' + keyword,
+                headers: {
+                    Authorization: getToken()
+                }
+            })
+            .then(response => {
+
+                if(response.data.code == 200 && response.data.status == 'success'){
+
+                    // Obtención de información
+                    this.usuariosBarrioEspecifico = response.data.usuarios;
+
+                    // Mostrar Modal
+                    $("#usuariosBarrioEspecifico").modal('show');
                 }
             });
         },

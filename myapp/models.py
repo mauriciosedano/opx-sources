@@ -28,6 +28,7 @@ class Usuario(AbstractBaseUser):
     horaubicacion = models.CharField(blank=True, null=True, max_length=100)
     puntaje = models.IntegerField(null=True, blank=True, default=0)
     fecha_creacion = models.DateTimeField(blank=True, null=True)
+    empleado = models.IntegerField(blank=True, default=0, null=True)
 
     objects = MyUserManager()
 

@@ -167,7 +167,7 @@ def listadoUsuarios(request):
     with connection.cursor() as cursor:
         query = "SELECT userid, userfullname, useremail, userestado, v1.usuarios.rolid, fecha_nacimiento, \
                 barrioid, generoid, nivel_educativo_id, telefono, v1.roles.rolname, latitud, longitud, \
-                horaubicacion, fecha_creacion \
+                horaubicacion, fecha_creacion, empleado \
                 FROM v1.usuarios \
                 INNER JOIN v1.roles ON v1.roles.rolid = v1.usuarios.rolid"
 
@@ -190,7 +190,8 @@ def detalleUsuario(request, userid):
         usuario = {}
 
         with connection.cursor() as cursor:
-            query = "SELECT u.*, r.rolname from v1.usuarios u INNER JOIN v1.roles r ON r.rolid = u.rolid " \
+            query = "SELECT u.*, r.rolname from v1.usuarios u \
+                    INNER JOIN v1.roles r ON r.rolid = u.rolid " \
                     "WHERE u.userid = '{}'".format(userid)
             cursor.execute(query)
             queryResult = dictfetchall(cursor)
@@ -273,6 +274,7 @@ def almacenarUsuario(request):
     nivelEducativo = request.POST.get('nivel_educativo_id')
     telefono = request.POST.get('telefono')
     fechaCreacion = datetime.today()
+    empleado = request.POST.get('empleado')
 
     usuario = models.Usuario(useremail = useremail, usertoken = usertoken, userfullname = userfullname,
                              password = password, rolid = rolid, userleveltype = userleveltype,
@@ -281,6 +283,14 @@ def almacenarUsuario(request):
                              fecha_creacion=fechaCreacion)
 
     try:
+        # Asignación de estado "empleado" a usuario en caso tal sea enviado
+        if empleado is not None:
+            if empleado == "true":
+                usuario.empleado = 1
+            else:
+                usuario.empleado = 0
+
+        # Validación de campos
         usuario.full_clean()
 
         # Contexto Passlib
@@ -386,6 +396,13 @@ def actualizarUsuario(request, userid):
                 pbkdf2_sha256__default_rounds=30000
             )
             usuario.password = pwd_context.encrypt(request.POST.get('password'))
+
+        # Asignando el estado "empleado" del usuario en tal caso sea enviado
+        if request.POST.get('empleado') is not None:
+            if request.POST.get('empleado') == "true":
+                usuario.empleado = 1
+            else:
+                usuario.empleado = 0
 
         usuario.full_clean()
 

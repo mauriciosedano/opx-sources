@@ -250,6 +250,33 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Usuario Barrio Especifico -->
+            <div class="modal" id="usuariosBarrioEspecifico">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">
+
+                            <h2>Usuarios</h2>
+                            <table class="table">
+                              <thead class=" text-primary">
+                                <th>
+                                  Nombre
+                                </th>
+                              </thead>
+                              <tbody>
+                                <tr v-for="usuario in usuariosBarrioEspecifico">
+                                  <td>
+                                    [[ usuario.userfullname ]]
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
