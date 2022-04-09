@@ -25,7 +25,7 @@
     "bootstrap-vue": "^2.2.2",
     "frappe-gantt": "^0.3.0",
     "leaflet-draw": "^1.0.4",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "sweetalert2": "^8.16.3",
     "vue": "^2.6.10",
     "vue-multiselect": "^2.1.6",
