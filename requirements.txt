@@ -8,7 +8,7 @@ djangorestframework-simplejwt==4.3.0
 Fiona==1.8.9.post2
 geopandas==0.6.1
 munch==2.5.0
-numpy==1.17.3
+numpy==1.22.0
 pandas==0.25.2
 passlib==1.7.1
 psycopg2==2.7.5
